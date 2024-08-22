@@ -1,154 +1,201 @@
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import javax.swing.SwingConstants;
+
+import materials.DBUtil;
+import materials.Function;
+import materials.PictureDAO;
+import materials.User;
 
 
-class GameTab extends JPanel {
-	public GameTab() {
-		setLayout(new GridLayout(5, 2));
+// 회원가입 버튼을 눌렀을 때 나오는 다이얼로그 창 화면
+class AccessionMember extends JDialog implements ActionListener{
+	private JTextField idField;
+	private JTextField pwField;
+	private JTextField nickNameField;
+	private JTextField birthField;
+	private JLabel warningLbl;
+	private Function function;
+	private Connection conn;
+	
+
+	public AccessionMember(PictureDAO pictureDAO, Function function, Connection conn) {
+		
+		this.function = function;
+		this.conn = conn;
+		JPanel pnlCenter = new JPanel();
+		JPanel pnlSouth = new JPanel();
+		JPanel pnlNorth = new JPanel();
+		
+		idField = new JTextField(10);
+		idField.setBounds(280, 43, 116, 21);
+		pwField = new JTextField(10);
+		pwField.setBounds(280, 80, 116, 21);
+		nickNameField = new JTextField(10);
+		nickNameField.setBounds(280, 115, 116, 21);
+		birthField = new JTextField(10);
+		birthField.setBounds(280, 148, 116, 21);
+		
+		JLabel idLbl = new JLabel("아이디 : ");
+		idLbl.setBounds(179, 46, 60, 15);
+		JLabel pwLbl = new JLabel("비밀번호 : ");
+		pwLbl.setBounds(179, 83, 77, 15);
+		JLabel nickNameLbl = new JLabel("닉네임 : ");
+		nickNameLbl.setBounds(179, 118, 67, 15);
+		JLabel birthLbl = new JLabel("생년월일 : ");
+		birthLbl.setBounds(179, 151, 77, 15);
+		
 		JLabel image1 = new JLabel();
+		byte[] bytes = pictureDAO.getData(1);
+		ImageIcon icon = new ImageIcon(bytes);
+		image1.setIcon(icon);
+		
 		JLabel image2 = new JLabel();
-		JLabel image3 = new JLabel();
-		JLabel image4 = new JLabel();
-		JLabel image5 = new JLabel();
-		JLabel image6 = new JLabel();
-		JLabel image7 = new JLabel();
-		JLabel image8 = new JLabel();
-		JLabel image9 = new JLabel();
-		JLabel image10 = new JLabel();
+		byte[] bytes2 = pictureDAO.getData(3);
+		ImageIcon icon2 = new ImageIcon(bytes2);
+		image2.setIcon(icon2);
 		
+		warningLbl = new JLabel("");
+		warningLbl.setHorizontalAlignment(SwingConstants.CENTER);
+		warningLbl.setBounds(115, 220, 343, 21);
+		pnlCenter.add(warningLbl);
 		
-		Path path1 = Paths.get("C:\\Users\\GGG\\Desktop\\자유주제 프로젝트", "header (1).jpg");
-		Path path2 = Paths.get("C:\\Users\\GGG\\Desktop\\자유주제 프로젝트", "header (1).jpg");
-		Path path3 = Paths.get("C:\\Users\\GGG\\Desktop\\자유주제 프로젝트", "header (1).jpg");
-		Path path4 = Paths.get("C:\\Users\\GGG\\Desktop\\자유주제 프로젝트", "header (1).jpg");
-		Path path5 = Paths.get("C:\\Users\\GGG\\Desktop\\자유주제 프로젝트", "header (1).jpg");
-		Path path6 = Paths.get("C:\\Users\\GGG\\Desktop\\자유주제 프로젝트", "header (1).jpg");
-		Path path7 = Paths.get("C:\\Users\\GGG\\Desktop\\자유주제 프로젝트", "header (1).jpg");
-		Path path8 = Paths.get("C:\\Users\\GGG\\Desktop\\자유주제 프로젝트", "header (1).jpg");
-		Path path9 = Paths.get("C:\\Users\\GGG\\Desktop\\자유주제 프로젝트", "header (1).jpg");
-		Path path10 = Paths.get("C:\\Users\\GGG\\Desktop\\자유주제 프로젝트", "header (1).jpg");
-		try {
-			byte[] readAllBytes1 = Files.readAllBytes(path1);
-			byte[] readAllBytes2 = Files.readAllBytes(path2);
-			byte[] readAllBytes3 = Files.readAllBytes(path3);
-			byte[] readAllBytes4 = Files.readAllBytes(path4);
-			byte[] readAllBytes5 = Files.readAllBytes(path5);
-			byte[] readAllBytes6 = Files.readAllBytes(path6);
-			byte[] readAllBytes7 = Files.readAllBytes(path7);
-			byte[] readAllBytes8 = Files.readAllBytes(path8);
-			byte[] readAllBytes9 = Files.readAllBytes(path9);
-			byte[] readAllBytes10 = Files.readAllBytes(path10);
-			ImageIcon icon1 = new ImageIcon(readAllBytes1);
-			ImageIcon icon2 = new ImageIcon(readAllBytes1);
-			ImageIcon icon3 = new ImageIcon(readAllBytes1);
-			ImageIcon icon4 = new ImageIcon(readAllBytes1);
-			ImageIcon icon5 = new ImageIcon(readAllBytes1);
-			ImageIcon icon6 = new ImageIcon(readAllBytes1);
-			ImageIcon icon7 = new ImageIcon(readAllBytes1);
-			ImageIcon icon8 = new ImageIcon(readAllBytes1);
-			ImageIcon icon9 = new ImageIcon(readAllBytes1);
-			ImageIcon icon10 = new ImageIcon(readAllBytes1);
-			image1.setIcon(icon1);
-			image2.setIcon(icon2);
-			image3.setIcon(icon3);
-			image4.setIcon(icon4);
-			image5.setIcon(icon5);
-			image6.setIcon(icon6);
-			image7.setIcon(icon7);
-			image8.setIcon(icon8);
-			image9.setIcon(icon9);
-			image10.setIcon(icon10);
-		} catch (Exception e) {
+		pnlCenter.setLayout(null);
+		
+		pnlCenter.add(idLbl);
+		pnlCenter.add(idField);
+		pnlCenter.add(pwLbl);
+		pnlCenter.add(pwField);
+		pnlCenter.add(nickNameLbl);
+		pnlCenter.add(nickNameField);
+		pnlCenter.add(birthLbl);
+		pnlCenter.add(birthField);
+		pnlNorth.add(image1);
+		pnlSouth.add(image2);
+		getContentPane().add(pnlCenter, "Center");
+		
+		JButton registBtn = new JButton("등록하기");
+		registBtn.setBounds(236, 187, 97, 23);
+		pnlCenter.add(registBtn);
+		registBtn.addActionListener(this);
+		
+		getContentPane().add(pnlSouth, "South");
+		getContentPane().add(pnlNorth, "North");
+		
+		setModal(true);
+		setSize(600, 600);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+	}
+
+	public JTextField getIdField() {
+		return idField;
+	}
+
+	public void setIdField(JTextField idField) {
+		this.idField = idField;
+	}
+
+	public JTextField getNickNameField() {
+		return nickNameField;
+	}
+
+	public void setNickNameField(JTextField nickNameField) {
+		this.nickNameField = nickNameField;
+	}
+
+	public JLabel getWarningLbl() {
+		return warningLbl;
+	}
+
+	public void setWarningLbl(JLabel warningLbl) {
+		this.warningLbl = warningLbl;
+	}
+	
+	// 회원가입 버튼을 눌렀을 때의 액션리스너
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		String id = idField.getText();
+		String pw = pwField.getText();
+		String nickName = nickNameField.getText();
+		String birth = birthField.getText();
+		
+		if (id.equals("") || pw.equals("") || nickName.equals("") || birth.equals("")) {
+			warningLbl.setText("모든 칸에 입력하라고 ㅡㅡ");
+		} else {
+			String result = function.checkUser(id, nickName, birth, conn);
+			if (result == null) {
+				this.setVisible(false);
+				function.insertUser(conn, id, pw, nickName, birth);
+				JOptionPane.showMessageDialog(null, "회원가입이 완료되었습니다.");
+			} else if (result.equals("닉네임")) {
+				warningLbl.setText("이미 존재하는 닉네임 입니다.");
+			} else if (result.equals("아이디")) {
+				warningLbl.setText("이미 존재하는 아이디 입니다.");
+			} else if (result.equals("생년월일")) {
+				warningLbl.setText("생년월일의 양식을 맞춰주세요 ex : 2012-08-04");
+			}
 		}
-		add(image1);
-		add(image2);
-		add(image3);
-		add(image4);
-		add(image5);
-		add(image6);
-		add(image7);
-		add(image8);
-		add(image9);
-		add(image10);
-		
 	}
 }
-
-class Basic extends JFrame {
-	
-	GameTab gameTab;
-	
-	public Basic() {
-		gameTab = new GameTab();
-		JTabbedPane tabbedPane = new JTabbedPane();
-		tabbedPane.add("게임 탭", gameTab);
-		tabbedPane.setPreferredSize(new Dimension(1000, 1000));
-		
-		add(tabbedPane);
-		pack();
-	}
-}
-
 
 // 로그인 화면
 public class Login extends JFrame implements ActionListener {
-	
+	PictureDAO pictureDAO;
+	private JTextField idField;
+	private JTextField pwField;
+	private Function function;
+	Connection conn;
+
 	public Login() {
 		super("로그인");
+
+		conn = null;
+		try {
+			conn = DBUtil.getConnection("jojosoft");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 		JPanel centerPnl = new JPanel();
 		JPanel southPnl = new JPanel();
 		JPanel northPnl = new JPanel();
 		JLabel jojoImage = new JLabel();
 		JLabel adImage = new JLabel();
-		Path path = Paths.get("C:\\Users\\GGG\\Desktop\\자유주제 프로젝트", "조조소프트.png");
-		Path path2 = Paths.get("C:\\Users\\GGG\\Desktop\\자유주제 프로젝트", "기적의 검.jpg");
-		try {
-			byte[] bytes = Files.readAllBytes(path);
-			byte[] bytes2 = Files.readAllBytes(path2);
-			ImageIcon icon = new ImageIcon(bytes);
-			ImageIcon icon2 = new ImageIcon(bytes2);
-			jojoImage.setIcon(icon);
-			adImage.setIcon(icon2);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
+		byte[] bytes1 = getPictureBytes(1);
+		byte[] bytes2 = getPictureBytes(2);
+		ImageIcon icon1 = new ImageIcon(bytes1);
+		ImageIcon icon2 = new ImageIcon(bytes2);
+		jojoImage.setIcon(icon1);
+		adImage.setIcon(icon2);
+
 		JLabel idLbl = new JLabel("아이디 : ");
-		idLbl.setBounds(189, 62, 48, 15);
+		idLbl.setBounds(189, 62, 60, 15);
 		JLabel pwLbl = new JLabel("비밀번호 : ");
-		pwLbl.setBounds(189, 103, 60, 15);
-		
-		JTextField idField = new JTextField(10);
+		pwLbl.setBounds(189, 103, 80, 15);
+
+		idField = new JTextField(10);
 		idField.setBounds(287, 59, 116, 21);
-		JTextField pwField = new JTextField(10);
+		pwField = new JTextField(10);
 		pwField.setBounds(287, 100, 116, 21);
-		
+
 		JButton loginBtn = new JButton("로그인");
 		loginBtn.setBounds(189, 183, 97, 23);
 		loginBtn.addActionListener(this);
-		
+
 		JButton joinMemberBtn = new JButton("회원 가입");
 		joinMemberBtn.setBounds(306, 183, 97, 23);
 		joinMemberBtn.addActionListener(this);
-		
-		
+
 		northPnl.add(jojoImage);
 		centerPnl.setLayout(null);
 		centerPnl.add(idLbl);
@@ -158,23 +205,41 @@ public class Login extends JFrame implements ActionListener {
 		centerPnl.add(loginBtn);
 		centerPnl.add(joinMemberBtn);
 		southPnl.add(adImage);
-		
+
 		getContentPane().add(centerPnl, "Center");
 		getContentPane().add(southPnl, "South");
 		getContentPane().add(northPnl, "North");
-		
+
 		setSize(600, 600);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		JOptionPane.showMessageDialog(this, "확인용");
+		function = new Function();
+		AccessionMember accessionMember = new AccessionMember(pictureDAO, function, conn);
+		String command = e.getActionCommand();
+		if (command.equals("로그인")) {
+			
+			User user = function.findMember(idField.getText(), pwField.getText(), conn);
+			
+			if (user == null) {
+				JOptionPane.showMessageDialog(this, "없는 회원입니다.");
+			} else {
+				JOptionPane.showMessageDialog(this, "환영합니다.");
+			}
+			
+		} else if (command.equals("회원 가입")) {
+			accessionMember.setVisible(true);
+		} 
 	}
-	
+
+	public byte[] getPictureBytes(int key) {
+		pictureDAO = new PictureDAO();
+		return pictureDAO.getData(key);
+	}
+
 	public static void main(String[] args) {
 		new Login().setVisible(true);
 	}
 }
-
-
