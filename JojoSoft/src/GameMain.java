@@ -3,25 +3,16 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.Connection;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
-import com.sun.javafx.collections.SetListenerHelper;
-
-import materials.PictureDAO;
-import sun.net.www.content.image.jpeg;
+import picture.IconManager;
+import picture.PictureDAO;
 
 // 메인 패널
 class PnlBasic extends JPanel {
@@ -31,13 +22,13 @@ class PnlBasic extends JPanel {
 	public PnlBasic() {
 		setLayout(new BorderLayout());
 		pnlToolBar = new PnlToolBar();
-		pnlToolBar.setBorder(new LineBorder(Color.RED));
 		add(pnlToolBar, BorderLayout.NORTH);
-		
+
 		pnlMainInfo = new PnlMainInfo();
 		add(pnlMainInfo, BorderLayout.WEST);
 	}
 }
+
 // 상단부 검색바 구성
 class PnlToolBar extends JPanel {
 	public PnlToolBar() {
@@ -52,11 +43,11 @@ class PnlToolBar extends JPanel {
 		pnlEast.add(btnLogout);
 		pnlEast.add(btnCart);
 		pnlEast.setBorder(new LineBorder(Color.RED));
-		
+
 		// 검색바랑 검색바 밑 버튼들 나누기 위한 패널생성
 		JPanel pnlCenter = new JPanel(new GridLayout(2, 0));
 		pnlCenter.setBorder(new LineBorder(Color.BLACK));
-		
+
 		// 검색바 패널
 		JPanel pnlSerch = new JPanel();
 		pnlSerch.setBorder(new LineBorder(Color.CYAN));
@@ -67,29 +58,30 @@ class PnlToolBar extends JPanel {
 		pnlSerch.add(btnLogo);
 		pnlSerch.add(tfSeach);
 		pnlSerch.add(btnSeach);
-		
+
 		// 게임,프로모션 버튼들 담을 패널
 		JPanel pnlBtns = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		pnlBtns.setBorder(new LineBorder(Color.green));
 		JButton btnGame = new JButton("게임");
 		JButton btnPromotion = new JButton("프로모션");
-		
+
 		pnlBtns.add(btnGame);
 		pnlBtns.add(btnPromotion);
-		
+
 		pnlCenter.add(pnlSerch);
 		pnlCenter.add(pnlBtns);
 
 		add(pnlEast, BorderLayout.EAST);
 		add(pnlCenter, BorderLayout.CENTER);
-		
-		setPreferredSize(new Dimension(700,100));
+
+		setPreferredSize(new Dimension(700, 100));
 	}
 }
+
 // 패널 테스트용 프레임
 class PnlTest extends JFrame {
 	private PnlBasic pnlBasic;
-	
+
 	public PnlTest() {
 		pnlBasic = new PnlBasic();
 		add(pnlBasic);
@@ -97,26 +89,27 @@ class PnlTest extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 }
+
 // 게임 메인화면이 나올 패널
-class PnlMainInfo extends JPanel{
+class PnlMainInfo extends JPanel {
 	private PictureDAO pictureDAO;
 	private PnlProduction pnlProduction;
+
 	public PnlMainInfo() {
 		pnlProduction = new PnlProduction();
 		setLayout(new BorderLayout());
-		add(pnlProduction,BorderLayout.WEST);
+		add(pnlProduction, BorderLayout.WEST);
 	}
 }
 
 // 게임제조사 이미지 담을 패널
 class PnlProduction extends JPanel {
-	private PictureDAO pictureDAO;
+
 	public PnlProduction() {
-		pictureDAO = new PictureDAO();
 		setLayout(new FlowLayout(FlowLayout.CENTER));
 		JLabel lblProduction1 = new JLabel();
-		lblProduction1.setPreferredSize(new Dimension(150,85));
-		lblProduction1.setIcon(new ImageIcon(pictureDAO.getData(6)));
+		lblProduction1.setPreferredSize(new Dimension(150, 85));
+		lblProduction1.setIcon(IconManager.getInstance().getIconByKey(6));
 		add(lblProduction1);
 	}
 }
@@ -126,7 +119,7 @@ public class GameMain {
 	public void printMain() {
 		new PnlTest().setVisible(true);
 	}
-	
+
 	public static void main(String[] args) {
 		new PnlTest().setVisible(true);
 //		PictureDAO pictureDAO = new PictureDAO();

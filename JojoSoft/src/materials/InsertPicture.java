@@ -9,6 +9,8 @@ import java.sql.PreparedStatement;
 
 import javax.swing.ImageIcon;
 
+import picture.PictureDAO;
+
 
 /* 해당 클래스는 이미지 파일 데이터를 문자열로 변환하여
  * 데이터 베이스에 등록할 때만 사용하는 클래스입니다.
