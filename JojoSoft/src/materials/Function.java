@@ -11,12 +11,10 @@ import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 
-import com.sun.corba.se.impl.interceptors.PICurrent;
-
 public class Function {
 
 	// 로그인 할 때 아이디와 패스워드를 받아와 디비에 존재하는 유저인지 확인하는 메소드
-	public User findMember(String userId, String userPw, Connection conn) {
+	public static User findMember(String userId, String userPw, Connection conn) {
 		String sql = "select * from user where user_id = ? and user_pw = ?";
 
 		PreparedStatement stmt = null;
@@ -55,7 +53,7 @@ public class Function {
 	}
 
 	// 회원가입 시 중복된 아이디 또는 중복된 닉네임이 있는지 체크하는 메소드
-	public String checkUser(String userId, String userNickName, String birth, String phoneNum, Connection conn) {
+	public static String checkUser(String userId, String userNickName, String birth, String phoneNum, Connection conn) {
 		String sqlId = "select * from user where user_id = ?";
 		String sqlNick = "select * from user where user_nickname = ?";
 		String sqlPhone = "select * from user where user_phonenumber = ?";
@@ -113,7 +111,7 @@ public class Function {
 	}
 	
 	// 유저를 데이터 베이스에 저장하는 메소드
-	public int insertUser(Connection conn, String userId, String userPw, String userNickName, String userBirth, String userPhoneNumber) {
+	public static int insertUser(Connection conn, String userId, String userPw, String userNickName, String userBirth, String userPhoneNumber) {
 		String sql = "insert into user(user_id, user_pw, user_nickname, user_birth, user_phonenumber) values (?, ?, ?, ?, ?);";
 		int result = 0;
 		PreparedStatement stmt = null;
@@ -138,7 +136,7 @@ public class Function {
 	}
 
 	// 문자열을 넣으면 메소드 내용을 토대로 암호화 된 문자열을 반환
-	public String changePW(String password) {
+	public static String changePW(String password) {
 		String result = "";
 
 		for (int i = 0; i < password.length(); i++) {
@@ -157,7 +155,7 @@ public class Function {
 	}
 	
 	// 암호화 된 비밀번호를 원복시켜 반환
-	public String changePWBasic(String password) {
+	public static String changePWBasic(String password) {
 		String result = "";
 
 		for (int i = 0; i < password.length(); i++) {
@@ -175,7 +173,7 @@ public class Function {
 		return result;
 	}
 	
-	public boolean containsKorean(String str) {
+	public static boolean containsKorean(String str) {
        
         // 문자열을 순회하며 한글이 포함되어 있는지 확인
         for (char c : str.toCharArray()) {
@@ -190,13 +188,13 @@ public class Function {
     }
 	
 	// 어떤 광고를 띄울지 랜덤으로 번호를 정해서 광고 id를 반환하는 메소드
-	public int randomPictureNum(List<Integer> pictureNumList) {
+	public static int randomPictureNum(List<Integer> pictureNumList) {
 		Random random = new Random();
 		int result = random.nextInt(pictureNumList.size());
 		return pictureNumList.get(result);
 	}
 	
-	public void findAdIdAndAddToList(List<Integer> pictureNumList , Connection conn) {
+	public static void findAdIdAndAddToList(List<Integer> pictureNumList , Connection conn) {
 		String sql = "SELECT id FROM picture WHERE name LIKE ?;";
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
