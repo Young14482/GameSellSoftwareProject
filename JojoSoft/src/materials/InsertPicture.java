@@ -22,11 +22,11 @@ public class InsertPicture {
 	public static void main(String[] args) {
 		pictureDAO = new PictureDAO();
 		
-		Path path = Paths.get("C:\\Users\\GGG\\Desktop\\자유주제 프로젝트", "마피아.jpg"); // 경로와 이미지파일 이름 작성
+		Path path = Paths.get("C:\\Users\\GGG\\Desktop\\자유주제 프로젝트", "소닉.jpg"); // 경로와 이미지파일 이름 작성
 		try {
 			byte[] bytes = Files.readAllBytes(path);
 			
-			pictureDAO.insert("광고:마피아", bytes); // 데이터 베이스에 저장할 이름을 작성
+			pictureDAO.insert("제조사:SEGA", bytes); // 데이터 베이스에 저장할 이름을 작성
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
