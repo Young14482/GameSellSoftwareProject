@@ -6,16 +6,18 @@ public class User {
 	private String userNickName; 
 	private String userGrade;
 	private String userBirth;
+	private String userPhoneNumber;
 	private int userUsedCash;
 
 	public User(String userId, String userPw, String userNickName, String userGrade, String userBirth,
-			int userUsedCash) {
+			String userPhoneNumber, int userUsedCash) {
 		super();
 		this.userId = userId;
 		this.userPw = userPw;
 		this.userNickName = userNickName;
 		this.userGrade = userGrade;
 		this.userBirth = userBirth;
+		this.userPhoneNumber = userPhoneNumber;
 		this.userUsedCash = userUsedCash;
 	}
 
@@ -65,6 +67,16 @@ public class User {
 
 	public void setUserBirth(String userBirth) {
 		this.userBirth = userBirth;
+	}
+	
+	
+
+	public String getUserPhoneNumber() {
+		return userPhoneNumber;
+	}
+
+	public void setUserPhoneNumber(String userPhoneNumber) {
+		this.userPhoneNumber = userPhoneNumber;
 	}
 
 	@Override
