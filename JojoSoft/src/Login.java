@@ -20,7 +20,6 @@ import materials.Function;
 import materials.PictureDAO;
 import materials.User;
 
-
 // 회원가입 버튼을 눌렀을 때 나오는 다이얼로그 창 화면
 class AccessionMember extends JDialog implements ActionListener {
 	private JTextField idField;
@@ -30,17 +29,14 @@ class AccessionMember extends JDialog implements ActionListener {
 	private JTextField nickNameField;
 	private JTextField birthField;
 	private JLabel warningLbl;
-	private Function function;
 	private Connection conn;
-	
 
-	public AccessionMember(PictureDAO pictureDAO, Function function, Connection conn, List<Integer> pictureNumList) {
-		this.function = function;
+	public AccessionMember(PictureDAO pictureDAO, Connection conn, List<Integer> pictureNumList) {
 		this.conn = conn;
 		JPanel pnlCenter = new JPanel();
 		JPanel pnlSouth = new JPanel();
 		JPanel pnlNorth = new JPanel();
-		
+
 		idField = new JTextField(10);
 		idField.setBounds(280, 10, 116, 21);
 		pwField = new JPasswordField(10);
@@ -53,7 +49,7 @@ class AccessionMember extends JDialog implements ActionListener {
 		nickNameField.setBounds(280, 130, 116, 21);
 		birthField = new JTextField(10);
 		birthField.setBounds(280, 160, 116, 21);
-		
+
 		JLabel idLbl = new JLabel("아이디 : ");
 		idLbl.setBounds(180, 10, 60, 15);
 		JLabel pwLbl = new JLabel("비밀번호 : ");
@@ -66,26 +62,26 @@ class AccessionMember extends JDialog implements ActionListener {
 		nickNameLbl.setBounds(180, 130, 67, 15);
 		JLabel birthLbl = new JLabel("생년월일 : ");
 		birthLbl.setBounds(180, 160, 77, 15);
-		
-		int randomPictureNum = function.randomPictureNum(pictureNumList);
-		
+
+		int randomPictureNum = Function.randomPictureNum(pictureNumList);
+
 		JLabel JojoImage = new JLabel();
 		byte[] JojoBytes = pictureDAO.getData(1);
 		ImageIcon JojoIcon = new ImageIcon(JojoBytes);
 		JojoImage.setIcon(JojoIcon);
-		
+
 		JLabel adImage = new JLabel();
 		byte[] adBytes = pictureDAO.getData(randomPictureNum);
 		ImageIcon adIcon = new ImageIcon(adBytes);
 		adImage.setIcon(adIcon);
-		
+
 		warningLbl = new JLabel("");
 		warningLbl.setHorizontalAlignment(SwingConstants.CENTER);
 		warningLbl.setBounds(115, 225, 343, 21);
 		pnlCenter.add(warningLbl);
-		
+
 		pnlCenter.setLayout(null);
-		
+
 		pnlCenter.add(idLbl);
 		pnlCenter.add(idField);
 		pnlCenter.add(pwLbl);
@@ -101,44 +97,25 @@ class AccessionMember extends JDialog implements ActionListener {
 		pnlNorth.add(JojoImage);
 		pnlSouth.add(adImage);
 		getContentPane().add(pnlCenter, "Center");
-		
+
 		JButton registBtn = new JButton("등록하기");
 		registBtn.setBounds(236, 195, 97, 23);
 		pnlCenter.add(registBtn);
 		registBtn.addActionListener(this);
-		
+
 		getContentPane().add(pnlSouth, "South");
 		getContentPane().add(pnlNorth, "North");
-		
+
 		setModal(true);
 		setSize(600, 600);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	}
 
-	public JTextField getIdField() {
-		return idField;
+	public void clearIdPw() {
+		idField.setText("");
+		pwField.setText("");
 	}
 
-	public void setIdField(JTextField idField) {
-		this.idField = idField;
-	}
-
-	public JTextField getNickNameField() {
-		return nickNameField;
-	}
-
-	public void setNickNameField(JTextField nickNameField) {
-		this.nickNameField = nickNameField;
-	}
-
-	public JLabel getWarningLbl() {
-		return warningLbl;
-	}
-
-	public void setWarningLbl(JLabel warningLbl) {
-		this.warningLbl = warningLbl;
-	}
-	
 	// 회원가입 버튼을 눌렀을 때의 액션리스너
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -148,18 +125,18 @@ class AccessionMember extends JDialog implements ActionListener {
 		String nickName = nickNameField.getText();
 		String birth = birthField.getText();
 		String phoneNumber = phoneNumField.getText();
-		
+
 		if (id.equals("") || pw.equals("") || nickName.equals("") || birth.equals("")) {
 			warningLbl.setText("모든 칸에 입력하세요");
-		} else if (!pw.equals(pwCheck)){
+		} else if (!pw.equals(pwCheck)) {
 			warningLbl.setText("비밀번호와 비밀번호 확인이 서로 일치하지 않습니다.");
-		} else if(function.containsKorean(id)) {
+		} else if (Function.containsKorean(id)) {
 			warningLbl.setText("아이디에 한글을 포함할 수 없습니다.");
 		} else {
-			String result = function.checkUser(id, nickName, birth, phoneNumber, conn);
+			String result = Function.checkUser(id, nickName, birth, phoneNumber, conn);
 			if (result == null) {
 				this.setVisible(false);
-				function.insertUser(conn, id, pw, nickName, birth, phoneNumber);
+				Function.insertUser(conn, id, pw, nickName, birth, phoneNumber);
 				JOptionPane.showMessageDialog(null, "회원가입이 완료되었습니다.");
 			} else if (result.equals("닉네임")) {
 				warningLbl.setText("이미 존재하는 닉네임 입니다.");
@@ -181,17 +158,14 @@ public class Login extends JFrame implements ActionListener {
 	PictureDAO pictureDAO;
 	private JTextField idField;
 	private JPasswordField pwField;
-	private Function function = new Function();
 	Connection conn;
 	List<Integer> pictureNumList;
-	
-	
-	
+
 	private JLabel adImage;
-	
+
 	public Login() {
 		super("로그인");
-		
+
 		conn = null;
 		try {
 			conn = DBUtil.getConnection("jojosoft");
@@ -199,19 +173,19 @@ public class Login extends JFrame implements ActionListener {
 			e.printStackTrace();
 		}
 		pictureNumList = new ArrayList<Integer>();
-		function.findAdIdAndAddToList(pictureNumList, conn);
-		
+		Function.findAdIdAndAddToList(pictureNumList, conn);
+
 		JPanel centerPnl = new JPanel();
 		JPanel southPnl = new JPanel();
 		JPanel northPnl = new JPanel();
 		JLabel jojoImage = new JLabel();
 		adImage = new JLabel();
-		int pictureNum = function.randomPictureNum(pictureNumList);
-		
+		int pictureNum = Function.randomPictureNum(pictureNumList);
+
 		byte[] bytesJojo = getPictureBytes(1);
 		ImageIcon jojoIcon = new ImageIcon(bytesJojo);
 		jojoImage.setIcon(jojoIcon);
-		
+
 		byte[] adBytes = getPictureBytes(pictureNum);
 		ImageIcon adIcon = new ImageIcon(adBytes);
 		adImage.setIcon(adIcon);
@@ -254,12 +228,12 @@ public class Login extends JFrame implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		AccessionMember accessionMember = new AccessionMember(pictureDAO, function, conn, pictureNumList);
+		AccessionMember accessionMember = new AccessionMember(pictureDAO, conn, pictureNumList);
 		String command = e.getActionCommand();
 		if (command.equals("로그인")) {
-			
-			User user = function.findMember(idField.getText(), pwField.getText(), conn);
-			
+
+			User user = Function.findMember(idField.getText(), pwField.getText(), conn);
+
 			if (user == null) {
 				JOptionPane.showMessageDialog(this, "없는 회원입니다.");
 			} else {
@@ -267,16 +241,16 @@ public class Login extends JFrame implements ActionListener {
 				this.setVisible(false);
 				new GameMain().printMain();
 			}
-			
+
 		} else if (command.equals("회원 가입")) {
 			accessionMember.setVisible(true);
 			idField.setText("");
 			pwField.setText("");
-			int pictureNum = function.randomPictureNum(pictureNumList);
+			int pictureNum = Function.randomPictureNum(pictureNumList);
 			byte[] adBytes = getPictureBytes(pictureNum);
 			ImageIcon adIcon = new ImageIcon(adBytes);
 			adImage.setIcon(adIcon);
-		} 
+		}
 	}
 
 	public byte[] getPictureBytes(int key) {
