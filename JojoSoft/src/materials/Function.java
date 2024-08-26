@@ -201,7 +201,6 @@ public class Function {
 		try {
 			stmt = conn.prepareStatement(sql);
 			stmt.setString(1, "광고%");
-			System.out.println(1);
 			rs = stmt.executeQuery();
 			
 			while (rs.next()) {

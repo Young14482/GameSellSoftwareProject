@@ -17,6 +17,7 @@ import javax.swing.border.LineBorder;
 
 import materials.Game;
 import materials.GameDAO;
+import materials.JLableFactory;
 import materials.User;
 import picture.IconManager;
 import picture.PictureDAO;
@@ -83,7 +84,7 @@ class PnlToolBar extends JPanel {
 		add(pnlEast, BorderLayout.EAST);
 		add(pnlCenter, BorderLayout.CENTER);
 
-		setPreferredSize(new Dimension(700, 100));
+		setPreferredSize(new Dimension(900, 100));
 	}
 }
 
@@ -94,7 +95,7 @@ class PnlTest extends JFrame {
 	public PnlTest() {
 		pnlBasic = new PnlBasic();
 		add(pnlBasic);
-		setSize(720, 700);
+		setSize(920, 700);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 }
@@ -118,20 +119,21 @@ class PnlMainInfo extends JPanel {
 
 // 게임제조사 이미지 담을 패널
 class PnlProduction extends JPanel {
-	private PictureDAO pictureDAO;
+	private JLableFactory lableFactory;
 
 	public PnlProduction() {
+		lableFactory = new JLableFactory();
 		setLayout(new FlowLayout(FlowLayout.CENTER));
 		setBorder(BorderFactory.createLineBorder(Color.RED));
 		setPreferredSize(new Dimension(160, 0));
 
-		JLabel lblProduction1 = createLblwithIcon(6);
-		JLabel lblProduction2 = createLblwithIcon(7);
-		JLabel lblProduction3 = createLblwithIcon(8);
-		JLabel lblProduction4 = createLblwithIcon(9);
-		JLabel lblProduction5 = createLblwithIcon(10);
-		JLabel lblProduction6 = createLblwithIcon(11);
-		
+		JLabel lblProduction1 = lableFactory.createLblwithIcon(6);
+		JLabel lblProduction2 = lableFactory.createLblwithIcon(7);
+		JLabel lblProduction3 = lableFactory.createLblwithIcon(8);
+		JLabel lblProduction4 = lableFactory.createLblwithIcon(9);
+		JLabel lblProduction5 = lableFactory.createLblwithIcon(10);
+		JLabel lblProduction6 = lableFactory.createLblwithIcon(11);
+
 		add(lblProduction1);
 		add(lblProduction2);
 		add(lblProduction3);
@@ -140,12 +142,6 @@ class PnlProduction extends JPanel {
 		add(lblProduction6);
 	}
 
-	private JLabel createLblwithIcon(int key) {
-		JLabel lblProduction1 = new JLabel();
-		lblProduction1.setPreferredSize(new Dimension(150, 85));
-		lblProduction1.setIcon(IconManager.getInstance().getIconByKey(key));
-		return lblProduction1;
-	}
 }
 
 // 게임들을 본격적으로 띄울 탭 패널
@@ -162,40 +158,66 @@ class PnlGames extends JTabbedPane {
 class PnlLatestGames extends JPanel {
 	private PictureDAO pictureDAO;
 	private GameDAO gameDAO;
+	private JLableFactory lableFactory;
 
 	public PnlLatestGames() {
+		lableFactory = new JLableFactory();
 		gameDAO = new GameDAO();
 		pictureDAO = new PictureDAO();
-		Game g = gameDAO.getGame(1); // 임시로 게임 1번만 불러옴
+		setPreferredSize(new Dimension(500, 100 + 85 * 10));
+		setBorder(BorderFactory.createLineBorder(Color.cyan));
+		Game g1 = gameDAO.getGame(1); // 임시로 게임 1번만 불러옴
+		Game g2 = gameDAO.getGame(2); // 임시로 게임 1번만 불러옴
+		Game g3 = gameDAO.getGame(3); // 임시로 게임 1번만 불러옴
 
-		JPanel pnlGame = new JPanel();
-		pnlGame.setLayout(new BorderLayout());
+		JPanel pnlGame1 = createGamePnl(g1);
+		JPanel pnlGame2 = createGamePnl(g2);
+		JPanel pnlGame3 = createGamePnl(g3);
+
+		add(pnlGame1);
+		add(pnlGame2);
+		add(pnlGame3);
+	}
+
+	private JPanel createGamePnl(Game g) {
+		JPanel pnlGame1 = new JPanel();
+		pnlGame1.setLayout(new BorderLayout());
 
 		// 게임 이름 부분
-		JPanel pnlGameMid = new JPanel(new GridLayout(2, 0));
-		JLabel lblGameName = new JLabel();
-		lblGameName.setFont(new Font("휴먼모음T", Font.PLAIN, 16));
-		lblGameName.setText("   " + g.getGame_name());
+		JPanel pnlGameMid = new JPanel(new GridLayout(3, 0));
+		JLabel lblGameName = lableFactory.createLblWithFont("   " + g.getGame_name());
 
 		// 게임 장르 + 유형
-		JLabel lblGameGenre = new JLabel();
-		lblGameGenre.setFont(new Font("휴먼모음T", Font.PLAIN, 16));
-		lblGameGenre.setText("   장르: " + g.getGame_genre() + " | 게임유형: " + g.getGame_category());
+		JLabel lblGameGenre = lableFactory
+				.createLblWithFont("   장르: " + g.getGame_genre() + " | 게임유형: " + g.getGame_category());
+
+		// 게임 제작사
+		JLabel lblGameProdu = lableFactory.createLblWithFont("   제작사: " + g.getGame_production());
 
 		pnlGameMid.add(lblGameName);
 		pnlGameMid.add(lblGameGenre);
+		pnlGameMid.add(lblGameProdu);
 
 		// 게임 사진
 		JLabel lblGameProfile = new JLabel();
 		lblGameProfile.setPreferredSize(new Dimension(150, 85));
 		lblGameProfile.setIcon(IconManager.getInstance().getIconByKey(g.getGame_profile()));
+		
+		// 게임 가격
+		JPanel pnlEast = new JPanel();
+		JLabel lblPrice = lableFactory.createLblWithFont("정상가: " + g.getGame_price() + "원");
+		
+		pnlEast.add(lblPrice);
 
-		pnlGame.add(lblGameProfile, BorderLayout.WEST);
-		pnlGame.add(pnlGameMid, BorderLayout.CENTER);
-		pnlGame.setPreferredSize(new Dimension(500, 85));
-		pnlGame.setBorder(BorderFactory.createLineBorder(Color.RED));
-		add(pnlGame);
+		pnlGame1.add(lblGameProfile, BorderLayout.WEST);
+		pnlGame1.add(pnlGameMid, BorderLayout.CENTER);
+		pnlGame1.add(pnlEast,BorderLayout.EAST);
+		pnlGame1.setPreferredSize(new Dimension(700, 85));
+		pnlGame1.setBorder(BorderFactory.createLineBorder(Color.RED));
+		
+		return pnlGame1;
 	}
+
 }
 
 // 패널 만든거 확인용 메인클래스
