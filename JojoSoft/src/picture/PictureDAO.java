@@ -4,9 +4,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.Base64.Decoder;
 import java.util.Base64.Encoder;
+
+import javax.swing.JOptionPane;
 
 import materials.DBUtil;
 
@@ -60,5 +64,31 @@ public class PictureDAO {
 			DBUtil.closeAll(null, stmt, conn);
 		}
 		return 0;
+	}
+
+	public List<Integer> findAdIdAndAddToList() {
+		String sql = "SELECT id FROM picture WHERE name LIKE ?;";
+
+		List<Integer> list = new ArrayList<>();
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try {
+			conn = DBUtil.getConnection("jojosoft");
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, "광고%");
+			System.out.println(1);
+			rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				list.add(rs.getInt("id"));
+			}
+			return list;
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "예외 발생, function 클래스 검토 요망");
+		} finally {
+			DBUtil.closeAll(rs, stmt, conn);
+		}
+		return null;
 	}
 }

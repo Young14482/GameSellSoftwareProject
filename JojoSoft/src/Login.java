@@ -15,11 +15,11 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import materials.DBUtil;
 import materials.Function;
-import materials.User;
 import picture.IconManager;
 import picture.PictureDAO;
+import user.User;
+import user.UserDAO;
 
 // 회원가입 버튼을 눌렀을 때 나오는 다이얼로그 창 화면
 class AccessionMember extends JDialog implements ActionListener {
@@ -30,10 +30,10 @@ class AccessionMember extends JDialog implements ActionListener {
 	private JTextField nickNameField;
 	private JTextField birthField;
 	private JLabel warningLbl;
-	private Connection conn;
+	private UserDAO userDAO;
 
-	public AccessionMember(Connection conn, List<Integer> pictureNumList) {
-		this.conn = conn;
+	public AccessionMember(List<Integer> pictureNumList) {
+		userDAO = new UserDAO();
 		JPanel pnlCenter = new JPanel();
 		JPanel pnlSouth = new JPanel();
 		JPanel pnlNorth = new JPanel();
@@ -132,10 +132,10 @@ class AccessionMember extends JDialog implements ActionListener {
 		} else if (Function.containsKorean(id)) {
 			warningLbl.setText("아이디에 한글을 포함할 수 없습니다.");
 		} else {
-			String result = Function.checkUser(id, nickName, birth, phoneNumber, conn);
+			String result = userDAO.checkUser(id, nickName, birth, phoneNumber);
 			if (result == null) {
 				this.setVisible(false);
-				Function.insertUser(conn, id, pw, nickName, birth, phoneNumber);
+				userDAO.insertUser(id, pw, nickName, birth, phoneNumber);
 				JOptionPane.showMessageDialog(null, "회원가입이 완료되었습니다.");
 			} else if (result.equals("닉네임")) {
 				warningLbl.setText("이미 존재하는 닉네임 입니다.");
@@ -156,22 +156,17 @@ class AccessionMember extends JDialog implements ActionListener {
 public class Login extends JFrame implements ActionListener {
 	private JTextField idField;
 	private JPasswordField pwField;
-	Connection conn;
-	List<Integer> pictureNumList;
+	private UserDAO userDAO;
+	private PictureDAO pictureDAO;
+	private List<Integer> pictureNumList;
 
 	private JLabel adImage;
 
 	public Login() {
 		super("로그인");
-
-		conn = null;
-		try {
-			conn = DBUtil.getConnection("jojosoft");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		pictureNumList = new ArrayList<Integer>();
-		Function.findAdIdAndAddToList(pictureNumList, conn);
+		userDAO = new UserDAO();
+		pictureDAO = new PictureDAO();
+		pictureNumList = pictureDAO.findAdIdAndAddToList();
 
 		JPanel centerPnl = new JPanel();
 		JPanel southPnl = new JPanel();
@@ -224,11 +219,11 @@ public class Login extends JFrame implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		AccessionMember accessionMember = new AccessionMember(conn, pictureNumList);
+		AccessionMember accessionMember = new AccessionMember(pictureNumList);
 		String command = e.getActionCommand();
 		if (command.equals("로그인")) {
 
-			User user = Function.findMember(idField.getText(), pwField.getText(), conn);
+			User user = userDAO.findMember(idField.getText(), pwField.getText());
 
 			if (user == null) {
 				JOptionPane.showMessageDialog(this, "없는 회원입니다.");
