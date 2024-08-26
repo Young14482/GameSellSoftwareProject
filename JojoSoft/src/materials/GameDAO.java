@@ -31,13 +31,15 @@ public class GameDAO {
 				int age_limit = rs.getInt("age_limit");
 				String game_genre = rs.getString("game_genre");
 				String game_production = rs.getString("game_production");
-				String game_ifgo = rs.getString("game_info");
+				String game_info = rs.getString("game_info");
 				Date game_release = rs.getDate("game_release");
 				int game_profile = rs.getInt("game_profile");
 				String game_category = rs.getString("game_category");
 
+				game_info = game_info.replace("\\n", "\n");
+
 				return new Game(game_Id, game_name, game_price, game_discount, age_limit, game_genre, game_production,
-						game_ifgo, game_release, game_profile, game_category);
+						game_info, game_release, game_profile, game_category);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -47,8 +49,8 @@ public class GameDAO {
 		return null;
 	}
 
-	public int insertGame(String game_name, int game_price, int age_limit, String game_genre,
-			String game_production, String game_ifgo, Date game_release, int game_profile, String game_category) {
+	public int insertGame(String game_name, int game_price, int age_limit, String game_genre, String game_production,
+			String game_ifgo, Date game_release, int game_profile, String game_category) {
 		String sql = "INSERT INTO game (game_name, game_price, age_limit, game_genre, game_production,\r\n"
 				+ "	game_ifgo, game_release, game_profile, game_category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 

@@ -17,7 +17,7 @@ public class Game {
 	private int age_limit;
 	private String game_genre; 
 	private String game_production; 
-	private String game_ifgo;
+	private String game_info;
 	private Date game_release;
 	private int game_profile;
 	private String game_category;

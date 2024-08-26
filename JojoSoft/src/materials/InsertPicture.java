@@ -20,11 +20,12 @@ import picture.PictureDAO;
  * 자동으로 데이터 베이스에 등록됩니다.
  */
 public class InsertPicture {
-	static PictureDAO pictureDAO;
-	
-	public static void main(String[] args) {
-		pictureDAO = new PictureDAO();
-		
+//	static PictureDAO pictureDAO;
+//	
+//	public static void main(String[] args) {
+//		pictureDAO = new PictureDAO();
+//		
+//<<<<<<< HEAD
 //<<<<<<< HEAD
 //		Path path = Paths.get("C:\\Users\\GGG\\Desktop\\자유주제 프로젝트", "소닉.jpg"); // 경로와 이미지파일 이름 작성
 //=======
@@ -42,5 +43,14 @@ public class InsertPicture {
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //		}
-	}
+//		Path path = Paths.get("C:\\Users\\GGG\\Desktop\\춘식\\팀프", "eddy.jpg"); // 경로와 이미지파일 이름 작성
+//		try {
+//			byte[] bytes = Files.readAllBytes(path);
+//			
+//		int row = pictureDAO.insert("DLC: "+ path.getFileName().toString(), bytes); // 데이터 베이스에 저장할 이름을 작성
+//			System.out.println("삽입된 행 개수: " + row);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//	}
 }
