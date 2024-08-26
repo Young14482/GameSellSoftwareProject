@@ -194,8 +194,9 @@ public class Function {
 		return pictureNumList.get(result);
 	}
 
-	// 광고 아이디들을 모두 찾아 리스트에 삽입하는 메소드드
-	public static void findAdIdAndAddToList(List<Integer> pictureNumList, Connection conn) {
+//광고 아이디들을 모두 찾아 리스트에 삽입하는 메소드드
+	public static void findAsIdAndAddToList(List<Integer> pictureNumList , Connection conn) {
+
 		String sql = "SELECT id FROM picture WHERE name LIKE ?;";
 		PreparedStatement stmt = null;
 		ResultSet rs = null;

@@ -5,9 +5,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 
 import javax.swing.ImageIcon;
+
+import picture.PictureDAO;
 
 
 /* 해당 클래스는 이미지 파일 데이터를 문자열로 변환하여
@@ -22,13 +25,22 @@ public class InsertPicture {
 	public static void main(String[] args) {
 		pictureDAO = new PictureDAO();
 		
-		Path path = Paths.get("C:\\Users\\GGG\\Desktop\\자유주제 프로젝트", "소닉.jpg"); // 경로와 이미지파일 이름 작성
-		try {
-			byte[] bytes = Files.readAllBytes(path);
-			
-			pictureDAO.insert("제조사:SEGA", bytes); // 데이터 베이스에 저장할 이름을 작성
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//<<<<<<< HEAD
+//		Path path = Paths.get("C:\\Users\\GGG\\Desktop\\자유주제 프로젝트", "소닉.jpg"); // 경로와 이미지파일 이름 작성
+//=======
+//		Path path = Paths.get("C:\\Users\\GGG\\Desktop\\춘식\\팀프", "naughtydog.jpg"); // 경로와 이미지파일 이름 작성
+//>>>>>>> branch 'Stupefyee' of https://github.com/HSLee1013/GameSoftwareDistribution.git
+//		try {
+//			byte[] bytes = Files.readAllBytes(path);
+//			
+//<<<<<<< HEAD
+//			pictureDAO.insert("제조사:SEGA", bytes); // 데이터 베이스에 저장할 이름을 작성
+//=======
+//		int row = pictureDAO.insert("제조사: "+ path.getFileName().toString(), bytes); // 데이터 베이스에 저장할 이름을 작성
+//			System.out.println("삽입된 행 개수: " + row);
+//>>>>>>> branch 'Stupefyee' of https://github.com/HSLee1013/GameSoftwareDistribution.git
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 }
