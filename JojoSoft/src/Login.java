@@ -18,9 +18,9 @@ import javax.swing.SwingConstants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import materials.Function;
-import materials.User;
 import picture.IconManager;
 import picture.PictureDAO;
+import user.User;
 import user.UserDAO;
 
 // 회원가입 버튼을 눌렀을 때 나오는 다이얼로그 창 화면

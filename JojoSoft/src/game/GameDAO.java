@@ -1,10 +1,12 @@
-package materials;
+package game;
 
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import materials.DBUtil;
 
 public class GameDAO {
 	public Game getGame(int key) {

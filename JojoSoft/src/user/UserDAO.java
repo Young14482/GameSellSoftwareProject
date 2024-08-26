@@ -10,7 +10,6 @@ import javax.swing.JOptionPane;
 
 import materials.DBUtil;
 import materials.Function;
-import materials.User;
 
 public class UserDAO {
 	// 로그인 할 때 아이디와 패스워드를 받아와 디비에 존재하는 유저인지 확인하는 메소드

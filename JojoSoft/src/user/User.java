@@ -1,4 +1,4 @@
-package materials;
+package user;
 
 public class User {
 	private String userId;

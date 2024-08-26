@@ -15,11 +15,11 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
-import materials.Game;
-import materials.GameDAO;
-import materials.User;
+import game.Game;
+import game.GameDAO;
 import picture.IconManager;
 import picture.PictureDAO;
+import user.User;
 
 // 메인 패널
 class PnlBasic extends JPanel {
