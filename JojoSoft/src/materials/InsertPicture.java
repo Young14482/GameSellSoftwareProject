@@ -25,12 +25,20 @@ public class InsertPicture {
 	public static void main(String[] args) {
 		pictureDAO = new PictureDAO();
 		
-		Path path = Paths.get("C:\\Users\\GGG\\Desktop\\춘식\\팀프", "eddy.jpg"); // 경로와 이미지파일 이름 작성
+		Path path1 = Paths.get("C:\\Users\\GGG\\Desktop\\춘식\\팀프", "uncharted.jpg"); // 경로와 이미지파일 이름 작성
+//		Path path2 = Paths.get("C:\\Users\\GGG\\Desktop\\춘식\\팀프", "baldur's gate 3.jpg"); // 경로와 이미지파일 이름 작성
+//		Path path3 = Paths.get("C:\\Users\\GGG\\Desktop\\춘식\\팀프", "wukong.jpg"); // 경로와 이미지파일 이름 작성
 		try {
-			byte[] bytes = Files.readAllBytes(path);
-			
-		int row = pictureDAO.insert("DLC: "+ path.getFileName().toString(), bytes); // 데이터 베이스에 저장할 이름을 작성
-			System.out.println("삽입된 행 개수: " + row);
+			byte[] bytes1 = Files.readAllBytes(path1);
+//			byte[] bytes2 = Files.readAllBytes(path2);
+//			byte[] bytes3 = Files.readAllBytes(path3);
+			// DLC 기본게임 번들
+		int row1 = pictureDAO.insert("기본게임: "+ path1.getFileName().toString(), bytes1); // 데이터 베이스에 저장할 이름을 작성
+//		int row2 = pictureDAO.insert("기본게임: "+ path2.getFileName().toString(), bytes2); // 데이터 베이스에 저장할 이름을 작성
+//		int row3 = pictureDAO.insert("기본게임: "+ path3.getFileName().toString(), bytes3); // 데이터 베이스에 저장할 이름을 작성
+			System.out.println("1번행 삽입: " + row1);
+//			System.out.println("2번행 삽입: " + row2);
+//			System.out.println("3번행 삽입: " + row3);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
