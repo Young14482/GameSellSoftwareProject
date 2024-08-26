@@ -31,7 +31,7 @@ public class GameDAO {
 				int age_limit = rs.getInt("age_limit");
 				String game_genre = rs.getString("game_genre");
 				String game_production = rs.getString("game_production");
-				String game_ifgo = rs.getString("game_ifgo");
+				String game_ifgo = rs.getString("game_info");
 				Date game_release = rs.getDate("game_release");
 				int game_profile = rs.getInt("game_profile");
 				String game_category = rs.getString("game_category");

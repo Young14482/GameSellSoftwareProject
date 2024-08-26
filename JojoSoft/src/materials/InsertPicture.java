@@ -1,14 +1,8 @@
 package materials;
-import java.awt.image.DataBuffer;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-
-import javax.swing.ImageIcon;
 
 import picture.PictureDAO;
 
@@ -25,12 +19,11 @@ public class InsertPicture {
 	public static void main(String[] args) {
 		pictureDAO = new PictureDAO();
 		
-		Path path = Paths.get("C:\\Users\\GGG\\Desktop\\춘식\\팀프", "naughtydog.jpg"); // 경로와 이미지파일 이름 작성
+		Path path = Paths.get("C:\\Users\\GGG\\Desktop\\자유주제 프로젝트", "소닉.jpg"); // 경로와 이미지파일 이름 작성
 		try {
 			byte[] bytes = Files.readAllBytes(path);
 			
-		int row = pictureDAO.insert("제조사: "+ path.getFileName().toString(), bytes); // 데이터 베이스에 저장할 이름을 작성
-			System.out.println("삽입된 행 개수: " + row);
+			pictureDAO.insert("제조사:SEGA", bytes); // 데이터 베이스에 저장할 이름을 작성
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
