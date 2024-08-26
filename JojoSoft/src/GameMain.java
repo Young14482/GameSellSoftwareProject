@@ -6,6 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -43,6 +44,7 @@ class PnlBasic extends JPanel implements ActionListener {
 		// 메인 정보 패널 및 스크롤 패널 설정
 		pnlMainInfo = new PnlMainInfo();
 		js = new JScrollPane(pnlMainInfo);
+		js.getVerticalScrollBar().setUnitIncrement(10);
 
 		// CardLayout에 패널 추가
 		pnlContainer.add(js, "MainPanel");
@@ -196,19 +198,14 @@ class PnlLatestGames extends JPanel {
 		lableFactory = new JLableFactory();
 		gameDAO = new GameDAO();
 		pictureDAO = new PictureDAO();
-		setPreferredSize(new Dimension(500, 100 + 85 * 10));
 		setBorder(BorderFactory.createLineBorder(Color.cyan));
-		Game g1 = gameDAO.getGame(1); // 임시로 게임 1번만 불러옴
-		Game g2 = gameDAO.getGame(2); // 임시로 게임 1번만 불러옴
-		Game g3 = gameDAO.getGame(3); // 임시로 게임 1번만 불러옴
+		List<Game> list = gameDAO.getSearchedListDefault();
+		setPreferredSize(new Dimension(500, 100 + 85 * list.size()));
 
-		JPanel pnlGame1 = createGamePnl(g1);
-		JPanel pnlGame2 = createGamePnl(g2);
-		JPanel pnlGame3 = createGamePnl(g3);
-
-		add(pnlGame1);
-		add(pnlGame2);
-		add(pnlGame3);
+		for (Game game : list) {
+			JPanel pnlGame = createGamePnl(game);
+			add(pnlGame);
+		}
 	}
 
 	private JPanel createGamePnl(Game g) {
@@ -220,7 +217,8 @@ class PnlLatestGames extends JPanel {
 		JLabel lblGameName = lableFactory.createLblWithFont("   " + g.getGame_name());
 
 		// 게임 장르 + 유형
-		JLabel lblGameGenre = lableFactory.createLblWithFont("   장르: " + g.getGame_genre() + " | 게임유형: " + g.getGame_category());
+		JLabel lblGameGenre = lableFactory
+				.createLblWithFont("   장르: " + g.getGame_genre() + " | 게임유형: " + g.getGame_category());
 
 		// 게임 제작사
 		JLabel lblGameProdu = lableFactory.createLblWithFont("   제작사: " + g.getGame_production());
@@ -257,20 +255,20 @@ public class GameMain {
 		new PnlTest().setVisible(true);
 	}
 
-	public static void main(String[] args) {
-		new PnlTest().setVisible(true);
-
-//		PictureDAO pictureDAO = new PictureDAO();
-//		Path path = Paths.get("C:\\Users\\GGG\\Desktop\\춘식\\팀프", "bandai.png");
-//		
-//		try {
-//			byte[] readAllBytes = Files.readAllBytes(path);
-//			
-//			int row = pictureDAO.insert(path.getFileName().toString(), readAllBytes);
-//			System.out.println("삽입된 행 개수: " + row);
-//			
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-	}
+//	public static void main(String[] args) {
+//		new PnlTest().setVisible(true);
+//
+////		PictureDAO pictureDAO = new PictureDAO();
+////		Path path = Paths.get("C:\\Users\\GGG\\Desktop\\춘식\\팀프", "bandai.png");
+////		
+////		try {
+////			byte[] readAllBytes = Files.readAllBytes(path);
+////			
+////			int row = pictureDAO.insert(path.getFileName().toString(), readAllBytes);
+////			System.out.println("삽입된 행 개수: " + row);
+////			
+////		} catch (IOException e) {
+////			e.printStackTrace();
+////		}
+//	}
 }
