@@ -167,9 +167,7 @@ public class GameDAO {
 		} else if (order == ORDER_BY_PRICE_ASC) {
 			sql += "ORDER BY ROUND(game_price * (100-game_discount)*100, -2)";
 		}
-		sql += "LIMIT 10";
-
-		System.out.println(sql);
+		sql += " LIMIT 10";
 		List<Game> list = new ArrayList<>();
 
 		Connection conn = null;
