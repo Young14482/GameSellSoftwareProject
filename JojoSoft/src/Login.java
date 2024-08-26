@@ -21,8 +21,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import materials.DBUtil;
 import materials.Function;
-import materials.PictureDAO;
 import materials.User;
+import picture.IconManager;
 
 // 회원가입 버튼을 눌렀을 때 나오는 다이얼로그 창 화면
 class AccessionMember extends JDialog implements ActionListener {
@@ -35,7 +35,7 @@ class AccessionMember extends JDialog implements ActionListener {
 	private JLabel warningLbl;
 	private Connection conn;
 
-	public AccessionMember(PictureDAO pictureDAO, Connection conn, List<Integer> pictureNumList) {
+	public AccessionMember(Connection conn, List<Integer> pictureNumList) {
 		this.conn = conn;
 		JPanel pnlCenter = new JPanel();
 		JPanel pnlSouth = new JPanel();
@@ -70,13 +70,11 @@ class AccessionMember extends JDialog implements ActionListener {
 		int randomPictureNum = Function.randomPictureNum(pictureNumList);
 
 		JLabel JojoImage = new JLabel();
-		byte[] JojoBytes = pictureDAO.getData(1);
-		ImageIcon JojoIcon = new ImageIcon(JojoBytes);
+		ImageIcon JojoIcon = IconManager.getInstance().getIconByKey(1);
 		JojoImage.setIcon(JojoIcon);
 
 		JLabel adImage = new JLabel();
-		byte[] adBytes = pictureDAO.getData(randomPictureNum);
-		ImageIcon adIcon = new ImageIcon(adBytes);
+		ImageIcon adIcon = IconManager.getInstance().getIconByKey(randomPictureNum);
 		adImage.setIcon(adIcon);
 
 		warningLbl = new JLabel("");
@@ -290,7 +288,6 @@ class FindPw extends JDialog {
 
 // 로그인 화면
 public class Login extends JFrame implements ActionListener {
-	PictureDAO pictureDAO;
 	private JTextField idField;
 	private JPasswordField pwField;
 	Connection conn;
@@ -317,12 +314,10 @@ public class Login extends JFrame implements ActionListener {
 		adImage = new JLabel();
 		int pictureNum = Function.randomPictureNum(pictureNumList);
 
-		byte[] bytesJojo = getPictureBytes(1);
-		ImageIcon jojoIcon = new ImageIcon(bytesJojo);
+		ImageIcon jojoIcon = IconManager.getInstance().getIconByKey(1);
 		jojoImage.setIcon(jojoIcon);
 
-		byte[] adBytes = getPictureBytes(pictureNum);
-		ImageIcon adIcon = new ImageIcon(adBytes);
+		ImageIcon adIcon = IconManager.getInstance().getIconByKey(pictureNum);
 		adImage.setIcon(adIcon);
 
 		JLabel idLbl = new JLabel("아이디 : ");
@@ -373,7 +368,7 @@ public class Login extends JFrame implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		AccessionMember accessionMember = new AccessionMember(pictureDAO, conn, pictureNumList);
+		AccessionMember accessionMember = new AccessionMember( conn, pictureNumList);
 		FindId findId = new FindId(pictureNumList, conn, this);
 		FindPw findPw = new FindPw(pictureNumList, conn, this);
 	
@@ -440,15 +435,9 @@ public class Login extends JFrame implements ActionListener {
 		}
 	}
 
-	public byte[] getPictureBytes(int key) {
-		pictureDAO = new PictureDAO();
-		return pictureDAO.getData(key);
-	}
-	
 	public void changeAd(JLabel adImage) {
 		int pictureNum = Function.randomPictureNum(pictureNumList);
-		byte[] adBytes = getPictureBytes(pictureNum);
-		ImageIcon adIcon = new ImageIcon(adBytes);
+		ImageIcon adIcon = IconManager.getInstance().getIconByKey(pictureNum);;
 		adImage.setIcon(adIcon);
 	}
 
