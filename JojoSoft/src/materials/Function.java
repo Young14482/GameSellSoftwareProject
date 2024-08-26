@@ -63,5 +63,4 @@ public class Function {
 		int result = random.nextInt(pictureNumList.size());
 		return pictureNumList.get(result);
 	}
-
 }
