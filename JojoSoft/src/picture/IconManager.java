@@ -6,7 +6,7 @@ import java.util.Map;
 import javax.swing.ImageIcon;
 
 public class IconManager {
-	private static IconManager instance = new IconManager();
+	private static final IconManager instance = new IconManager();
 	private Map<String, ImageIcon> iconMap;
 	private PictureDAO pictureDAO;
 

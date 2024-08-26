@@ -10,8 +10,11 @@ import javax.swing.JOptionPane;
 
 import materials.DBUtil;
 import materials.Function;
+import materials.IResultMapper;
 
 public class UserDAO {
+	public static final IResultMapper<User> userMapper = new UserMapper();
+
 	// 로그인 할 때 아이디와 패스워드를 받아와 디비에 존재하는 유저인지 확인하는 메소드
 	public User findMember(String userId, String userPw) {
 		String sql = "select * from user where user_id = ? and user_pw = ?";
@@ -29,19 +32,7 @@ public class UserDAO {
 			rs = stmt.executeQuery();
 
 			if (rs.next()) {
-				String userid = rs.getString("user_id");
-				String userpw = rs.getString("user_pw");
-				String userNickName = rs.getString("user_nickname");
-				String userGrade = rs.getString("user_grade");
-				String userBirth = rs.getString("user_birth");
-				String userPhoneNumber = rs.getString("user_phonenumber");
-				int userUsedCash = rs.getInt("user_usedcash");
-
-				User user = new User(userid, userpw, userNickName, userGrade, userBirth, userPhoneNumber, userUsedCash);
-
-				return user;
-			} else {
-				return null;
+				return userMapper.resultMapping(rs);
 			}
 
 		} catch (Exception e) {

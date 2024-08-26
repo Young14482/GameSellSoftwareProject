@@ -5,10 +5,19 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import materials.DBUtil;
+import materials.IResultMapper;
 
 public class GameDAO {
+	public static final IResultMapper<Game> gameMapper = new GameMapper();
+	public static final int ORDER_BY_RELEASE = 0;
+	public static final int ORDER_BY_PRICE_ASC = 1;
+	public static final int ORDER_BY_PRICE_DESC = 2;
+
 	public Game getGame(int key) {
 		String sql = "SELECT * FROM game WHERE game_Id = ?";
 
@@ -23,20 +32,7 @@ public class GameDAO {
 			rs = stmt.executeQuery();
 
 			if (rs.next()) {
-				int game_Id = rs.getInt("game_Id");
-				String game_name = rs.getString("game_name");
-				int game_price = rs.getInt("game_price");
-				int game_discount = rs.getInt("game_discount");
-				int age_limit = rs.getInt("age_limit");
-				String game_genre = rs.getString("game_genre");
-				String game_production = rs.getString("game_production");
-				String game_ifgo = rs.getString("game_info");
-				Date game_release = rs.getDate("game_release");
-				int game_profile = rs.getInt("game_profile");
-				String game_category = rs.getString("game_category");
-
-				return new Game(game_Id, game_name, game_price, game_discount, age_limit, game_genre, game_production, game_ifgo,
-						game_release, game_profile, game_category);
+				return gameMapper.resultMapping(rs);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -74,5 +70,83 @@ public class GameDAO {
 			DBUtil.closeAll(null, stmt, conn);
 		}
 		return 0;
+	}
+
+	public List<String> getGenreList() {
+		String sql = "SELECT DISTINCT game_genre FROM game";
+		List<String> list = new ArrayList<>();
+
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = DBUtil.getConnection("jojosoft");
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+
+			while (rs.next()) {
+				String game_genre = rs.getString("game_genre");
+				list.add(game_genre);
+			}
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.closeAll(rs, stmt, conn);
+		}
+		return null;
+	}
+
+	public List<Game> getGameListByGenre(String gameGenre) {
+		String sql = "SELECT * FROM game WHERE game_genre = ? LIMIT 10";
+		List<Game> list = new ArrayList<>();
+
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = DBUtil.getConnection("jojosoft");
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, gameGenre);
+			rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				list.add(gameMapper.resultMapping(rs));
+			}
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.closeAll(rs, stmt, conn);
+		}
+		return null;
+	}
+
+	public List<Game> getGameSearchedList(int order) {
+		String sql = "SELECT * FROM game ";// WHERE game_genre = ? LIMIT 10";
+		List<Game> list = new ArrayList<>();
+
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = DBUtil.getConnection("jojosoft");
+			stmt = conn.prepareStatement(sql);
+//			stmt.setString(1, gameGenre);
+			rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				list.add(gameMapper.resultMapping(rs));
+			}
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.closeAll(rs, stmt, conn);
+		}
+		return null;
 	}
 }
