@@ -10,7 +10,6 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -18,10 +17,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
-import com.sun.xml.internal.bind.v2.runtime.reflect.Lister.Pack;
-
 import materials.DBUtil;
-import materials.User;
+import user.User;
 
 
 // 구매한 게임 이력을 확인할수 있는 탭
