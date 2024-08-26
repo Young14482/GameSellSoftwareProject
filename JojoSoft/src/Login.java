@@ -15,6 +15,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import jdk.nashorn.internal.scripts.JO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import materials.Function;
@@ -402,7 +403,7 @@ public class Login extends JFrame implements ActionListener {
 			findId.setVisible(false);
 		} else if (command.equals("pw확인")) {
 			findPw = (FindPw) ((JButton) e.getSource()).getTopLevelAncestor();
-			int result = userDAO.findIdToUsingId("아이디로 찾기", findPw.getIdField().getText(), null);
+			int result = userDAO.findIdToUsingId("아이디로 찾기", findPw.getIdField().getText());
 
 			if (result == 1) {
 				findPw.getRequestLbl().setText("변경할 비밀번호를 입력해주세요.");
@@ -421,8 +422,11 @@ public class Login extends JFrame implements ActionListener {
 		} else if (command.equals("pw확인2")) {
 			findPw = (FindPw) ((JButton) e.getSource()).getTopLevelAncestor();
 			if (findPw.getPasswordField().getText().equals(findPw.getPasswordField2().getText())) {
-				userDAO.findIdToUsingId("비밀번호 변경", findPw.getIdField().getText(), findPw.getPasswordField().getText());
-				findPw.setVisible(false);
+				int result = userDAO.changeUserInfo("비밀번호 변경", findPw.getIdField().getText(), findPw.getPasswordField().getText(), null, null);
+				if (result == 1) {
+					JOptionPane.showMessageDialog(this, "비밀번호 변경이 완료되었습니다.");
+					findPw.setVisible(false);
+				}
 			} else {
 				JOptionPane.showMessageDialog(null, "입력한 비밀번호가 동일하지 않습니다.");
 			}

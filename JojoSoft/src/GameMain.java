@@ -3,7 +3,6 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,8 +17,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
-import materials.Game;
-import materials.GameDAO;
+import game.Game;
+import game.GameDAO;
 import materials.JLableFactory;
 import picture.IconManager;
 import picture.PictureDAO;
@@ -36,6 +35,7 @@ class PnlBasic extends JPanel implements ActionListener {
 
 	public PnlBasic() {
 		memberInfoPnl = new MemberInfoPnl();
+		pnlToolBar = new PnlToolBar(this);
 
 		// CardLayout과 패널 컨테이너 설정
 		cardLayout = new CardLayout();
@@ -50,7 +50,7 @@ class PnlBasic extends JPanel implements ActionListener {
 		pnlContainer.add(memberInfoPnl, "MemberInfoPanel");
 
 		setLayout(new BorderLayout());
-		pnlToolBar = new PnlToolBar(this);
+		
 		add(pnlToolBar, BorderLayout.NORTH);
 
 		add(pnlContainer, BorderLayout.CENTER);
@@ -69,11 +69,13 @@ class PnlBasic extends JPanel implements ActionListener {
 // 상단부 검색바 구성
 class PnlToolBar extends JPanel {
 
+	private JLabel lnlNickname;
+
 	public PnlToolBar(PnlBasic pnlBasic) {
 		setLayout(new BorderLayout());
 		// pnlEast: 로그인,로그아웃, 사용자 닉네임 알려주는 패널
 		JPanel pnlEast = new JPanel(new GridLayout(3, 0));
-		JLabel lnlNickname = new JLabel(User.getCurUser().getUserNickName() + "님 환영합니다");
+		lnlNickname = new JLabel(User.getCurUser().getUserNickName() + "님 환영합니다");
 		JButton btnLogout = new JButton("로그아웃");
 		JButton btnCart = new JButton("장바구니");
 
@@ -119,6 +121,9 @@ class PnlToolBar extends JPanel {
 		setPreferredSize(new Dimension(900, 100));
 	}
 
+	public JLabel getLnlNickname() {
+		return lnlNickname;
+	}
 }
 
 // 패널 테스트용 프레임

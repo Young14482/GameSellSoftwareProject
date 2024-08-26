@@ -3,6 +3,7 @@ package user;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -113,6 +114,7 @@ public class UserDAO {
 		PreparedStatement stmt = null;
 		try {
 			conn = DBUtil.getConnection("jojosoft");
+			conn.setAutoCommit(false);
 			stmt = conn.prepareStatement(sql);
 			stmt.setString(1, userId);
 			String changePw = Function.changePW(userPw);
@@ -123,14 +125,20 @@ public class UserDAO {
 
 			result = stmt.executeUpdate();
 			if (result == 1) {
+				conn.commit();
 				return result;
 			}
 		} catch (Exception e) {
+			
 			JOptionPane.showMessageDialog(null, "예외 발생, UserDAO 클래스 insert 검토 요망");
 		} finally {
 			DBUtil.closeAll(null, stmt, conn);
 		}
-
+		try {
+			conn.rollback();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return result;
 	}
 
@@ -173,52 +181,123 @@ public class UserDAO {
 		return 0;
 	}
 
-	// 아이디를 이용하여 유저를 찾거나 비밀번호를 변경할 수 있는 메소드
-	public int findIdToUsingId(String select, String userId, String userPw) {
+	// 아이디를 이용하여 유저를 찾는 메소드 
+	public int findIdToUsingId(String select, String userId) {
 
-		String sql = null;
-		if (select.equals("아이디로 찾기")) {
-			sql = "select user_id from user where user_id= ?";
-		} else if (select.equals("비밀번호 변경")) {
-			sql = "update user set user_pw = ? where user_id = ?";
-		}
+		String sql = "select user_id from user where user_id= ?";
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
+		
 		try {
 			conn = DBUtil.getConnection("jojosoft");
+			conn.setAutoCommit(false);
 			stmt = conn.prepareStatement(sql);
 
-			if (select.equals("아이디로 찾기") && userId != null) {
-				stmt.setString(1, userId);
-				rs = stmt.executeQuery();
-				if (rs.next()) {
-					JOptionPane.showMessageDialog(null, "유저 확인 완료");
-					return 1;
-				} else {
-					JOptionPane.showMessageDialog(null, "해당 아이디로 등록된 기록이 없습니다.");
-					return 0;
-				}
-
-			} else if (select.equals("비밀번호 변경")) {
-				String changePw = Function.changePW(userPw);
-
-				stmt.setString(1, changePw);
-				stmt.setString(2, userId);
-
-				int result = stmt.executeUpdate();
-				if (result == 1) {
-					JOptionPane.showMessageDialog(null, "비밀번호 변경이 완료되었습니다.");
-				}
-				return result;
+			stmt.setString(1, userId);
+			rs = stmt.executeQuery();
+			if (rs.next()) {
+				JOptionPane.showMessageDialog(null, "유저 확인 완료");
+				conn.commit();
+				return 1;
+			} else {
+				JOptionPane.showMessageDialog(null, "해당 아이디로 등록된 기록이 없습니다.");
+				conn.commit();
+				return 0;
 			}
-
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "예외 발생, function 클래스 검토 요망");
 		} finally {
 			DBUtil.closeAll(rs, stmt, conn);
 		}
+		return 0;
+	}
+	
+	/** 유저 아이디를 통해 유저의 정보를 변경하는 메소드
+	 * String select 문구를 바꾸어서 기능을 변경시킬 수 있음
+	 * select 종류 : 아이디로 찾기, 비밀번호 변경, 닉네임 변경, 생년월일 변경
+	 * 비밀번호, 닉네임, 전화번호, 생년월일도 변경할 수 있도록 추가
+	 */
+	public int changeUserInfo(String select, String userId, String userPw, String userNickName, String userBirth) {
 
+		String sql = null;
+		if (select.equals("비밀번호 변경")) {
+			sql = "update user set user_pw = ? where user_id = ?";
+		} else if (select.equals("닉네임 변경")) {
+			sql = "update user set user_nickname = ? where user_id = ?";
+		} else if (select.equals("전화번호 변경")) {
+			sql = "update user set user_phonenumber = ? where user_id = ?";
+		} else if (select.equals("생년월일 변경")) {
+			sql = "update user set user_birth = ? where user_id = ?";
+		}
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		PreparedStatement stmtAnother = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = DBUtil.getConnection("jojosoft");
+			conn.setAutoCommit(false);
+			stmt = conn.prepareStatement(sql);
+
+			if (select.equals("비밀번호 변경")) {
+				String duplicateCheck = "select user_pw from user where user_id= ?";
+				stmtAnother = conn.prepareStatement(duplicateCheck);
+				stmtAnother.setString(1, userId);
+				rs = stmtAnother.executeQuery();
+				rs.next();
+				String comparison = rs.getString("user_pw");
+				String changePw = Function.changePW(userPw);
+				
+				if (comparison.equals(changePw)) {
+					JOptionPane.showMessageDialog(null, "기존의 비밀번호와 다른 비밀번호를 입력하세요.");
+					return 0;
+				} else {
+					stmt.setString(1, changePw);
+					stmt.setString(2, userId);
+					int result = stmt.executeUpdate();
+					if (result == 1) {
+						conn.commit();
+						return result;
+					} else {
+						conn.rollback();
+					}
+				}
+			} else if (select.equals("닉네임 변경")) {
+				String duplicateCheck = "select user_nickname from user where user_id= ?";
+				stmtAnother = conn.prepareStatement(duplicateCheck);
+				stmtAnother.setString(1, userId);
+				rs = stmtAnother.executeQuery();
+				rs.next();
+				String comparison = rs.getString("user_nickname");
+				
+				if (comparison.equals(userNickName)) {
+					JOptionPane.showMessageDialog(null, "기존의 닉네임과 다른 닉네임을 입력하세요.");
+					return 0;
+				} else {
+					stmt.setString(1, userNickName);
+					stmt.setString(2, userId);
+					
+					int result = stmt.executeUpdate();
+					if (result == 1) {
+						conn.commit();
+						return result;
+					} else {
+						conn.rollback();
+					}
+				}
+			}
+
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "이미 존재하는 닉네임 입니다.");
+		} finally {
+			try {
+				conn.rollback();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			DBUtil.closeAll(rs, stmt, conn);
+		}
 		return 0;
 	}
 
