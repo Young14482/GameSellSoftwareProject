@@ -10,8 +10,8 @@ public class User {
 	private int userUsedCash;
 	private static User curUser;
 
-	public User(String userId, String userPw, String userNickName, String userGrade, String userBirth,
-			String userPhoneNumber, int userUsedCash) {
+	public User(String userId, String userPw, String userNickName, String userGrade, String userBirth, String userPhoneNumber,
+			int userUsedCash) {
 		super();
 		this.userId = userId;
 		this.userPw = userPw;
@@ -77,18 +77,18 @@ public class User {
 	public void setUserPhoneNumber(String userPhoneNumber) {
 		this.userPhoneNumber = userPhoneNumber;
 	}
-	
+
 	public static void setCurUser(User user) {
 		curUser = user;
 	}
-	
+
 	public static User getCurUser() {
 		return curUser;
 	}
 
 	@Override
 	public String toString() {
-		return "User [userId=" + userId + ", userPw=" + userPw + ", userNickName=" + userNickName + ", userGrade="
-				+ userGrade + ", userUsedCash=" + userUsedCash + "]";
+		return "User [userId=" + userId + ", userPw=" + userPw + ", userNickName=" + userNickName + ", userGrade=" + userGrade
+				+ ", userUsedCash=" + userUsedCash + "]";
 	}
 }

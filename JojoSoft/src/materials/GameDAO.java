@@ -5,9 +5,6 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Base64;
-import java.util.Base64.Decoder;
-import java.util.Base64.Encoder;
 
 public class GameDAO {
 	public Game getGame(int key) {
@@ -36,8 +33,8 @@ public class GameDAO {
 				int game_profile = rs.getInt("game_profile");
 				String game_category = rs.getString("game_category");
 
-				return new Game(game_Id, game_name, game_price, game_discount, age_limit, game_genre, game_production,
-						game_ifgo, game_release, game_profile, game_category);
+				return new Game(game_Id, game_name, game_price, game_discount, age_limit, game_genre, game_production, game_ifgo,
+						game_release, game_profile, game_category);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -47,8 +44,8 @@ public class GameDAO {
 		return null;
 	}
 
-	public int insertGame(String game_name, int game_price, int age_limit, String game_genre,
-			String game_production, String game_ifgo, Date game_release, int game_profile, String game_category) {
+	public int insertGame(String game_name, int game_price, int age_limit, String game_genre, String game_production,
+			String game_ifgo, Date game_release, int game_profile, String game_category) {
 		String sql = "INSERT INTO game (game_name, game_price, age_limit, game_genre, game_production,\r\n"
 				+ "	game_ifgo, game_release, game_profile, game_category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
