@@ -23,9 +23,9 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
 import materials.DBUtil;
-import materials.Function;
 import user.User;
 import user.UserDAO;
+
 
 // 구매한 게임 이력을 확인할수 있는 탭
 class ShoopingInfo extends JPanel {
