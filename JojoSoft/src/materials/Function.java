@@ -194,7 +194,7 @@ public class Function {
 		return pictureNumList.get(result);
 	}
 	
-	public static void findAdIdAndAddToList(List<Integer> pictureNumList , Connection conn) {
+	public static void findAsIdAndAddToList(List<Integer> pictureNumList , Connection conn) {
 		String sql = "SELECT id FROM picture WHERE name LIKE ?;";
 		PreparedStatement stmt = null;
 		ResultSet rs = null;

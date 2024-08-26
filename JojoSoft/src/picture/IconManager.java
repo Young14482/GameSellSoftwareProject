@@ -36,5 +36,4 @@ public class IconManager {
 	public ImageIcon getIconByKey(int key) {
 		return getIcon(getPicture(key));
 	}
-
 }

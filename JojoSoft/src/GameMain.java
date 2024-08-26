@@ -17,6 +17,7 @@ import javax.swing.border.LineBorder;
 
 import materials.Game;
 import materials.GameDAO;
+import materials.User;
 import picture.IconManager;
 import picture.PictureDAO;
 
@@ -43,7 +44,7 @@ class PnlToolBar extends JPanel {
 		setLayout(new BorderLayout());
 		// pnlEast: 로그인,로그아웃, 사용자 닉네임 알려주는 패널
 		JPanel pnlEast = new JPanel(new GridLayout(3, 0));
-		JLabel lnlNickname = new JLabel("스폰지밥님 환영합니다");
+		JLabel lnlNickname = new JLabel(User.getCurUser().getUserNickName() + "님 환영합니다");
 		JButton btnLogout = new JButton("로그아웃");
 		JButton btnCart = new JButton("장바구니");
 
@@ -112,7 +113,6 @@ class PnlMainInfo extends JPanel {
 		setLayout(new BorderLayout());
 		add(pnlProduction, BorderLayout.WEST);
 		add(pnlGames, BorderLayout.CENTER);
-
 	}
 }
 
@@ -158,6 +158,7 @@ class PnlGames extends JTabbedPane {
 	}
 }
 
+// 게임 정보 패널부분
 class PnlLatestGames extends JPanel {
 	private PictureDAO pictureDAO;
 	private GameDAO gameDAO;
@@ -165,16 +166,18 @@ class PnlLatestGames extends JPanel {
 	public PnlLatestGames() {
 		gameDAO = new GameDAO();
 		pictureDAO = new PictureDAO();
-		Game g = gameDAO.getGame(1);
+		Game g = gameDAO.getGame(1); // 임시로 게임 1번만 불러옴
 
 		JPanel pnlGame = new JPanel();
 		pnlGame.setLayout(new BorderLayout());
 
+		// 게임 이름 부분
 		JPanel pnlGameMid = new JPanel(new GridLayout(2, 0));
 		JLabel lblGameName = new JLabel();
 		lblGameName.setFont(new Font("휴먼모음T", Font.PLAIN, 16));
 		lblGameName.setText("   " + g.getGame_name());
 
+		// 게임 장르 + 유형
 		JLabel lblGameGenre = new JLabel();
 		lblGameGenre.setFont(new Font("휴먼모음T", Font.PLAIN, 16));
 		lblGameGenre.setText("   장르: " + g.getGame_genre() + " | 게임유형: " + g.getGame_category());
@@ -182,10 +185,10 @@ class PnlLatestGames extends JPanel {
 		pnlGameMid.add(lblGameName);
 		pnlGameMid.add(lblGameGenre);
 
+		// 게임 사진
 		JLabel lblGameProfile = new JLabel();
 		lblGameProfile.setPreferredSize(new Dimension(150, 85));
 		lblGameProfile.setIcon(IconManager.getInstance().getIconByKey(g.getGame_profile()));
-		
 
 		pnlGame.add(lblGameProfile, BorderLayout.WEST);
 		pnlGame.add(pnlGameMid, BorderLayout.CENTER);

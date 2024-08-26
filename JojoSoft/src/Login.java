@@ -160,6 +160,7 @@ public class Login extends JFrame implements ActionListener {
 	List<Integer> pictureNumList;
 
 	private JLabel adImage;
+	private User user;
 
 	public Login() {
 		super("로그인");
@@ -171,7 +172,7 @@ public class Login extends JFrame implements ActionListener {
 			e.printStackTrace();
 		}
 		pictureNumList = new ArrayList<Integer>();
-		Function.findAdIdAndAddToList(pictureNumList, conn);
+		Function.findAsIdAndAddToList(pictureNumList, conn);
 
 		JPanel centerPnl = new JPanel();
 		JPanel southPnl = new JPanel();
@@ -228,12 +229,13 @@ public class Login extends JFrame implements ActionListener {
 		String command = e.getActionCommand();
 		if (command.equals("로그인")) {
 
-			User user = Function.findMember(idField.getText(), pwField.getText(), conn);
+			user = Function.findMember(idField.getText(), pwField.getText(), conn);
 
 			if (user == null) {
 				JOptionPane.showMessageDialog(this, "없는 회원입니다.");
 			} else {
 				JOptionPane.showMessageDialog(this, "환영합니다.");
+				User.setCurUser(user);
 				this.setVisible(false);
 				new GameMain().printMain();
 			}

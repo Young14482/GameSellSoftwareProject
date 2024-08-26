@@ -3,11 +3,12 @@ package materials;
 public class User {
 	private String userId;
 	private String userPw;
-	private String userNickName; 
+	private String userNickName;
 	private String userGrade;
 	private String userBirth;
 	private String userPhoneNumber;
 	private int userUsedCash;
+	private static User curUser;
 
 	public User(String userId, String userPw, String userNickName, String userGrade, String userBirth,
 			String userPhoneNumber, int userUsedCash) {
@@ -60,7 +61,7 @@ public class User {
 	public void setUserUsedCash(int userUsedCash) {
 		this.userUsedCash = userUsedCash;
 	}
-	
+
 	public String getUserBirth() {
 		return userBirth;
 	}
@@ -68,8 +69,6 @@ public class User {
 	public void setUserBirth(String userBirth) {
 		this.userBirth = userBirth;
 	}
-	
-	
 
 	public String getUserPhoneNumber() {
 		return userPhoneNumber;
@@ -77,6 +76,14 @@ public class User {
 
 	public void setUserPhoneNumber(String userPhoneNumber) {
 		this.userPhoneNumber = userPhoneNumber;
+	}
+	
+	public static void setCurUser(User user) {
+		curUser = user;
+	}
+	
+	public static User getCurUser() {
+		return curUser;
 	}
 
 	@Override
