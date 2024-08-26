@@ -3,7 +3,6 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,8 +17,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
-import materials.Game;
-import materials.GameDAO;
+import game.Game;
+import game.GameDAO;
 import materials.JLableFactory;
 import picture.IconManager;
 import picture.PictureDAO;
