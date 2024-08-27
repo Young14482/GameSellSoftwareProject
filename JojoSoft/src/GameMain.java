@@ -259,7 +259,9 @@ class PnlLatestGames extends JPanel {
 }
 
 class PnlRecommendedGame extends JPanel {
-	
+	public PnlRecommendedGame() {
+		// TODO Auto-generated constructor stub
+	}
 }
 
 // 패널 만든거 확인용 메인클래스
