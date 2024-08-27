@@ -19,7 +19,7 @@ public class InsertPicture {
 	public static void main(String[] args) {
 		pictureDAO = new PictureDAO();
 
-		Path path1 = Paths.get("C:\\Users\\GGG\\Desktop\\춘식\\팀프\\게임\\기본게임", "babaisyou.jpg"); // 경로와 이미지파일 이름 작성
+		Path path1 = Paths.get("C:\\Users\\GGG\\Desktop\\춘식\\팀프\\게임\\기본게임", "baldur's gate 3.jpg"); // 경로와 이미지파일 이름 작성
 //		Path path2 = Paths.get("C:\\Users\\GGG\\Desktop\\춘식\\팀프", "baldur's gate 3.jpg"); // 경로와 이미지파일 이름 작성
 //		Path path3 = Paths.get("C:\\Users\\GGG\\Desktop\\춘식\\팀프", "wukong.jpg"); // 경로와 이미지파일 이름 작성
 		try {

@@ -7,6 +7,8 @@ import java.awt.GridLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -33,10 +35,13 @@ class PnlBasic extends JPanel implements ActionListener {
 	private JPanel memberInfoPnl;
 	private CardLayout cardLayout;
 	private JPanel pnlContainer;
+	private JPanel gameDetailPnl;
 
 	public PnlBasic() {
 		pnlToolBar = new PnlToolBar(this);
 		memberInfoPnl = new MemberInfoPnl(getLnlNickname());
+		gameDetailPnl = new GameDetailPnl();
+
 		// CardLayout과 패널 컨테이너 설정
 		cardLayout = new CardLayout();
 		pnlContainer = new JPanel(cardLayout);
@@ -49,7 +54,10 @@ class PnlBasic extends JPanel implements ActionListener {
 		// CardLayout에 패널 추가
 		pnlContainer.add(js, "MainPanel");
 		pnlContainer.add(memberInfoPnl, "MemberInfoPanel");
-		
+		pnlContainer.add(gameDetailPnl, "GameDetail");
+
+		setLayout(new BorderLayout());
+
 		setLayout(new BorderLayout());
 
 		add(pnlToolBar, BorderLayout.NORTH);
@@ -73,16 +81,20 @@ class PnlBasic extends JPanel implements ActionListener {
 			// 새로운 로그인 창을 만들어서 visible을 true로 변경함
 			// import는 import java.awt.Window; 를 사용
 			for (Window window : Window.getWindows()) {
-                window.dispose();
-            }
-			new Login().setVisible(true);;
+				window.dispose();
+			}
+			new Login().setVisible(true);
+			;
 		}
+	}
+
+	public void changeScreenToGameDetail() {
+		cardLayout.show(pnlContainer, "GameDetail");
 	}
 }
 
 // 상단부 검색바 구성
 class PnlToolBar extends JPanel {
-
 	private JLabel lnlNickname;
 
 	public PnlToolBar(PnlBasic pnlBasic) {
@@ -171,20 +183,18 @@ class PnlMainInfo extends JPanel {
 
 // 게임제조사 이미지 담을 패널
 class PnlProduction extends JPanel {
-	private JLableFactory lableFactory;
 
 	public PnlProduction() {
-		lableFactory = new JLableFactory();
 		setLayout(new FlowLayout(FlowLayout.CENTER));
 		setBorder(BorderFactory.createLineBorder(Color.RED));
 		setPreferredSize(new Dimension(160, 0));
 
-		JLabel lblProduction1 = lableFactory.createLblwithIcon(6);
-		JLabel lblProduction2 = lableFactory.createLblwithIcon(7);
-		JLabel lblProduction3 = lableFactory.createLblwithIcon(8);
-		JLabel lblProduction4 = lableFactory.createLblwithIcon(9);
-		JLabel lblProduction5 = lableFactory.createLblwithIcon(10);
-		JLabel lblProduction6 = lableFactory.createLblwithIcon(11);
+		JLabel lblProduction1 = JLableFactory.createLblwithIcon(6);
+		JLabel lblProduction2 = JLableFactory.createLblwithIcon(7);
+		JLabel lblProduction3 = JLableFactory.createLblwithIcon(8);
+		JLabel lblProduction4 = JLableFactory.createLblwithIcon(9);
+		JLabel lblProduction5 = JLableFactory.createLblwithIcon(10);
+		JLabel lblProduction6 = JLableFactory.createLblwithIcon(11);
 
 		add(lblProduction1);
 		add(lblProduction2);
@@ -200,12 +210,15 @@ class PnlProduction extends JPanel {
 class PnlGames extends JTabbedPane {
 	private PnlLatestGames latestGames;
 	private PnlRecommendedGame recommendedGame;
-	
+	private PnlDiscountGame discountGame;
+
 	public PnlGames() {
 		latestGames = new PnlLatestGames();
 		recommendedGame = new PnlRecommendedGame();
+		discountGame = new PnlDiscountGame();
 		add(latestGames, "최신게임");
 		add(recommendedGame, "추천게임");
+		add(discountGame, "할인게임");
 	}
 }
 
@@ -228,10 +241,11 @@ class PnlLatestGames extends JPanel {
 	}
 }
 
+// 추천게임패널
 class PnlRecommendedGame extends JPanel {
 	private GameDAO gameDAO;
 	private JPanelFactory panelFactory;
-	
+
 	public PnlRecommendedGame() {
 		panelFactory = new JPanelFactory();
 		gameDAO = new GameDAO();
@@ -244,8 +258,28 @@ class PnlRecommendedGame extends JPanel {
 	}
 }
 
+class PnlDiscountGame extends JPanel {
+	private GameDAO gameDAO;
+	private JPanelFactory panelFactory;
+
+	public PnlDiscountGame() {
+		panelFactory = new JPanelFactory();
+		gameDAO = new GameDAO();
+		List<Game> list = gameDAO.getDiscountList();
+		setPreferredSize(new Dimension(500, 100 + 85 * list.size()));
+		for (Game game : list) {
+			JPanel pnlGame = panelFactory.createGamePnl(game);
+			add(pnlGame);
+		}
+	}
+}
+
 // 패널 만든거 확인용 메인클래스
 public class GameMain {
+	public void printScreen() {
+		new PnlBasic().changeScreenToGameDetail();
+	}
+
 	public void printMain() {
 		new PnlTest().setVisible(true);
 	}
