@@ -187,10 +187,13 @@ class PnlProduction extends JPanel {
 // 게임들을 본격적으로 띄울 탭 패널
 class PnlGames extends JTabbedPane {
 	private PnlLatestGames latestGames;
-
+	private PnlRecommendedGame recommendedGame;
+	
 	public PnlGames() {
 		latestGames = new PnlLatestGames();
+		recommendedGame = new PnlRecommendedGame();
 		add(latestGames, "최신게임");
+		add(recommendedGame, "추천게임");
 	}
 }
 
@@ -253,6 +256,10 @@ class PnlLatestGames extends JPanel {
 		return pnlGame1;
 	}
 
+}
+
+class PnlRecommendedGame extends JPanel {
+	
 }
 
 // 패널 만든거 확인용 메인클래스
