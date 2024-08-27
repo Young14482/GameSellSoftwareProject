@@ -73,7 +73,6 @@ public class PnlBasic extends JPanel implements ActionListener {
 	}
 
 	public void changeScreenToGameDetail() {
-		System.out.println(Game.getCurGame());
 		cardLayout.show(pnlContainer, "GameDetail");
 		gameDetailPnl.update();
 	}
