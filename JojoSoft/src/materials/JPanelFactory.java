@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -13,23 +15,20 @@ import game.Game;
 import picture.IconManager;
 
 public class JPanelFactory {
-	JLableFactory lableFactory;
-
 	public JPanel createGamePnl(Game g) {
 		JPanel pnlGame = new JPanel();
-		lableFactory = new JLableFactory();
 		pnlGame.setLayout(new BorderLayout());		
 
 		// 게임 이름 부분
 		JPanel pnlGameMid = new JPanel(new GridLayout(3, 0));
-		JLabel lblGameName = lableFactory.createLblWithFont("   " + g.getGame_name());
+		JLabel lblGameName = JLableFactory.createLblWithFont("   " + g.getGame_name());
 
 		// 게임 장르 + 유형
-		JLabel lblGameGenre = lableFactory
+		JLabel lblGameGenre = JLableFactory
 				.createLblWithFont("   장르: " + g.getGame_genre() + " | 게임유형: " + g.getGame_category());
 
 		// 게임 제작사
-		JLabel lblGameProdu = lableFactory.createLblWithFont("   제작사: " + g.getGame_production());
+		JLabel lblGameProdu = JLableFactory.createLblWithFont("   제작사: " + g.getGame_production());
 
 		pnlGameMid.add(lblGameName);
 		pnlGameMid.add(lblGameGenre);
@@ -44,13 +43,13 @@ public class JPanelFactory {
 		JPanel pnlEast = new JPanel();
 		pnlEast.setLayout(new GridLayout(3, 0));
 		pnlEast.setPreferredSize(new Dimension(150,85));
-		JLabel lblOriginPrice = lableFactory.createLblWithFont("정상가: " + g.getGame_price() + "원");
+		JLabel lblOriginPrice = JLableFactory.createLblWithFont("정상가: " + g.getGame_price() + "원");
 		
-		JLabel lblDiscount = lableFactory.createLblWithFont("할인률: " + g.getGame_discount() + "%");
+		JLabel lblDiscount = JLableFactory.createLblWithFont("할인률: " + g.getGame_discount() + "%");
 		
 		int sellPrice = g.getGame_price() * (100-g.getGame_discount()) / 100;
 		int result = Math.round(sellPrice/100) * 100;
-		JLabel lblSellPrice = lableFactory.createLblWithFont("판매가: " + result + "원");
+		JLabel lblSellPrice = JLableFactory.createLblWithFont("판매가: " + result + "원");
 
 		pnlEast.add(lblOriginPrice);
 		pnlEast.add(lblDiscount);
@@ -61,6 +60,18 @@ public class JPanelFactory {
 		pnlGame.add(pnlEast, BorderLayout.EAST);
 		pnlGame.setPreferredSize(new Dimension(700, 85));
 		pnlGame.setBorder(BorderFactory.createLineBorder(Color.RED));
+		
+		pnlGame.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				Game.setCurGame(g);
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				Game.setCurGame(null);
+			}
+		});;
 
 		return pnlGame;
 	}
