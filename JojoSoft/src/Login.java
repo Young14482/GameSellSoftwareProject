@@ -15,7 +15,6 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import jdk.nashorn.internal.scripts.JO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import materials.Function;

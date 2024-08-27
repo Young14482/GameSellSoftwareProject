@@ -22,8 +22,6 @@ import game.Game;
 import game.GameDAO;
 import materials.JLableFactory;
 import materials.JPanelFactory;
-import picture.IconManager;
-import picture.PictureDAO;
 import user.User;
 
 // 메인 패널
