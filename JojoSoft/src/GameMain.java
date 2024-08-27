@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -34,9 +35,8 @@ class PnlBasic extends JPanel implements ActionListener {
 	private JPanel pnlContainer;
 
 	public PnlBasic() {
-		memberInfoPnl = new MemberInfoPnl();
 		pnlToolBar = new PnlToolBar(this);
-
+		memberInfoPnl = new MemberInfoPnl(getLnlNickname());
 		// CardLayout과 패널 컨테이너 설정
 		cardLayout = new CardLayout();
 		pnlContainer = new JPanel(cardLayout);
@@ -49,12 +49,16 @@ class PnlBasic extends JPanel implements ActionListener {
 		// CardLayout에 패널 추가
 		pnlContainer.add(js, "MainPanel");
 		pnlContainer.add(memberInfoPnl, "MemberInfoPanel");
-
-		setLayout(new BorderLayout());
 		
+		setLayout(new BorderLayout());
+
 		add(pnlToolBar, BorderLayout.NORTH);
 
 		add(pnlContainer, BorderLayout.CENTER);
+	}
+
+	public JLabel getLnlNickname() {
+		return ((PnlToolBar) pnlToolBar).getLnlNickname();
 	}
 
 	@Override
@@ -63,6 +67,15 @@ class PnlBasic extends JPanel implements ActionListener {
 			cardLayout.show(pnlContainer, "MemberInfoPanel");
 		} else if (e.getActionCommand().equals("JOJOSOFT")) {
 			cardLayout.show(pnlContainer, "MainPanel");
+		} else if (e.getActionCommand().equals("로그아웃")) {
+			// 기본적으로 내장된 윈도우 메소드를 통해 모든 창을 가져옴.
+			// 반복문을 통하여 가져오는 모든 창들을 dispose(종료)시킴
+			// 새로운 로그인 창을 만들어서 visible을 true로 변경함
+			// import는 import java.awt.Window; 를 사용
+			for (Window window : Window.getWindows()) {
+                window.dispose();
+            }
+			new Login().setVisible(true);;
 		}
 	}
 }
@@ -78,6 +91,7 @@ class PnlToolBar extends JPanel {
 		JPanel pnlEast = new JPanel(new GridLayout(3, 0));
 		lnlNickname = new JLabel(User.getCurUser().getUserNickName() + "님 환영합니다");
 		JButton btnLogout = new JButton("로그아웃");
+		btnLogout.addActionListener(pnlBasic);
 		JButton btnCart = new JButton("장바구니");
 
 		pnlEast.add(lnlNickname);
