@@ -52,7 +52,7 @@ class PnlBasic extends JPanel implements ActionListener {
 		pnlContainer.add(memberInfoPnl, "MemberInfoPanel");
 
 		setLayout(new BorderLayout());
-		
+
 		add(pnlToolBar, BorderLayout.NORTH);
 
 		add(pnlContainer, BorderLayout.CENTER);
@@ -188,7 +188,7 @@ class PnlProduction extends JPanel {
 class PnlGames extends JTabbedPane {
 	private PnlLatestGames latestGames;
 	private PnlRecommendedGame recommendedGame;
-	
+
 	public PnlGames() {
 		latestGames = new PnlLatestGames();
 		recommendedGame = new PnlRecommendedGame();
@@ -226,8 +226,7 @@ class PnlLatestGames extends JPanel {
 		JLabel lblGameName = lableFactory.createLblWithFont("   " + g.getGame_name());
 
 		// 게임 장르 + 유형
-		JLabel lblGameGenre = lableFactory
-				.createLblWithFont("   장르: " + g.getGame_genre() + " | 게임유형: " + g.getGame_category());
+		JLabel lblGameGenre = lableFactory.createLblWithFont("   장르: " + g.getGame_genre() + " | 게임유형: " + g.getGame_category());
 
 		// 게임 제작사
 		JLabel lblGameProdu = lableFactory.createLblWithFont("   제작사: " + g.getGame_production());

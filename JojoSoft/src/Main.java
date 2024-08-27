@@ -1,4 +1,3 @@
-import game.Game;
 import game.GameDAO;
 
 public class Main {

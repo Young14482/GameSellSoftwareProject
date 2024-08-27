@@ -15,7 +15,6 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import jdk.nashorn.internal.scripts.JO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import materials.Function;
@@ -421,8 +420,10 @@ public class Login extends JFrame implements ActionListener {
 			findPw.setVisible(false);
 		} else if (command.equals("pw확인2")) {
 			findPw = (FindPw) ((JButton) e.getSource()).getTopLevelAncestor();
+			
 			if (findPw.getPasswordField().getText().equals(findPw.getPasswordField2().getText())) {
-				int result = userDAO.changeUserInfo("비밀번호 변경", findPw.getIdField().getText(), findPw.getPasswordField().getText(), null, null);
+				int result = userDAO.changeUserInfo("비밀번호 변경", findPw.getIdField().getText(),
+						findPw.getPasswordField().getText(), null, null);
 				if (result == 1) {
 					JOptionPane.showMessageDialog(this, "비밀번호 변경이 완료되었습니다.");
 					findPw.setVisible(false);

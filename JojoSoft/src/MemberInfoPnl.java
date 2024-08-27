@@ -26,7 +26,6 @@ import materials.DBUtil;
 import user.User;
 import user.UserDAO;
 
-
 // 구매한 게임 이력을 확인할수 있는 탭
 class ShoopingInfo extends JPanel {
 	public ShoopingInfo() {
@@ -256,7 +255,8 @@ class ChangeInfoPnl extends JDialog implements ActionListener {
 		UserDAO userDAO = new UserDAO();
 
 		if (e.getActionCommand().equals("기존 비밀번호")) {
-			if (userDAO.findMember(User.getCurUser().getUserId(), pwTextField.getText()) == null) {
+			String pw = String.valueOf(pwTextField.getPassword());
+			if (userDAO.findMember(User.getCurUser().getUserId(), pw) == null) {
 				JOptionPane.showMessageDialog(this, "비밀번호를 잘못입력하셨습니다.");
 			} else {
 				JOptionPane.showMessageDialog(this, "확인 완료.");
@@ -266,23 +266,23 @@ class ChangeInfoPnl extends JDialog implements ActionListener {
 				pwTextField.setText("");
 			}
 		} else if (e.getActionCommand().equals("변경 비밀번호")) {
-			if (pwTextField.getText().length() < 8 || pwTextField.getText().length() > 20) {
+			String pw = String.valueOf(pwTextField.getPassword());
+			if (pw.length() < 8 || pw.length() > 20) {
 				JOptionPane.showMessageDialog(this, "비밀번호는 8~20 글자 사이로 입력하셔야 합니다.");
 			} else {
-				int result = userDAO.changeUserInfo("비밀번호 변경", User.getCurUser().getUserId(), pwTextField.getText(),
-						null, null);
+				int result = userDAO.changeUserInfo("비밀번호 변경", User.getCurUser().getUserId(),
+						String.valueOf(pwTextField.getPassword()), null, null);
 				if (result == 1) {
 					JOptionPane.showMessageDialog(this, "비밀번호 변경이 완료되었습니다.");
 					this.setVisible(false);
-					User.getCurUser().setUserPw(pwTextField.getText());
+					User.getCurUser().setUserPw(pw);
 				}
 			}
 		} else if (e.getActionCommand().equals("닉네임")) {
 			if (textField.getText().length() < 2 || textField.getText().length() > 16) {
 				JOptionPane.showMessageDialog(this, "닉네임은 2~16 글자 사이로 변경 가능합니다.");
 			} else {
-				int result = userDAO.changeUserInfo("닉네임 변경", User.getCurUser().getUserId(), null, textField.getText(),
-						null);
+				int result = userDAO.changeUserInfo("닉네임 변경", User.getCurUser().getUserId(), null, textField.getText(), null);
 				if (result == 1) {
 					JOptionPane.showMessageDialog(this, "닉네임 변경이 완료되었습니다.");
 					this.setVisible(false);
