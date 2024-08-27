@@ -1,9 +1,14 @@
 package user;
 
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -89,15 +94,32 @@ public class UserDAO {
 			DBUtil.closeAll(rs3, stmt3, conn);
 		}
 
-		Matcher m1 = phoneNumberFome(phoneNum);
-		Matcher m2 = birthForm(birth);
+		String exp = "^(19[1-9][0-9]|20[0-1][0-9]|2020)-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$";
+		String exp2 = "^\\d{3}-\\d{3,4}-\\d{4}$";
+		// 정규표현식으로 문자열의 동등함을 비교
+		Pattern p = Pattern.compile(exp);
+		Matcher m1 = p.matcher(birth);
+		Pattern p2 = Pattern.compile(exp2);
+		Matcher m2 = p2.matcher(phoneNum);
 
 		if (!m1.matches()) {
 			return "전화번호양식";
-		} else if (!m2.matches()) {
+
+		} else if (!m2.matches() || !isDate(phoneNum)) {
 			return "생년월일";
 		} else {
 			return null;
+		}
+	}
+
+	private boolean isDate(String date) {
+		try {
+			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			int year = LocalDate.parse(date, dateTimeFormatter).getYear();
+
+			return true;
+		} catch (DateTimeParseException ex) {
+			return false;
 		}
 	}
 
@@ -206,13 +228,11 @@ public class UserDAO {
 	}
 
 	/**
-	 * 유저 아이디를 통해 유저의 정보를 변경하는 메소드 String select 문구를 바꾸어서 기능을 변경시킬 수 있음 select 종류 :
-	 * 아이디로 찾기, 비밀번호 변경, 닉네임 변경, 생년월일 변경 비밀번호, 닉네임, 전화번호, 생년월일도 변경할 수 있도록 추가 0을 리턴하면
-	 * 메소드로 걸러내지 못한 값을 반영하려고 하여 반영에 실패하였을 때 0을 리턴,
-	 * 1을 리턴하면 정상적으로 반영되었을 때, 
-	 * 2를 리턴하면 올바른 양식대로 작성하지 않았을 때, 
-	 * 3을 리턴하면 기존과 동일한 값을 입력하였을 때
-	 * 4를 리턴하면 이미 존재하는 정보라 (Unique) 반영할 수 없을 때
+	 * <<<<<<< HEAD 유저 아이디를 통해 유저의 정보를 변경하는 메소드 String select 문구를 바꾸어서 기능을 변경시킬 수 있음 select 종류 : 아이디로 찾기, 비밀번호 변경, 닉네임 변경, 생년월일
+	 * 변경 비밀번호, 닉네임, 전화번호, 생년월일도 변경할 수 있도록 추가 0을 리턴하면 메소드로 걸러내지 못한 값을 반영하려고 하여 반영에 실패하였을 때 0을 리턴, 1을 리턴하면 정상적으로 반영되었을 때, 2를 리턴하면
+	 * 올바른 양식대로 작성하지 않았을 때, 3을 리턴하면 기존과 동일한 값을 입력하였을 때 4를 리턴하면 이미 존재하는 정보라 (Unique) 반영할 수 없을 때 ======= 유저 아이디를 통해 유저의 정보를 변경하는
+	 * 메소드 String select 문구를 바꾸어서 기능을 변경시킬 수 있음 select 종류 : 아이디로 찾기, 비밀번호 변경, 닉네임 변경, 생년월일 변경 비밀번호, 닉네임, 전화번호, 생년월일도 변경할 수 있도록 추가
+	 * >>>>>>> stash
 	 */
 	public int changeUserInfo(String select, String userId, String userPw, String userNickName, String phoneNumber,
 			String userBirth) {
@@ -231,7 +251,6 @@ public class UserDAO {
 		PreparedStatement stmt = null;
 		PreparedStatement stmtAnother = null;
 		ResultSet rs = null;
-
 		try {
 			conn = DBUtil.getConnection("jojosoft");
 			conn.setAutoCommit(false);
@@ -272,7 +291,7 @@ public class UserDAO {
 					// 3을 리턴하면 기존과 동일한 닉네임이라는 의미
 					return 3;
 				}
-				
+
 				// 기존의 stmt와 rs를 사용하려고 했으나 이클립스에서 해당 방법을 권장하지 않아(경고(노란색 밑줄))
 				// 새로운 stmt와 rs를 다시 작성하게 되었습니다.
 				String existCheck = "select user_nickname from user where user_nickname = ?";
@@ -280,10 +299,10 @@ public class UserDAO {
 				statement.setString(1, userNickName);
 				ResultSet resultSet = statement.executeQuery();
 				if (resultSet.next()) {
-					// 이미 변경하려는 닉네임이 존재할 때 
+					// 이미 변경하려는 닉네임이 존재할 때
 					return 4;
 				}
-				
+
 				stmt.setString(1, userNickName);
 				stmt.setString(2, userId);
 
@@ -292,7 +311,7 @@ public class UserDAO {
 					conn.commit();
 					return result;
 				}
-				
+
 			} else if (select.equals("전화번호 변경")) {
 
 				Matcher m = phoneNumberFome(phoneNumber);
@@ -311,7 +330,7 @@ public class UserDAO {
 					// 3을 리턴하면 기존과 동일한 전화번호라는 의미
 					return 3;
 				}
-				
+
 				// 기존의 stmt와 rs를 사용하려고 했으나 이클립스에서 해당 방법을 권장하지 않아(경고(노란색 밑줄))
 				// 새로운 stmt와 rs를 다시 작성하게 되었습니다.
 				String existCheck = "select user_phonenumber from user where user_phonenumber = ?";
@@ -331,7 +350,7 @@ public class UserDAO {
 					conn.commit();
 					return result;
 				}
-				
+
 			} else if (select.equals("생년월일 변경")) {
 
 				Matcher m = birthForm(userBirth);
