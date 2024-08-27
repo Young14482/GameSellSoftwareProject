@@ -37,6 +37,7 @@ class PnlToolBar extends JPanel {
 		JButton btnLogout = new JButton("로그아웃");
 		btnLogout.addActionListener(pnlBasic);
 		JButton btnCart = new JButton("장바구니");
+		btnCart.addActionListener(pnlBasic);
 
 		pnlEast.add(lnlNickname);
 		pnlEast.add(btnLogout);
@@ -65,11 +66,14 @@ class PnlToolBar extends JPanel {
 		JButton btnGame = new JButton("게임");
 		JButton btnPromotion = new JButton("프로모션");
 		JButton userInfoBtn = new JButton("회원 정보");
+		JButton chargeMoneyBtn = new JButton("금액 충전 하기");
+		chargeMoneyBtn.addActionListener(pnlBasic);
 		userInfoBtn.addActionListener(pnlBasic);
 
 		pnlBtns.add(btnGame);
 		pnlBtns.add(btnPromotion);
 		pnlBtns.add(userInfoBtn);
+		pnlBtns.add(chargeMoneyBtn);
 
 		pnlCenter.add(pnlSerch);
 		pnlCenter.add(pnlBtns);
