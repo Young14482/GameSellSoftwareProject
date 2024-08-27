@@ -21,6 +21,7 @@ import javax.swing.border.LineBorder;
 import game.Game;
 import game.GameDAO;
 import materials.JLableFactory;
+import materials.JPanelFactory;
 import picture.IconManager;
 import picture.PictureDAO;
 import user.User;
@@ -142,7 +143,6 @@ class PnlTest extends JFrame {
 
 // 게임 메인화면이 나올 패널
 class PnlMainInfo extends JPanel {
-	private PictureDAO pictureDAO;
 	private PnlProduction pnlProduction;
 	private PnlGames pnlGames;
 
@@ -199,68 +199,36 @@ class PnlGames extends JTabbedPane {
 
 // 게임 정보 패널부분
 class PnlLatestGames extends JPanel {
-	private PictureDAO pictureDAO;
 	private GameDAO gameDAO;
-	private JLableFactory lableFactory;
+	private JPanelFactory panelFactory;
 
 	public PnlLatestGames() {
-		lableFactory = new JLableFactory();
+		panelFactory = new JPanelFactory();
 		gameDAO = new GameDAO();
-		pictureDAO = new PictureDAO();
 		setBorder(BorderFactory.createLineBorder(Color.cyan));
 		List<Game> list = gameDAO.getSearchedListDefault();
 		setPreferredSize(new Dimension(500, 100 + 85 * list.size()));
 
 		for (Game game : list) {
-			JPanel pnlGame = createGamePnl(game);
+			JPanel pnlGame = panelFactory.createGamePnl(game);
 			add(pnlGame);
 		}
 	}
-
-	private JPanel createGamePnl(Game g) {
-		JPanel pnlGame1 = new JPanel();
-		pnlGame1.setLayout(new BorderLayout());
-
-		// 게임 이름 부분
-		JPanel pnlGameMid = new JPanel(new GridLayout(3, 0));
-		JLabel lblGameName = lableFactory.createLblWithFont("   " + g.getGame_name());
-
-		// 게임 장르 + 유형
-		JLabel lblGameGenre = lableFactory
-				.createLblWithFont("   장르: " + g.getGame_genre() + " | 게임유형: " + g.getGame_category());
-
-		// 게임 제작사
-		JLabel lblGameProdu = lableFactory.createLblWithFont("   제작사: " + g.getGame_production());
-
-		pnlGameMid.add(lblGameName);
-		pnlGameMid.add(lblGameGenre);
-		pnlGameMid.add(lblGameProdu);
-
-		// 게임 사진
-		JLabel lblGameProfile = new JLabel();
-		lblGameProfile.setPreferredSize(new Dimension(150, 85));
-		lblGameProfile.setIcon(IconManager.getInstance().getIconByKey(g.getGame_profile()));
-
-		// 게임 가격
-		JPanel pnlEast = new JPanel();
-		JLabel lblPrice = lableFactory.createLblWithFont("정상가: " + g.getGame_price() + "원");
-
-		pnlEast.add(lblPrice);
-
-		pnlGame1.add(lblGameProfile, BorderLayout.WEST);
-		pnlGame1.add(pnlGameMid, BorderLayout.CENTER);
-		pnlGame1.add(pnlEast, BorderLayout.EAST);
-		pnlGame1.setPreferredSize(new Dimension(700, 85));
-		pnlGame1.setBorder(BorderFactory.createLineBorder(Color.RED));
-
-		return pnlGame1;
-	}
-
 }
 
 class PnlRecommendedGame extends JPanel {
+	private GameDAO gameDAO;
+	private JPanelFactory panelFactory;
+	
 	public PnlRecommendedGame() {
-		// TODO Auto-generated constructor stub
+		panelFactory = new JPanelFactory();
+		gameDAO = new GameDAO();
+		List<Game> list = gameDAO.getRandomList();
+		setPreferredSize(new Dimension(500, 100 + 85 * list.size()));
+		for (Game game : list) {
+			JPanel pnlGame = panelFactory.createGamePnl(game);
+			add(pnlGame);
+		}
 	}
 }
 
