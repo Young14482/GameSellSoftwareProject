@@ -1,9 +1,11 @@
 package temp;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -22,8 +24,6 @@ import materials.JLableFactory;
 import materials.JPanelFactory;
 import picture.IconManager;
 import user.User;
-
-
 
 // 상단부 검색바 구성
 class PnlToolBar extends JPanel {
@@ -82,19 +82,6 @@ class PnlToolBar extends JPanel {
 
 	public JLabel getLnlNickname() {
 		return lnlNickname;
-	}
-}
-
-// 패널 테스트용 프레임
-class PnlTest extends JFrame {
-	private PnlBasic pnlBasic;
-
-	public PnlTest() {
-		pnlBasic = new PnlBasic();
-		add(pnlBasic);
-		DataManager.inputData("pnlBasic", pnlBasic);
-		setSize(920, 700);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 }
 
@@ -248,9 +235,17 @@ class PnlDiscountGame extends JPanel {
 }
 
 // 패널 만든거 확인용 메인클래스
-public class GameMain {
-	public void printMain() {
-		new PnlTest().setVisible(true);
+public class GameMain extends JFrame {
+	private PnlBasic pnlBasic;
+
+	public GameMain() {
+		pnlBasic = new PnlBasic();
+		add(pnlBasic);
+		DataManager.inputData("pnlBasic", pnlBasic);
+		setSize(920, 700);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+		setLocation((d.width - this.getSize().width) / 2, (d.height - this.getSize().height) / 2);
 	}
 
 //	public static void main(String[] args) {

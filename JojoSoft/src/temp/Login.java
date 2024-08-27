@@ -1,4 +1,5 @@
 package temp;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -369,7 +370,6 @@ public class Login extends JFrame implements ActionListener {
 
 		setSize(600, 600);
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-//		System.out.println(d);
 		setLocation((d.width - this.getSize().width) / 2, (d.height - this.getSize().height) / 2);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
@@ -391,7 +391,7 @@ public class Login extends JFrame implements ActionListener {
 				JOptionPane.showMessageDialog(this, "환영합니다.");
 				User.setCurUser(user);
 				this.setVisible(false);
-				new GameMain().printMain();
+				new GameMain().setVisible(true);
 			}
 
 		} else if (command.equals("회원 가입")) {
