@@ -8,13 +8,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.StringJoiner;
 
 import materials.DBUtil;
 import materials.IResultMapper;
 
 public class GameDAO {
-	public static final IResultMapper<Game> gameMapper = new GameMapper();
+	private static final IResultMapper<Game> gameMapper = new GameMapper();
 	public static final int ORDER_BY_RELEASE_DESC = 0;
 	public static final int ORDER_BY_PRICE_ASC = 1;
 	public static final int ORDER_BY_PRICE_DESC = 2;
@@ -39,6 +40,28 @@ public class GameDAO {
 			e.printStackTrace();
 		} finally {
 			DBUtil.closeAll(rs, stmt, conn);
+		}
+		return null;
+	}
+
+	public Game getGame(int key, Connection conn) {
+		String sql = "SELECT * FROM game WHERE game_Id = ?";
+
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+
+		try {
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, key);
+			rs = stmt.executeQuery();
+
+			if (rs.next()) {
+				return gameMapper.resultMapping(rs);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.closeAll(rs, stmt, null);
 		}
 		return null;
 	}
@@ -99,8 +122,31 @@ public class GameDAO {
 		return null;
 	}
 
-	public List<Game> getGameListByGenre(String gameGenre) {
-		String sql = "SELECT * FROM game WHERE game_genre = ? LIMIT 10";
+	public List<Game> getRandomList() {
+		int size = getAllCount();
+		Random random = new Random();
+		List<Integer> randomId = new ArrayList<>();
+		while (randomId.size() < 10) {
+			int id = random.nextInt(size) + 1;
+			if (!randomId.contains(id)) {
+				randomId.add(id);
+			}
+		}
+		List<Game> list = new ArrayList<>();
+		Connection conn = null;
+		try {
+			conn = DBUtil.getConnection("jojosoft");
+			for (int i = 0; i < randomId.size(); i++) {
+				list.add(getGame(randomId.get(i), conn));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	public List<Game> getDiscountList() {
+		String sql = "SELECT * FROM game WHERE game_discount > 0 LIMIT 10";
 		List<Game> list = new ArrayList<>();
 
 		Connection conn = null;
@@ -110,7 +156,6 @@ public class GameDAO {
 		try {
 			conn = DBUtil.getConnection("jojosoft");
 			stmt = conn.prepareStatement(sql);
-			stmt.setString(1, gameGenre);
 			rs = stmt.executeQuery();
 
 			while (rs.next()) {
@@ -126,23 +171,84 @@ public class GameDAO {
 	}
 
 	public List<Game> getSearchedListDefault() {
-		return getSearchedList(null, null, null, null, null, GameDAO.ORDER_BY_RELEASE_DESC);
+		return getSearchedList(null, null, null, null, null, ORDER_BY_RELEASE_DESC);
 	}
 
-	public List<Game> getSearchedListNoOrder(String main, String sub, String genre, String production, String category) {
-		return getSearchedList(main, sub, genre, production, category, GameDAO.ORDER_BY_RELEASE_DESC);
+	public int getAllCount() {
+		return getSearchedCount(null, null, null, null, null);
 	}
 
-	public List<Game> getSearchedList(String main, String sub, String genre, String production, String category, int order) {
-		String sql = "SELECT * FROM game ";// WHERE game_genre = ? LIMIT 10";
+	public int getSearchedCount(String main, String sub, String genre, String production, String category) {
+		String sql = "SELECT COUNT(*) FROM game ";
 		StringJoiner stringJoiner = new StringJoiner(" AND ", "WHERE ", " ");
 		boolean where = false;
 		if (main != null) {
-			stringJoiner.add("game_name Like '%" + main + "%'");
+			stringJoiner.add("game_name LIKE '%" + main + "%'");
 			where = true;
 		}
 		if (sub != null) {
-			stringJoiner.add("game_name Like '%" + sub + "%'");
+			stringJoiner.add("game_name LIKE '%" + sub + "%'");
+			where = true;
+		}
+		if (genre != null) {
+			stringJoiner.add("game_genre = ?");
+			where = true;
+		}
+		if (production != null) {
+			stringJoiner.add("game_production = ?");
+			where = true;
+		}
+		if (category != null) {
+			stringJoiner.add("game_category = ?");
+			where = true;
+		}
+		if (where) {
+			sql += stringJoiner;
+		}
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = DBUtil.getConnection("jojosoft");
+			stmt = conn.prepareStatement(sql);
+			int param = 1;
+			if (genre != null) {
+				stmt.setString(param, genre);
+				param++;
+			}
+			if (production != null) {
+				stmt.setString(param, production);
+				param++;
+			}
+			if (category != null) {
+				stmt.setString(param, category);
+			}
+
+			rs = stmt.executeQuery();
+
+			if (rs.next()) {
+				return rs.getInt(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.closeAll(rs, stmt, conn);
+		}
+
+		return -1;
+	}
+
+	public List<Game> getSearchedList(String main, String sub, String genre, String production, String category, int order) {
+		String sql = "SELECT * FROM game ";
+		StringJoiner stringJoiner = new StringJoiner(" AND ", "WHERE ", " ");
+		boolean where = false;
+		if (main != null) {
+			stringJoiner.add("game_name LIKE '%" + main + "%'");
+			where = true;
+		}
+		if (sub != null) {
+			stringJoiner.add("game_name LIKE '%" + sub + "%'");
 			where = true;
 		}
 		if (genre != null) {
@@ -168,6 +274,7 @@ public class GameDAO {
 			sql += "ORDER BY ROUND(game_price * (100-game_discount)*100, -2)";
 		}
 		sql += " LIMIT 10";
+
 		List<Game> list = new ArrayList<>();
 
 		Connection conn = null;
