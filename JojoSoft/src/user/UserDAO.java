@@ -13,7 +13,7 @@ import materials.Function;
 import materials.IResultMapper;
 
 public class UserDAO {
-	public static final IResultMapper<User> userMapper = new UserMapper();
+	private static final IResultMapper<User> userMapper = new UserMapper();
 
 	// 로그인 할 때 아이디와 패스워드를 받아와 디비에 존재하는 유저인지 확인하는 메소드
 	public User findMember(String userId, String userPw) {

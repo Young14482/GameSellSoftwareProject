@@ -257,20 +257,20 @@ public class GameMain {
 		new PnlTest().setVisible(true);
 	}
 
-	public static void main(String[] args) {
-		new PnlTest().setVisible(true);
-
-//		PictureDAO pictureDAO = new PictureDAO();
-//		Path path = Paths.get("C:\\Users\\GGG\\Desktop\\춘식\\팀프", "bandai.png");
-//		
-//		try {
-//			byte[] readAllBytes = Files.readAllBytes(path);
-//			
-//			int row = pictureDAO.insert(path.getFileName().toString(), readAllBytes);
-//			System.out.println("삽입된 행 개수: " + row);
-//			
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-	}
+//	public static void main(String[] args) {
+//		new PnlTest().setVisible(true);
+//
+////		PictureDAO pictureDAO = new PictureDAO();
+////		Path path = Paths.get("C:\\Users\\GGG\\Desktop\\춘식\\팀프", "bandai.png");
+////		
+////		try {
+////			byte[] readAllBytes = Files.readAllBytes(path);
+////			
+////			int row = pictureDAO.insert(path.getFileName().toString(), readAllBytes);
+////			System.out.println("삽입된 행 개수: " + row);
+////			
+////		} catch (IOException e) {
+////			e.printStackTrace();
+////		}
+//	}
 }
