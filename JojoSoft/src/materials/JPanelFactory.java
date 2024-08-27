@@ -71,7 +71,7 @@ public class JPanelFactory {
 			public void mouseReleased(MouseEvent e) {
 				Game.setCurGame(null);
 			}
-		});;
+		});
 
 		return pnlGame;
 	}
