@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -21,8 +22,8 @@ import javax.swing.border.LineBorder;
 import game.Game;
 import game.GameDAO;
 import materials.JLableFactory;
+import materials.JPanelFactory;
 import picture.IconManager;
-import picture.PictureDAO;
 import user.User;
 
 // 메인 패널
@@ -35,9 +36,8 @@ class PnlBasic extends JPanel implements ActionListener {
 	private JPanel pnlContainer;
 
 	public PnlBasic() {
-		memberInfoPnl = new MemberInfoPnl();
 		pnlToolBar = new PnlToolBar(this);
-
+		memberInfoPnl = new MemberInfoPnl(getLnlNickname());
 		// CardLayout과 패널 컨테이너 설정
 		cardLayout = new CardLayout();
 		pnlContainer = new JPanel(cardLayout);
@@ -50,12 +50,15 @@ class PnlBasic extends JPanel implements ActionListener {
 		// CardLayout에 패널 추가
 		pnlContainer.add(js, "MainPanel");
 		pnlContainer.add(memberInfoPnl, "MemberInfoPanel");
-
 		setLayout(new BorderLayout());
 
 		add(pnlToolBar, BorderLayout.NORTH);
 
 		add(pnlContainer, BorderLayout.CENTER);
+	}
+
+	public JLabel getLnlNickname() {
+		return ((PnlToolBar) pnlToolBar).getLnlNickname();
 	}
 
 	@Override
@@ -64,6 +67,16 @@ class PnlBasic extends JPanel implements ActionListener {
 			cardLayout.show(pnlContainer, "MemberInfoPanel");
 		} else if (e.getActionCommand().equals("JOJOSOFT")) {
 			cardLayout.show(pnlContainer, "MainPanel");
+		} else if (e.getActionCommand().equals("로그아웃")) {
+			// 기본적으로 내장된 윈도우 메소드를 통해 모든 창을 가져옴.
+			// 반복문을 통하여 가져오는 모든 창들을 dispose(종료)시킴
+			// 새로운 로그인 창을 만들어서 visible을 true로 변경함
+			// import는 import java.awt.Window; 를 사용
+			for (Window window : Window.getWindows()) {
+				window.dispose();
+			}
+			new Login().setVisible(true);
+			;
 		}
 	}
 }
@@ -79,6 +92,7 @@ class PnlToolBar extends JPanel {
 		JPanel pnlEast = new JPanel(new GridLayout(3, 0));
 		lnlNickname = new JLabel(User.getCurUser().getUserNickName() + "님 환영합니다");
 		JButton btnLogout = new JButton("로그아웃");
+		btnLogout.addActionListener(pnlBasic);
 		JButton btnCart = new JButton("장바구니");
 
 		pnlEast.add(lnlNickname);
@@ -142,7 +156,6 @@ class PnlTest extends JFrame {
 
 // 게임 메인화면이 나올 패널
 class PnlMainInfo extends JPanel {
-	private PictureDAO pictureDAO;
 	private PnlProduction pnlProduction;
 	private PnlGames pnlGames;
 
@@ -199,20 +212,18 @@ class PnlGames extends JTabbedPane {
 
 // 게임 정보 패널부분
 class PnlLatestGames extends JPanel {
-	private PictureDAO pictureDAO;
 	private GameDAO gameDAO;
-	private JLableFactory lableFactory;
+	private JPanelFactory panelFactory;
 
 	public PnlLatestGames() {
-		lableFactory = new JLableFactory();
+		panelFactory = new JPanelFactory();
 		gameDAO = new GameDAO();
-		pictureDAO = new PictureDAO();
 		setBorder(BorderFactory.createLineBorder(Color.cyan));
 		List<Game> list = gameDAO.getSearchedListDefault();
 		setPreferredSize(new Dimension(500, 100 + 85 * list.size()));
 
 		for (Game game : list) {
-			JPanel pnlGame = createGamePnl(game);
+			JPanel pnlGame = panelFactory.createGamePnl(game);
 			add(pnlGame);
 		}
 	}
@@ -223,13 +234,14 @@ class PnlLatestGames extends JPanel {
 
 		// 게임 이름 부분
 		JPanel pnlGameMid = new JPanel(new GridLayout(3, 0));
-		JLabel lblGameName = lableFactory.createLblWithFont("   " + g.getGame_name());
+		JLabel lblGameName = JLableFactory.createLblWithFont("   " + g.getGame_name());
 
 		// 게임 장르 + 유형
-		JLabel lblGameGenre = lableFactory.createLblWithFont("   장르: " + g.getGame_genre() + " | 게임유형: " + g.getGame_category());
+		JLabel lblGameGenre = JLableFactory
+				.createLblWithFont("   장르: " + g.getGame_genre() + " | 게임유형: " + g.getGame_category());
 
 		// 게임 제작사
-		JLabel lblGameProdu = lableFactory.createLblWithFont("   제작사: " + g.getGame_production());
+		JLabel lblGameProdu = JLableFactory.createLblWithFont("   제작사: " + g.getGame_production());
 
 		pnlGameMid.add(lblGameName);
 		pnlGameMid.add(lblGameGenre);
@@ -242,7 +254,7 @@ class PnlLatestGames extends JPanel {
 
 		// 게임 가격
 		JPanel pnlEast = new JPanel();
-		JLabel lblPrice = lableFactory.createLblWithFont("정상가: " + g.getGame_price() + "원");
+		JLabel lblPrice = JLableFactory.createLblWithFont("정상가: " + g.getGame_price() + "원");
 
 		pnlEast.add(lblPrice);
 
@@ -258,8 +270,18 @@ class PnlLatestGames extends JPanel {
 }
 
 class PnlRecommendedGame extends JPanel {
+	private GameDAO gameDAO;
+	private JPanelFactory panelFactory;
+
 	public PnlRecommendedGame() {
-		// TODO Auto-generated constructor stub
+		panelFactory = new JPanelFactory();
+		gameDAO = new GameDAO();
+		List<Game> list = gameDAO.getRandomList();
+		setPreferredSize(new Dimension(500, 100 + 85 * list.size()));
+		for (Game game : list) {
+			JPanel pnlGame = panelFactory.createGamePnl(game);
+			add(pnlGame);
+		}
 	}
 }
 

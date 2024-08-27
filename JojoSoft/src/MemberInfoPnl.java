@@ -17,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -34,18 +35,25 @@ class ShoopingInfo extends JPanel {
 		// 게임 아이디, 유저 아이디, 게임이름, 구매날짜, 당시 구매가, 결제 상태 순서로 리스트에 들어가있음
 		List<List<String>> userInfoList = makeUserInfoList();
 
-		for (int i = 0; i < userInfoList.size(); i++) {
+		if (userInfoList.size() == 0) {
+			JLabel lbl = new JLabel("확인된 구매 이력이 없습니다.");
+			lbl.setFont(new Font("굴림", Font.BOLD, 25));
+			lbl.setHorizontalAlignment(SwingConstants.CENTER);
+			add(lbl);
+		} else {
+			for (int i = 0; i < userInfoList.size(); i++) {
 
-			JPanel pnl = new JPanel();
+				JPanel pnl = new JPanel();
 
-			makeLbl("게임 아이디 : ", userInfoList.get(i), 0, pnl);
-			makeLbl("유저 아이디 : ", userInfoList.get(i), 1, pnl);
-			makeLbl("게임 이름 : ", userInfoList.get(i), 2, pnl);
-			makeLbl("구매 날짜 : ", userInfoList.get(i), 3, pnl);
-			makeLbl("구매 가격 : ", userInfoList.get(i), 4, pnl);
-			makeLbl("", userInfoList.get(i), 5, pnl);
+				makeLbl("게임 아이디 : ", userInfoList.get(i), 0, pnl);
+				makeLbl("유저 아이디 : ", userInfoList.get(i), 1, pnl);
+				makeLbl("게임 이름 : ", userInfoList.get(i), 2, pnl);
+				makeLbl("구매 날짜 : ", userInfoList.get(i), 3, pnl);
+				makeLbl("구매 가격 : ", userInfoList.get(i), 4, pnl);
+				makeLbl("", userInfoList.get(i), 5, pnl);
 
-			add(pnl);
+				add(pnl);
+			}
 		}
 	}
 
@@ -113,9 +121,10 @@ class InfoChange extends JPanel implements ActionListener {
 	private JLabel phoneLbl;
 	private JLabel birthLbl;
 	private JLabel nickNameLbl;
+	private JLabel welcomeLbl;
 
-	public InfoChange() {
-
+	public InfoChange(JLabel jLabel) {
+		this.welcomeLbl = jLabel;
 		JPanel eastPnl = new JPanel();
 		JPanel westPnl = new JPanel();
 		eastPnl.setLayout(new GridLayout(6, 1));
@@ -174,21 +183,23 @@ class InfoChange extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 
 		if (e.getActionCommand().equals("비밀번호 변경하기")) {
-			ChangeInfoPnl changeInfoPnl = new ChangeInfoPnl(e.getActionCommand(), this);
+			ChangeInfoPnl changeInfoPnl = new ChangeInfoPnl(e.getActionCommand(), this, welcomeLbl);
 			changeInfoPnl.setVisible(true);
 		} else if (e.getActionCommand().equals("닉네임 변경하기")) {
-			ChangeInfoPnl changeInfoPnl = new ChangeInfoPnl(e.getActionCommand(), this);
+			ChangeInfoPnl changeInfoPnl = new ChangeInfoPnl(e.getActionCommand(), this, welcomeLbl);
 			changeInfoPnl.setVisible(true);
 		} else if (e.getActionCommand().equals("전화번호 변경하기")) {
-			ChangeInfoPnl changeInfoPnl = new ChangeInfoPnl(e.getActionCommand(), this);
+			ChangeInfoPnl changeInfoPnl = new ChangeInfoPnl(e.getActionCommand(), this, welcomeLbl);
 			changeInfoPnl.setVisible(true);
 		} else if (e.getActionCommand().equals("생년월일 변경하기")) {
-			ChangeInfoPnl changeInfoPnl = new ChangeInfoPnl(e.getActionCommand(), this);
+			ChangeInfoPnl changeInfoPnl = new ChangeInfoPnl(e.getActionCommand(), this, welcomeLbl);
 			changeInfoPnl.setVisible(true);
 		}
 	}
 }
 
+// 개인 정보를 변경하려고 했을 때 띄워주는 다이얼로그 창
+// 어떤 버튼을 눌렀는지에 따라서 창의 구성을 달리 하였음
 class ChangeInfoPnl extends JDialog implements ActionListener {
 	private JLabel questionLbl;
 	private JButton btn;
@@ -196,10 +207,11 @@ class ChangeInfoPnl extends JDialog implements ActionListener {
 	private JPasswordField pwTextField;
 	private JLabel anotherQuestionLbl;
 	private InfoChange infoChange;
+	private JLabel welcomeLbl;
 
-	public ChangeInfoPnl(String btnActionCommand, InfoChange infoChange) {
+	public ChangeInfoPnl(String btnActionCommand, InfoChange infoChange, JLabel welcomeLbl) {
 		this.infoChange = infoChange;
-		System.out.println(this.infoChange.getNickNameLbl());
+		this.welcomeLbl = welcomeLbl;
 		JPanel pnl = new JPanel();
 		pnl.setLayout(null);
 		if (btnActionCommand.equals("비밀번호 변경하기")) {
@@ -223,7 +235,7 @@ class ChangeInfoPnl extends JDialog implements ActionListener {
 		} else if (btnActionCommand.equals("닉네임 변경하기")) {
 
 			questionLbl = new JLabel("변경할 닉네임을 입력해주세요.");
-			questionLbl.setBounds(70, 50, 250, 50);
+			questionLbl.setBounds(75, 50, 250, 50);
 			anotherQuestionLbl = new JLabel("변경할 닉네임 : ");
 			anotherQuestionLbl.setBounds(60, 84, 150, 50);
 			textField = new JTextField(10);
@@ -240,16 +252,54 @@ class ChangeInfoPnl extends JDialog implements ActionListener {
 
 		} else if (btnActionCommand.equals("전화번호 변경하기")) {
 
+			questionLbl = new JLabel("변경할 전화번호를 입력해주세요.");
+			questionLbl.setBounds(70, 50, 250, 50);
+			anotherQuestionLbl = new JLabel("전화번호 : ");
+			anotherQuestionLbl.setBounds(60, 84, 150, 50);
+			textField = new JTextField(10);
+			textField.setBounds(170, 100, 100, 20);
+			btn = new JButton("변경하기");
+			btn.setBounds(100, 150, 130, 30);
+			btn.setActionCommand("전화번호");
+			btn.addActionListener(this);
+
+			pnl.add(questionLbl);
+			pnl.add(anotherQuestionLbl);
+			pnl.add(textField);
+			pnl.add(btn);
+
 		} else if (btnActionCommand.equals("생년월일 변경하기")) {
+
+			questionLbl = new JLabel("변경할 생년월일을 입력해주세요.");
+			questionLbl.setBounds(70, 30, 250, 50);
+			JLabel questionLbl2 = new JLabel("기존 : " + User.getCurUser().getUserBirth());
+			questionLbl2.setBounds(105, 52, 250, 50);
+
+			anotherQuestionLbl = new JLabel("생년월일 : ");
+			anotherQuestionLbl.setBounds(60, 84, 150, 50);
+			textField = new JTextField(10);
+			textField.setBounds(170, 100, 100, 20);
+			btn = new JButton("변경하기");
+			btn.setBounds(100, 150, 130, 30);
+			btn.setActionCommand("생년월일");
+			btn.addActionListener(this);
+
+			pnl.add(questionLbl);
+			pnl.add(questionLbl2);
+			pnl.add(anotherQuestionLbl);
+			pnl.add(textField);
+			pnl.add(btn);
 
 		}
 
+		setModal(true);
 		add(pnl);
 
 		setSize(360, 250);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	}
 
+	// 비밀번호, 닉네임, 폰 번호, 생년월일을 변경하려고 할 때의 버튼 액션리스너 모음
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		UserDAO userDAO = new UserDAO();
@@ -271,24 +321,58 @@ class ChangeInfoPnl extends JDialog implements ActionListener {
 				JOptionPane.showMessageDialog(this, "비밀번호는 8~20 글자 사이로 입력하셔야 합니다.");
 			} else {
 				int result = userDAO.changeUserInfo("비밀번호 변경", User.getCurUser().getUserId(),
-						String.valueOf(pwTextField.getPassword()), null, null);
+						String.valueOf(pwTextField.getPassword()), null, null, null);
 				if (result == 1) {
 					JOptionPane.showMessageDialog(this, "비밀번호 변경이 완료되었습니다.");
 					this.setVisible(false);
 					User.getCurUser().setUserPw(pw);
+				} else if (result == 3) {
+					JOptionPane.showMessageDialog(this, "기존의 비밀번호와 동일한 비밀번호로 변경할 수 없습니다.");
 				}
 			}
 		} else if (e.getActionCommand().equals("닉네임")) {
 			if (textField.getText().length() < 2 || textField.getText().length() > 16) {
 				JOptionPane.showMessageDialog(this, "닉네임은 2~16 글자 사이로 변경 가능합니다.");
 			} else {
-				int result = userDAO.changeUserInfo("닉네임 변경", User.getCurUser().getUserId(), null, textField.getText(), null);
+				int result = userDAO.changeUserInfo("닉네임 변경", User.getCurUser().getUserId(), null, textField.getText(), null,
+						null);
 				if (result == 1) {
 					JOptionPane.showMessageDialog(this, "닉네임 변경이 완료되었습니다.");
 					this.setVisible(false);
 					User.getCurUser().setUserNickName(textField.getText());
+					welcomeLbl.setText(User.getCurUser().getUserNickName() + "님 환영합니다!");
 					infoChange.getNickNameLbl().setText("닉네임 : " + User.getCurUser().getUserNickName());
+				} else if (result == 3) {
+					JOptionPane.showMessageDialog(this, "기존의 닉네임과 동일한 닉네임으로 변경할 수 없습니다.");
+				} else if (result == 4) {
+					JOptionPane.showMessageDialog(this, "이미 존재하는 닉네임 입니다.");
 				}
+			}
+		} else if (e.getActionCommand().equals("전화번호")) {
+			int result = userDAO.changeUserInfo("전화번호 변경", User.getCurUser().getUserId(), null, null, textField.getText(), null);
+			if (result == 2) {
+				JOptionPane.showMessageDialog(this, "전화번호 양식이 올바르지 않습니다. ex : 010-1234-5678");
+			} else if (result == 1) {
+				User.getCurUser().setUserPhoneNumber(textField.getText());
+				infoChange.getPhoneLbl().setText("등록된 전화번호 : " + User.getCurUser().getUserPhoneNumber());
+				JOptionPane.showMessageDialog(this, "전화번호 변경이 완료되었습니다.");
+				this.setVisible(false);
+			} else if (result == 3) {
+				JOptionPane.showMessageDialog(this, "기존의 전화번호와 동일한 전화번호로 변경할 수 없습니다.");
+			} else if (result == 4) {
+				JOptionPane.showMessageDialog(this, "이미 가입되어 있는 전화번호 입니다.");
+			}
+		} else if (e.getActionCommand().equals("생년월일")) {
+			int result = userDAO.changeUserInfo("생년월일 변경", User.getCurUser().getUserId(), null, null, null, textField.getText());
+			if (result == 2) {
+				JOptionPane.showMessageDialog(this, "생년월일 양식이 올바르지 않습니다. ex : 2024-08-27");
+			} else if (result == 1) {
+				User.getCurUser().setUserBirth(textField.getText());
+				infoChange.getBirthLbl().setText("등록된 생년월일 : " + User.getCurUser().getUserBirth());
+				JOptionPane.showMessageDialog(this, "생년월일 변경이 완료되었습니다.");
+				this.setVisible(false);
+			} else if (result == 3) {
+				JOptionPane.showMessageDialog(this, "기존과 동일한 생년월일 입니다.");
 			}
 		}
 	}
@@ -297,15 +381,17 @@ class ChangeInfoPnl extends JDialog implements ActionListener {
 // 회원 정보 보기 버튼을 눌렀을 때 띄워주는 창
 public class MemberInfoPnl extends JPanel {
 
-	private ShoopingInfo shoopingInfo = new ShoopingInfo();
-
-	public MemberInfoPnl() {
+	public MemberInfoPnl(JLabel jLabel) {
+		JPanel shoopingInfo = new ShoopingInfo();
 		JTabbedPane tabbedPane = new JTabbedPane();
-		InfoChange infoChange = new InfoChange();
+		InfoChange infoChange = new InfoChange(jLabel);
+		JScrollPane js = new JScrollPane(shoopingInfo);
+		js.getVerticalScrollBar().setUnitIncrement(10);
+
 		tabbedPane.addTab("회원 정보 수정", infoChange);
-		tabbedPane.addTab("쇼핑 정보", shoopingInfo);
+		tabbedPane.addTab("쇼핑 정보", js);
 		add(tabbedPane);
-		setSize(1200, 600);
+
 	}
 //	public static void main(String[] args) {
 //		new MemberInfoPnl().setVisible(true);

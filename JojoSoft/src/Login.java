@@ -1,5 +1,7 @@
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -15,8 +17,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import materials.Function;
 import picture.IconManager;
 import picture.PictureDAO;
@@ -34,7 +35,7 @@ class AccessionMember extends JDialog implements ActionListener {
 	private JLabel warningLbl;
 	private UserDAO userDAO;
 
-	public AccessionMember(List<Integer> pictureNumList) {
+	public AccessionMember(List<Integer> pictureNumList, JFrame frame) {
 		userDAO = new UserDAO();
 		JPanel pnlCenter = new JPanel();
 		JPanel pnlSouth = new JPanel();
@@ -109,6 +110,7 @@ class AccessionMember extends JDialog implements ActionListener {
 
 		setModal(true);
 		setSize(600, 600);
+		setLocationRelativeTo(frame);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	}
 
@@ -121,8 +123,8 @@ class AccessionMember extends JDialog implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String id = idField.getText();
-		String pw = pwField.getText();
-		String pwCheck = pwFieldCheck.getText();
+		String pw = String.valueOf(pwField.getPassword());
+		String pwCheck = String.valueOf(pwFieldCheck.getPassword());
 		String nickName = nickNameField.getText();
 		String birth = birthField.getText();
 		String phoneNumber = phoneNumField.getText();
@@ -138,7 +140,7 @@ class AccessionMember extends JDialog implements ActionListener {
 			if (result == null) {
 				this.setVisible(false);
 				userDAO.insertUser(id, pw, nickName, birth, phoneNumber);
-				JOptionPane.showMessageDialog(null, "회원가입이 완료되었습니다.");
+				JOptionPane.showMessageDialog(this, "회원가입이 완료되었습니다.");
 			} else if (result.equals("닉네임")) {
 				warningLbl.setText("이미 존재하는 닉네임 입니다.");
 			} else if (result.equals("아이디")) {
@@ -198,6 +200,7 @@ class FindId extends JDialog {
 
 		setModal(true);
 		setSize(600, 400);
+		setLocationRelativeTo(login);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	}
 
@@ -207,8 +210,7 @@ class FindId extends JDialog {
 
 }
 
-@Data
-@AllArgsConstructor
+@Getter
 class FindPw extends JDialog {
 	private JTextField idField;
 	private JLabel phoneLbl;
@@ -280,7 +282,16 @@ class FindPw extends JDialog {
 
 		setModal(true);
 		setSize(600, 400);
+		setLocationRelativeTo(login);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+	}
+
+	public String getPW() {
+		return String.valueOf(passwordField.getPassword());
+	}
+
+	public String getPW2() {
+		return String.valueOf(passwordField2.getPassword());
 	}
 }
 
@@ -356,6 +367,9 @@ public class Login extends JFrame implements ActionListener {
 		getContentPane().add(northPnl, "North");
 
 		setSize(600, 600);
+		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+//		System.out.println(d);
+		setLocation((d.width - this.getSize().width) / 2, (d.height - this.getSize().height) / 2);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 
@@ -364,11 +378,11 @@ public class Login extends JFrame implements ActionListener {
 		FindId findId = new FindId(pictureNumList, this);
 		FindPw findPw = new FindPw(pictureNumList, this);
 
-		AccessionMember accessionMember = new AccessionMember(pictureNumList);
+		AccessionMember accessionMember = new AccessionMember(pictureNumList, this);
 		String command = e.getActionCommand();
 		if (command.equals("로그인")) {
 
-			User user = userDAO.findMember(idField.getText(), pwField.getText());
+			User user = userDAO.findMember(idField.getText(), String.valueOf(pwField.getPassword()));
 
 			if (user == null) {
 				JOptionPane.showMessageDialog(this, "없는 회원입니다.");
@@ -420,16 +434,14 @@ public class Login extends JFrame implements ActionListener {
 			findPw.setVisible(false);
 		} else if (command.equals("pw확인2")) {
 			findPw = (FindPw) ((JButton) e.getSource()).getTopLevelAncestor();
-			
-			if (findPw.getPasswordField().getText().equals(findPw.getPasswordField2().getText())) {
-				int result = userDAO.changeUserInfo("비밀번호 변경", findPw.getIdField().getText(),
-						findPw.getPasswordField().getText(), null, null);
+			if (findPw.getPW().equals(findPw.getPW2())) {
+				int result = userDAO.changeUserInfo("비밀번호 변경", findPw.getIdField().getText(), findPw.getPW(), null, null, null);
 				if (result == 1) {
-					JOptionPane.showMessageDialog(this, "비밀번호 변경이 완료되었습니다.");
+					JOptionPane.showMessageDialog(findPw, "비밀번호 변경이 완료되었습니다.");
 					findPw.setVisible(false);
 				}
 			} else {
-				JOptionPane.showMessageDialog(null, "입력한 비밀번호가 동일하지 않습니다.");
+				JOptionPane.showMessageDialog(findPw, "입력한 비밀번호가 동일하지 않습니다.");
 			}
 		}
 	}
@@ -437,7 +449,6 @@ public class Login extends JFrame implements ActionListener {
 	public void changeAd(JLabel adImage) {
 		int pictureNum = Function.randomPictureNum(pictureNumList);
 		ImageIcon adIcon = IconManager.getInstance().getIconByKey(pictureNum);
-		;
 		adImage.setIcon(adIcon);
 	}
 
