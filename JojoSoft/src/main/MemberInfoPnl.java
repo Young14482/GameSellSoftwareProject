@@ -1,3 +1,4 @@
+package main;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -33,7 +34,7 @@ class ShoopingInfo extends JPanel {
 
 		setLayout(new GridLayout(5, 1));
 		// 게임 아이디, 유저 아이디, 게임이름, 구매날짜, 당시 구매가, 결제 상태 순서로 리스트에 들어가있음
-		List<List<String>> userInfoList = makeUserInfoList();
+		List<List<String>> userInfoList = UserDAO.makeUserInfoList();
 
 		if (userInfoList.size() == 0) {
 			JLabel lbl = new JLabel("확인된 구매 이력이 없습니다.");
@@ -67,52 +68,9 @@ class ShoopingInfo extends JPanel {
 		return lbl;
 	}
 
-	private List<List<String>> makeUserInfoList() {
 
-//		select game_id, A.user_nickname, D.game_name, order_date,round(D.game_price * (100 - C.order_discount) / 100, -2) as '당시 구매가' from `user` as A
-//		   join `order` as B using (user_id)
-//		    join `order_list` as C using (order_Id)
-//		    join game as D using (game_id);
-
-		List<List<String>> result = new ArrayList<>();
-
-		String sql = "select game_id, A.user_id, D.game_name, order_date,round(D.game_price * (100 - C.order_discount) / 100, -2) as '당시 구매가', order_status from `user` as A\r\n"
-				+ "   join `order` as B using (user_id)\r\n" + "    join `order_list` as C using (order_Id)\r\n"
-				+ "    join game as D using (game_id)\r\n" + "    where A.user_id = ?;";
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		try {
-			conn = DBUtil.getConnection("jojosoft");
-			stmt = conn.prepareStatement(sql);
-			stmt.setString(1, User.getCurUser().getUserId());
-			rs = stmt.executeQuery();
-
-			while (rs.next()) {
-				List<String> collect = new ArrayList<>();
-				for (int i = 1; i < 7; i++) {
-					if (i != 4) {
-						if (i == 6) {
-							if (rs.getString(i).equals("1")) {
-								collect.add("결제 완료");
-							} else {
-								collect.add("결제 X");
-							}
-						}
-						collect.add(rs.getString(i));
-					} else {
-						String before = rs.getString(i);
-						String after = before.substring(0, 10);
-						collect.add(after);
-					}
-				}
-				result.add(collect);
-			}
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "예외 발생. ShoopingInfo 클래스 확인");
-		}
-		return result;
-	}
+	
+	
 }
 
 // 정보수정 탭. 구현 중
@@ -181,20 +139,8 @@ class InfoChange extends JPanel implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-
-		if (e.getActionCommand().equals("비밀번호 변경하기")) {
-			ChangeInfoPnl changeInfoPnl = new ChangeInfoPnl(e.getActionCommand(), this, welcomeLbl);
-			changeInfoPnl.setVisible(true);
-		} else if (e.getActionCommand().equals("닉네임 변경하기")) {
-			ChangeInfoPnl changeInfoPnl = new ChangeInfoPnl(e.getActionCommand(), this, welcomeLbl);
-			changeInfoPnl.setVisible(true);
-		} else if (e.getActionCommand().equals("전화번호 변경하기")) {
-			ChangeInfoPnl changeInfoPnl = new ChangeInfoPnl(e.getActionCommand(), this, welcomeLbl);
-			changeInfoPnl.setVisible(true);
-		} else if (e.getActionCommand().equals("생년월일 변경하기")) {
-			ChangeInfoPnl changeInfoPnl = new ChangeInfoPnl(e.getActionCommand(), this, welcomeLbl);
-			changeInfoPnl.setVisible(true);
-		}
+		ChangeInfoPnl changeInfoPnl = new ChangeInfoPnl(e.getActionCommand(), this, welcomeLbl);
+		changeInfoPnl.setVisible(true);
 	}
 }
 

@@ -1,3 +1,4 @@
+package main;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -13,6 +14,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -25,6 +27,7 @@ import materials.JLableFactory;
 import picture.IconManager;
 import picture.PictureDAO;
 import user.User;
+import user.UserDAO;
 
 // 메인 패널
 class PnlBasic extends JPanel implements ActionListener {
@@ -34,22 +37,26 @@ class PnlBasic extends JPanel implements ActionListener {
 	private JPanel memberInfoPnl;
 	private CardLayout cardLayout;
 	private JPanel pnlContainer;
+	private JPanel shoopingCart;
 
 	public PnlBasic() {
 		pnlToolBar = new PnlToolBar(this);
-		memberInfoPnl = new MemberInfoPnl(getLnlNickname());
+	
 		// CardLayout과 패널 컨테이너 설정
 		cardLayout = new CardLayout();
 		pnlContainer = new JPanel(cardLayout);
-
-		// 메인 정보 패널 및 스크롤 패널 설정
+		
 		pnlMainInfo = new PnlMainInfo();
 		js = new JScrollPane(pnlMainInfo);
 		js.getVerticalScrollBar().setUnitIncrement(10);
+		shoopingCart = new ShoopingCart();
+		memberInfoPnl = new MemberInfoPnl(getLnlNickname());
+		shoopingCart = new ShoopingCart();
 
 		// CardLayout에 패널 추가
 		pnlContainer.add(js, "MainPanel");
 		pnlContainer.add(memberInfoPnl, "MemberInfoPanel");
+		pnlContainer.add(shoopingCart, "ShoopingCart");
 		
 		setLayout(new BorderLayout());
 
@@ -64,6 +71,9 @@ class PnlBasic extends JPanel implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		
+		ChargeMoneyDialog chargeMoneyDialog = new ChargeMoneyDialog(this);
+		
 		if (e.getActionCommand().equals("회원 정보")) {
 			cardLayout.show(pnlContainer, "MemberInfoPanel");
 		} else if (e.getActionCommand().equals("JOJOSOFT")) {
@@ -77,6 +87,25 @@ class PnlBasic extends JPanel implements ActionListener {
                 window.dispose();
             }
 			new Login().setVisible(true);;
+		} else if (e.getActionCommand().equals("장바구니")) {
+			cardLayout.show(pnlContainer, "ShoopingCart");
+		} else if (e.getActionCommand().equals("금액 충전 하기")) {
+			chargeMoneyDialog.setVisible(true);
+		} else if (e.getActionCommand().equals("금액 충전")) {
+			chargeMoneyDialog = (ChargeMoneyDialog) ((JButton) e.getSource()).getTopLevelAncestor();
+			try {
+				int chargeMoney = Integer.valueOf(chargeMoneyDialog.getTf().getText());
+				if (chargeMoney>0) {
+					UserDAO.chargeMoney(User.getCurUser().getUserId(), chargeMoney);
+					JOptionPane.showMessageDialog(this, chargeMoney + "원 충전이 완료되었습니다.");
+					chargeMoneyDialog.setVisible(false);
+				} else {
+					chargeMoneyDialog.getLbl().setText("1원 이상만 충전하실 수 있습니다.");
+				}
+				
+			} catch (Exception e2) {
+				chargeMoneyDialog.getLbl().setText("정수의 숫자만 입력하여 주십시오");
+			}
 		}
 	}
 }
@@ -94,6 +123,7 @@ class PnlToolBar extends JPanel {
 		JButton btnLogout = new JButton("로그아웃");
 		btnLogout.addActionListener(pnlBasic);
 		JButton btnCart = new JButton("장바구니");
+		btnCart.addActionListener(pnlBasic);
 
 		pnlEast.add(lnlNickname);
 		pnlEast.add(btnLogout);
@@ -122,11 +152,14 @@ class PnlToolBar extends JPanel {
 		JButton btnGame = new JButton("게임");
 		JButton btnPromotion = new JButton("프로모션");
 		JButton userInfoBtn = new JButton("회원 정보");
+		JButton chargeMoneyBtn = new JButton("금액 충전 하기");
+		chargeMoneyBtn.addActionListener(pnlBasic);
 		userInfoBtn.addActionListener(pnlBasic);
 
 		pnlBtns.add(btnGame);
 		pnlBtns.add(btnPromotion);
 		pnlBtns.add(userInfoBtn);
+		pnlBtns.add(chargeMoneyBtn);
 
 		pnlCenter.add(pnlSerch);
 		pnlCenter.add(pnlBtns);
