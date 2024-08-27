@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 
 import game.Game;
 import picture.IconManager;
+import temp.PnlBasic;
 
 public class JPanelFactory {
 	public JPanel createGamePnl(Game g) {
@@ -68,9 +69,15 @@ public class JPanelFactory {
 			}
 
 			@Override
-			public void mouseReleased(MouseEvent e) {
+			public void mouseExited(MouseEvent e) {
 				Game.setCurGame(null);
 			}
+
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				((PnlBasic) DataManager.getData("pnlBasic")).changeScreenToGameDetail();
+			}
+
 		});
 
 		return pnlGame;
