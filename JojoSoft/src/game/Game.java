@@ -21,4 +21,13 @@ public class Game {
 	private Date game_release;
 	private int game_profile;
 	private String game_category;
+	private static Game curGame;
+	
+	
+	public static Game getCurGame() {
+		return curGame;
+	}
+	public static void setCurGame(Game curGame) {
+		Game.curGame = curGame;
+	}
 }
