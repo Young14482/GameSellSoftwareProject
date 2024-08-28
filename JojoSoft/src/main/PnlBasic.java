@@ -89,21 +89,24 @@ public class PnlBasic extends JPanel implements ActionListener {
 			new Login().setVisible(true);
 		} else if (e.getActionCommand().equals("장바구니")) {
 			cardLayout.show(pnlContainer, "ShoopingCart");
+			
 		} else if (e.getActionCommand().equals("장바구니에 담기")) {
+			
 			orderDAO = new OrderDAO();
 			orderListDAO = new OrderListDAO();
-			List<Integer> notBuyList = orderDAO.getNotBuyList();
-			if(notBuyList.size() == 0) {
-				int order_id = orderDAO.insert();
+			int order_idOrNot = orderDAO.getNotBuyList();
+			
+			if(order_idOrNot == 0) {
+				int order_id  = orderDAO.insert();
 				orderListDAO.insert(order_id);
 				showCartDialog("상품을 장바구니에 담았습니다");
 			} else {
-				int order_id = orderDAO.checkAndInsert();
+				int order_id = orderListDAO.checkGame(order_idOrNot);
 				if(order_id == 0) {
-					showCartDialog("이미 있는 상품입니다.");
-				} else {
-					orderListDAO.insert(order_id);
+					orderListDAO.insert(order_idOrNot);
 					showCartDialog("상품을 장바구니에 담았습니다");
+				} else {
+					showCartDialog("이미 있는 상품입니다.");
 				}
 			}
 		} else if (e.getActionCommand().equals("금액 충전 하기")) {
