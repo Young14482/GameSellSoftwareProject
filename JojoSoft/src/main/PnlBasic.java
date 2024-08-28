@@ -55,6 +55,7 @@ public class PnlBasic extends JPanel implements ActionListener {
 		pnlContainer.add(memberInfoPnl, "MemberInfoPanel");
 		pnlContainer.add(gameDetailPnl, "GameDetail");
 		pnlContainer.add(pnlGameList, "GameList");
+		pnlContainer.add(shoopingCart, "ShoopingCart");
 
 		setLayout(new BorderLayout());
 
@@ -87,7 +88,7 @@ public class PnlBasic extends JPanel implements ActionListener {
 			new Login().setVisible(true);
 		} else if (e.getActionCommand().equals("장바구니")) {
 			cardLayout.show(pnlContainer, "ShoopingCart");
-		}  else if (e.getActionCommand().equals("장바구니에 담기")) {
+		} else if (e.getActionCommand().equals("장바구니에 담기")) {
 			orderDAO = new OrderDAO();
 			orderListDAO = new OrderListDAO();
 			int order_id = orderDAO.insert();
@@ -98,7 +99,7 @@ public class PnlBasic extends JPanel implements ActionListener {
 			} else {
 				System.out.println("등록 실패");
 			}
-		}else if (e.getActionCommand().equals("금액 충전 하기")) {
+		} else if (e.getActionCommand().equals("금액 충전 하기")) {
 			chargeMoneyDialog.setVisible(true);
 		} else if (e.getActionCommand().equals("금액 충전")) {
 			chargeMoneyDialog = (ChargeMoneyDialog) ((JButton) e.getSource()).getTopLevelAncestor();
