@@ -135,7 +135,11 @@ public class PnlBasic extends JPanel implements ActionListener {
 		int choice = JOptionPane.showOptionDialog(this, str, "알림",  JOptionPane.DEFAULT_OPTION
 				, JOptionPane.QUESTION_MESSAGE, null, options, null);
 		if (choice == 1) {
-			//TODO 장바구니로 화면전환 되야함
+			cardLayout.show(pnlContainer, "ShoopingCart");
+			ShoopingCart getShoopingCart = (ShoopingCart) DataManager.getData("ShoopingCart");
+			getShoopingCart.removeAll();
+			getShoopingCart.revalidate();
+			getShoopingCart.repaint();
 		} else {
 			cardLayout.show(pnlContainer, "MainPanel");
 		}

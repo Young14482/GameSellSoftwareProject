@@ -463,6 +463,7 @@ public class UserDAO {
 				}
 				list.add(detailList);
 			}
+			return list;
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -474,7 +475,7 @@ public class UserDAO {
 			}
 			DBUtil.closeAll(rs, stmt, conn);
 		}
-		return list;
+		return null;
 	}
 
 	// 유저의 아이디를 통하여 돈을 충전시켜주는 메소드

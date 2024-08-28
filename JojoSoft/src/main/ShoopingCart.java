@@ -20,6 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.Border;
 
+import materials.DataManager;
 import materials.Function;
 import materials.JLableFactory;
 import user.User;
@@ -95,6 +96,7 @@ public class ShoopingCart extends JPanel implements ActionListener {
 	private JPanel mainPnl;
 	public ShoopingCart() {
 		// 게임 이름, 게임 기본 가격, 할인율, 이미지 데이터 아이디 순서로 리스트에 삽입
+		DataManager.inputData("ShoopingCart", this);
 		
 		gameIdList = new ArrayList<>();
 		gameInfoList = UserDAO.userShoopingCart(User.getCurUser().getUserId());

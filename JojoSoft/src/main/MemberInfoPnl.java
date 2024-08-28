@@ -28,6 +28,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
 import materials.DBUtil;
+import materials.DataManager;
 import user.User;
 import user.UserDAO;
 
@@ -417,7 +418,7 @@ public class MemberInfoPnl extends JPanel {
 
 	public MemberInfoPnl(JLabel jLabel) {
 		setLayout(new BorderLayout()); // BorderLayout으로 레이아웃 설정
-
+		DataManager.inputData("MemberInfoPnl", this);
 		
 		JPanel shoopingInfo = new ShoopingInfo();
 		//shoopingInfo.setPreferredSize(new Dimension(1000, 1000));
