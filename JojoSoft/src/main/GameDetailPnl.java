@@ -1,6 +1,7 @@
 package main;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.List;
@@ -11,6 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.text.DefaultCaret;
 
 import game.BundleGameDAO;
@@ -75,19 +77,21 @@ public class GameDetailPnl extends JPanel {
 		pnlEast.add(btnInsertCart, BorderLayout.SOUTH);
 
 		// 게임 메인정보
-		pnlCenter = new JPanel();
-		pnlCenter.setLayout(new BorderLayout());
-		pnlCenter.setBorder(BorderFactory.createEmptyBorder(0, 75, 0, 50));
-		pnlCenter.setPreferredSize(new Dimension(600, 800));
+		pnlCenter = new JPanel(new BorderLayout());
+		pnlCenter.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
+//		pnlCenter.setPreferredSize(new Dimension(600, 800));
 
 		lblInGame = new JLabel();
+//		lblInGame.setBorder(BorderFactory.createLineBorder(Color.BLACK, 5));
+		lblInGame.setHorizontalAlignment(JLabel.CENTER);
 		lblInGame.setPreferredSize(new Dimension(0, 380));
 
-		jtaGameInfo = new JTextArea("");
+		jtaGameInfo = new JTextArea("", 0, 0);
 		jtaGameInfo.setEditable(false);
-		jtaGameInfo.setBorder(BorderFactory.createEmptyBorder());
+		jtaGameInfo.setBorder(BorderFactory.createEmptyBorder(0, 30, 10, 40));
 		jtaGameInfo.setBackground(null);
 		jtaGameInfo.setLineWrap(true);
+
 		// 텍스트필드 스크롤바 초기위치를 상단으로 초기화 함
 		DefaultCaret caret = (DefaultCaret) jtaGameInfo.getCaret();
 		caret.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
@@ -97,6 +101,7 @@ public class GameDetailPnl extends JPanel {
 		js = new JScrollPane(pnlCenter);
 		js.getVerticalScrollBar().setUnitIncrement(10);
 		js.setBorder(BorderFactory.createEmptyBorder());
+		js.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		pnlCenter.add(lblInGame, BorderLayout.NORTH);
 		pnlCenter.add(jtaGameInfo, BorderLayout.CENTER);
 		pnlCenter.add(pnlCenterSouth, BorderLayout.SOUTH);
@@ -137,10 +142,11 @@ public class GameDetailPnl extends JPanel {
 				for (int game_id : gameBundle) {
 					Game game = gameDAO.getGame(game_id);
 					JPanel gamePnl = jPanelFactory.createGamePnl(game);
-					pnlCenterSouth.setPreferredSize(new Dimension(0, 85 * gameBundle.size()));
+					pnlCenterSouth.setPreferredSize(new Dimension(0, 90 * gameBundle.size()));
 					pnlCenterSouth.add(gamePnl);
 				}
 			}
+			System.out.println(pnlCenterSouth.getPreferredSize());
 
 		}
 	}
