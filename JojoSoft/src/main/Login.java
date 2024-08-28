@@ -105,6 +105,7 @@ class AccessionMember extends JDialog implements ActionListener {
 		JButton registBtn = new JButton("등록하기");
 		registBtn.setBounds(236, 195, 97, 23);
 		pnlCenter.add(registBtn);
+		
 		registBtn.addActionListener(this);
 
 		getContentPane().add(pnlSouth, "South");

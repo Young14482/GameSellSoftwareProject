@@ -46,6 +46,7 @@ public class PnlBasic extends JPanel implements ActionListener {
 		pnlContainer.add(js, "MainPanel");
 		pnlContainer.add(memberInfoPnl, "MemberInfoPanel");
 		pnlContainer.add(gameDetailPnl, "GameDetail");
+		pnlContainer.add(shoopingCart, "ShoopingCart");
 
 		setLayout(new BorderLayout());
 
