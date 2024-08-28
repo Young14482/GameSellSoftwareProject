@@ -23,7 +23,7 @@ public class InsertPicture {
 			try {
 				byte[] bytes1 = Files.readAllBytes(path1);
 				int row1 = pictureDAO.insert("인게임: " + path1.getFileName().toString(), bytes1); // 데이터 베이스에 저장할 이름을 작성
-				System.out.println(i + "번 사진 입력 완료" + row1);
+				System.out.println( i + "번 사진 입력 완료" + row1);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

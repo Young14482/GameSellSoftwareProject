@@ -1,4 +1,4 @@
-package temp;
+package main;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -7,10 +7,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import game.Game;
+import materials.DataManager;
+import order.OrderDAO;
+import order.OrderListDAO;
 
 //메인 패널
 public class PnlBasic extends JPanel implements ActionListener {
@@ -21,8 +25,11 @@ public class PnlBasic extends JPanel implements ActionListener {
 	private CardLayout cardLayout;
 	private JPanel pnlContainer;
 	private GameDetailPnl gameDetailPnl;
+	private OrderDAO orderDAO;
+	private OrderListDAO orderListDAO;
 
 	public PnlBasic() {
+		DataManager.inputData("pnlBasic", this);
 		pnlToolBar = new PnlToolBar(this);
 		memberInfoPnl = new MemberInfoPnl(getLnlNickname());
 		gameDetailPnl = new GameDetailPnl();
@@ -69,6 +76,17 @@ public class PnlBasic extends JPanel implements ActionListener {
 				window.dispose();
 			}
 			new Login().setVisible(true);
+		} else if (e.getActionCommand().equals("장바구니에 담기")) {
+			orderDAO = new OrderDAO();
+			orderListDAO = new OrderListDAO();
+			int order_id = orderDAO.insert();
+			int result = orderListDAO.insert(order_id);
+			if (result == 1) {
+				System.out.println("등록 완료");
+				cardLayout.show(pnlContainer, "MainPanel");
+			} else {
+				System.out.println("등록 실패");
+			}
 		}
 	}
 

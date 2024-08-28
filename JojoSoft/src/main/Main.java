@@ -1,4 +1,4 @@
-package temp;
+package main;
 import game.GameDAO;
 
 public class Main {

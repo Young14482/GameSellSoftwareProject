@@ -12,8 +12,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import game.Game;
+import main.PnlBasic;
 import picture.IconManager;
-import temp.PnlBasic;
 
 public class JPanelFactory {
 	public JPanel createGamePnl(Game g) {
@@ -67,12 +67,7 @@ public class JPanelFactory {
 			public void mouseEntered(MouseEvent e) {
 				Game.setCurGame(g);
 			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				Game.setCurGame(null);
-			}
-
+			
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				((PnlBasic) DataManager.getData("pnlBasic")).changeScreenToGameDetail();

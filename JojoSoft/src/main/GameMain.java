@@ -1,4 +1,5 @@
-package temp;
+package main;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -22,8 +23,6 @@ import materials.JLableFactory;
 import materials.JPanelFactory;
 import picture.IconManager;
 import user.User;
-
-
 
 // 상단부 검색바 구성
 class PnlToolBar extends JPanel {
@@ -92,8 +91,7 @@ class PnlTest extends JFrame {
 	public PnlTest() {
 		pnlBasic = new PnlBasic();
 		add(pnlBasic);
-		DataManager.inputData("pnlBasic", pnlBasic);
-		setSize(920, 700);
+		setSize(1050, 700);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 }
