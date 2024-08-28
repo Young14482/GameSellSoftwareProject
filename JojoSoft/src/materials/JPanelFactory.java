@@ -12,8 +12,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import game.Game;
+import main.PnlBasic;
 import picture.IconManager;
-import temp.PnlBasic;
 
 public class JPanelFactory {
 	public JPanel createGamePnl(Game g) {
