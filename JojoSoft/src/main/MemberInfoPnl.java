@@ -1,5 +1,6 @@
 package main;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -33,38 +35,66 @@ import user.UserDAO;
 class ShoopingInfo extends JPanel {
 	public ShoopingInfo() {
 
-		setLayout(new GridLayout(5, 1));
 		// 게임 아이디, 유저 아이디, 게임이름, 구매날짜, 당시 구매가, 결제 상태 순서로 리스트에 들어가있음
 		List<List<String>> userInfoList = makeUserInfoList();
-
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		
 		if (userInfoList.size() == 0) {
 			JLabel lbl = new JLabel("확인된 구매 이력이 없습니다.");
 			lbl.setFont(new Font("굴림", Font.BOLD, 25));
 			lbl.setHorizontalAlignment(SwingConstants.CENTER);
 			add(lbl);
 		} else {
+			
 			for (int i = 0; i < userInfoList.size(); i++) {
-
+				
+				
+				int x = 10;
 				JPanel pnl = new JPanel();
-
-				makeLbl("게임 아이디 : ", userInfoList.get(i), 0, pnl);
-				makeLbl("유저 아이디 : ", userInfoList.get(i), 1, pnl);
-				makeLbl("게임 이름 : ", userInfoList.get(i), 2, pnl);
-				makeLbl("구매 날짜 : ", userInfoList.get(i), 3, pnl);
-				makeLbl("구매 가격 : ", userInfoList.get(i), 4, pnl);
-				makeLbl("", userInfoList.get(i), 5, pnl);
-
-				add(pnl);
+				pnl.setPreferredSize(new Dimension(1000, 100));
+				pnl.setLayout(null);
+				
+				JLabel listLbl = new JLabel("구매 목록 " + (i + 1));
+				listLbl.setBounds(5, 0, 100, 20);
+				pnl.add(listLbl);
+				
+			//	JLabel gameIdLbl = makeLbl("게임 아이디 : ", userInfoList.get(i), 0, pnl, x, 20);
+				//x = x + gameIdLbl.getSize().width + 10;
+				JLabel userIdLbl = makeLbl("유저 아이디 : ", userInfoList.get(i), 1, pnl, x, 20);
+				x = x + userIdLbl.getSize().width + 10;
+				JLabel gameNameLbl = makeLbl("게임 이름 : ", userInfoList.get(i), 2, pnl, x, 20);
+				x = x + gameNameLbl.getSize().width + 10;
+				JLabel buyDateLbl = makeLbl("구매 날짜 : ", userInfoList.get(i), 3, pnl, x, 20);
+				x = x + buyDateLbl.getSize().width + 10;
+				JLabel priceLbl = makeLbl("구매 가격 : ", userInfoList.get(i), 4, pnl, x, 20);
+				x = x + priceLbl.getSize().width + 10;
+				JLabel priceInfoLbl = makeLbl("결제 상태 : ", userInfoList.get(i), 5, pnl, x, 20);
+				x = x + priceInfoLbl.getSize().width + 10;
+				if (priceInfoLbl.getText().equals("결제 상태 : 결제 X")) {
+					JLabel lastLbl = makeLbl("장바구니를 확인하세요", null, 0, pnl, x, 20);
+					lastLbl.setBackground(new Color(200, 200, 200));
+					lastLbl.setOpaque(true);
+				}
+				
+			add(pnl);
 			}
+			
+			setPreferredSize(new Dimension(1500, userInfoList.size()*90));
 		}
 	}
 
-	private JLabel makeLbl(String detail, List<String> list, int index, JPanel pnl) {
+	private JLabel makeLbl(String detail, List<String> list, int index, JPanel pnl, int x, int y) {
 		Border border = BorderFactory.createLineBorder(Color.BLACK, 2);
-		JLabel lbl = new JLabel(detail + list.get(index));
-		lbl.setPreferredSize(new Dimension(lbl.getText().length() * 11 + 5, 40));
+		
+		JLabel lbl = null;
+		if(list == null) {
+			lbl = new JLabel(detail);
+		} else {
+			lbl = new JLabel(detail + list.get(index));
+		}
 		lbl.setHorizontalAlignment(SwingConstants.CENTER);
 		lbl.setBorder(border);
+		lbl.setBounds(x, y, (lbl.getText().length() * 10) + 50, 40);
 		pnl.add(lbl);
 		return lbl;
 	}
@@ -336,8 +366,8 @@ class ChangeInfoPnl extends JDialog implements ActionListener {
 			if (textField.getText().length() < 2 || textField.getText().length() > 16) {
 				JOptionPane.showMessageDialog(this, "닉네임은 2~16 글자 사이로 변경 가능합니다.");
 			} else {
-				int result = userDAO.changeUserInfo("닉네임 변경", User.getCurUser().getUserId(), null, textField.getText(), null,
-						null);
+				int result = userDAO.changeUserInfo("닉네임 변경", User.getCurUser().getUserId(), null, textField.getText(),
+						null, null);
 				if (result == 1) {
 					JOptionPane.showMessageDialog(this, "닉네임 변경이 완료되었습니다.");
 					this.setVisible(false);
@@ -351,7 +381,8 @@ class ChangeInfoPnl extends JDialog implements ActionListener {
 				}
 			}
 		} else if (e.getActionCommand().equals("전화번호")) {
-			int result = userDAO.changeUserInfo("전화번호 변경", User.getCurUser().getUserId(), null, null, textField.getText(), null);
+			int result = userDAO.changeUserInfo("전화번호 변경", User.getCurUser().getUserId(), null, null,
+					textField.getText(), null);
 			if (result == 2) {
 				JOptionPane.showMessageDialog(this, "전화번호 양식이 올바르지 않습니다. ex : 010-1234-5678");
 			} else if (result == 1) {
@@ -365,7 +396,8 @@ class ChangeInfoPnl extends JDialog implements ActionListener {
 				JOptionPane.showMessageDialog(this, "이미 가입되어 있는 전화번호 입니다.");
 			}
 		} else if (e.getActionCommand().equals("생년월일")) {
-			int result = userDAO.changeUserInfo("생년월일 변경", User.getCurUser().getUserId(), null, null, null, textField.getText());
+			int result = userDAO.changeUserInfo("생년월일 변경", User.getCurUser().getUserId(), null, null, null,
+					textField.getText());
 			if (result == 2) {
 				JOptionPane.showMessageDialog(this, "생년월일 양식이 올바르지 않습니다. ex : 2024-08-27");
 			} else if (result == 1) {
@@ -384,15 +416,21 @@ class ChangeInfoPnl extends JDialog implements ActionListener {
 public class MemberInfoPnl extends JPanel {
 
 	public MemberInfoPnl(JLabel jLabel) {
+		setLayout(new BorderLayout()); // BorderLayout으로 레이아웃 설정
+
+		
 		JPanel shoopingInfo = new ShoopingInfo();
+		//shoopingInfo.setPreferredSize(new Dimension(1000, 1000));
 		JTabbedPane tabbedPane = new JTabbedPane();
 		InfoChange infoChange = new InfoChange(jLabel);
 		JScrollPane js = new JScrollPane(shoopingInfo);
 		js.getVerticalScrollBar().setUnitIncrement(10);
+		
 
 		tabbedPane.addTab("회원 정보 수정", infoChange);
 		tabbedPane.addTab("쇼핑 정보", js);
 		add(tabbedPane);
+		add(tabbedPane, BorderLayout.CENTER); // JTabbedPane을 중앙에 추가
 
 	}
 //	public static void main(String[] args) {

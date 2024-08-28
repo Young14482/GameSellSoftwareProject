@@ -2,9 +2,11 @@ package order;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Base64;
-import java.util.Base64.Encoder;
+import java.util.List;
+
+import javax.swing.JOptionPane;
 
 import game.Game;
 import materials.DBUtil;
@@ -29,5 +31,37 @@ public class OrderListDAO {
 			DBUtil.closeAll(null, stmt, conn);
 		}
 		return 0;
+	}
+
+	public int checkGame(List<Integer> list) {
+		Game g = Game.getCurGame();
+		String sql = "SELECT COUNT(*) AS \"이새끼이거있음\" FROM order_list WHERE order_id = ? AND game_id = ?;";
+
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		int hasGame = 0;
+
+		try {
+			conn = DBUtil.getConnection("jojosoft");
+			stmt = conn.prepareStatement(sql);
+			outer: for (int a : list) {
+				stmt.setInt(1, a);
+				stmt.setInt(2, g.getGame_Id());
+				rs = stmt.executeQuery();
+				while (rs.next()) {
+					hasGame = rs.getInt("이새끼이거있음");
+					if (hasGame != 0) {
+						break outer;
+					}
+				}
+			}
+			return hasGame;
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "예외 발생");
+		} finally {
+			DBUtil.closeAll(rs, stmt, conn);
+		}
+		return -1;
 	}
 }

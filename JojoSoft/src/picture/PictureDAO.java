@@ -1,5 +1,10 @@
 package picture;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,12 +15,19 @@ import java.util.List;
 import java.util.Base64.Decoder;
 import java.util.Base64.Encoder;
 
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import admin.InsertImageToDB;
 import materials.DBUtil;
 
-public class PictureDAO {
+public class PictureDAO implements ActionListener {
 
+	String imageName;
+	private InsertImageToDB insertImageToDB;
+	private PictureDAO pictureDAO;
+	private byte[] byts;
+	
 	public Picture getPicture(int key) {
 		String sql = "SELECT * FROM picture WHERE id = ?";
 
@@ -89,5 +101,47 @@ public class PictureDAO {
 			DBUtil.closeAll(rs, stmt, conn);
 		}
 		return null;
+	}
+
+	public byte[] selectImageAndReturnBytes() {
+		byte[] imageBytes = null;
+		
+		// 파일 선택을 위한 JFileChooser
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setAcceptAllFileFilterUsed(false);
+
+        // 이미지 파일만 선택할 수 있도록 필터 설정
+        fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("이미지 파일", "jpg", "png", "gif", "bmp"));
+
+        int result = fileChooser.showOpenDialog(null);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            try {
+                // 파일을 byte 배열로 읽기
+                imageBytes = Files.readAllBytes(selectedFile.toPath());
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, "이미지를 불러오는 데 실패했습니다.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        return imageBytes;
+    }
+	
+	public void insertSelectImageToDB() {
+		pictureDAO = new PictureDAO();
+		byts = pictureDAO.selectImageAndReturnBytes();
+		insertImageToDB = new InsertImageToDB(this);
+		insertImageToDB.setVisible(true);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getActionCommand().equals("저장하기")) {
+			imageName = insertImageToDB.getResultField().getText();
+			insertImageToDB.setVisible(false);
+			pictureDAO.insert(imageName, byts);
+		}
 	}
 }

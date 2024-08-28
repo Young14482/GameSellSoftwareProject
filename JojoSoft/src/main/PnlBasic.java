@@ -5,6 +5,7 @@ import java.awt.CardLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -55,6 +56,7 @@ public class PnlBasic extends JPanel implements ActionListener {
 		pnlContainer.add(memberInfoPnl, "MemberInfoPanel");
 		pnlContainer.add(gameDetailPnl, "GameDetail");
 		pnlContainer.add(pnlGameList, "GameList");
+		pnlContainer.add(shoopingCart, "ShoopingCart");
 
 		setLayout(new BorderLayout());
 
@@ -90,13 +92,19 @@ public class PnlBasic extends JPanel implements ActionListener {
 		} else if (e.getActionCommand().equals("장바구니에 담기")) {
 			orderDAO = new OrderDAO();
 			orderListDAO = new OrderListDAO();
-			int order_id = orderDAO.insert();
-			int result = orderListDAO.insert(order_id);
-			if (result == 1) {
-				System.out.println("등록 완료");
-				cardLayout.show(pnlContainer, "MainPanel");
+			List<Integer> notBuyList = orderDAO.getNotBuyList();
+			if(notBuyList.size() == 0) {
+				int order_id = orderDAO.insert();
+				orderListDAO.insert(order_id);
+				showCartDialog("상품을 장바구니에 담았습니다");
 			} else {
-				System.out.println("등록 실패");
+				int order_id = orderDAO.checkAndInsert();
+				if(order_id == 0) {
+					showCartDialog("이미 있는 상품입니다.");
+				} else {
+					orderListDAO.insert(order_id);
+					showCartDialog("상품을 장바구니에 담았습니다");
+				}
 			}
 		} else if (e.getActionCommand().equals("금액 충전 하기")) {
 			chargeMoneyDialog.setVisible(true);
@@ -121,5 +129,15 @@ public class PnlBasic extends JPanel implements ActionListener {
 	public void changeScreenToGameDetail() {
 		cardLayout.show(pnlContainer, "GameDetail");
 		gameDetailPnl.update();
+	}
+	private void showCartDialog(String str) {
+		String[] options = { "계속 쇼핑", "장바구니" };
+		int choice = JOptionPane.showOptionDialog(this, str, "알림",  JOptionPane.DEFAULT_OPTION
+				, JOptionPane.QUESTION_MESSAGE, null, options, null);
+		if (choice == 1) {
+			//TODO 장바구니로 화면전환 되야함
+		} else {
+			cardLayout.show(pnlContainer, "MainPanel");
+		}
 	}
 }
