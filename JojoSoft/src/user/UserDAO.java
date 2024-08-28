@@ -533,7 +533,7 @@ public class UserDAO {
 	}
 
 	// 장바구니에 담겨있는 목록 중 체크한 목록들을 모두 구매시켜주고 DB값을 변경해주는 메소드
-	public boolean payment(String userId, List<Integer> buyGameIdList, int totalPaymentMoney) {
+	public String payment(String userId, List<Integer> buyGameIdList, int totalPaymentMoney) {
 
 		String sqlSelectOrderId = "SELECT order_id FROM `order` where user_id = ? and order_status = 0;";
 		String sqlUpdateUser = "update user set user_chargeMoney = user_chargeMoney - ?, user_usedcash = user_usedcash + ? where user_id = ?;";
@@ -580,13 +580,17 @@ public class UserDAO {
 			int orderId = rs.getInt(1);
 			stmt4.setInt(1, orderId);
 
-			int result1 = stmt2.executeUpdate();
-			int result2 = stmt3.executeUpdate();
-			int result3 = stmt4.executeUpdate();
+			stmt2.executeUpdate();
+			stmt3.executeUpdate();
+			stmt4.executeUpdate();
+			
+			String result = changUserRank(userId);
+			
 			conn2.commit();
 			conn3.commit();
 			conn4.commit();
-			return true;
+			
+			return result;
 
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "예외 발생, UserDAO 클래스 payment 메소드 검토 ");
@@ -602,60 +606,117 @@ public class UserDAO {
 			DBUtil.closeAll(null, stmt2, conn2);
 			DBUtil.closeAll(null, stmt3, conn3);
 		}
+		return null;
+	}
+
+	// 장바구니에 담겨있는 목록 중 체크한 목록들을 모두 지우는 메소드
+	public static boolean removeShoopingList(String userId, List<String> gameIdList, List<JCheckBox> boxList) {
+		String sqlSelectOrderId = "SELECT order_id FROM `order` where user_id = ? and order_status = 0;";
+		String sqlDeleteOrderDetail = "DELETE FROM order_list WHERE order_id = ?";
+		boolean start = true;
+		for (int i = 0; i < gameIdList.size(); i++) {
+			if (boxList.get(i).isSelected() && start) {
+				sqlDeleteOrderDetail += (" and game_id = " + gameIdList.get(i));
+				start = false;
+			} else if (boxList.get(i).isSelected()) {
+				sqlDeleteOrderDetail += (" or game_id = " + gameIdList.get(i));
+			}
+		}
+		Connection conn1 = null;
+		PreparedStatement stmt1 = null;
+		Connection conn2 = null;
+		PreparedStatement stmt2 = null;
+
+		ResultSet rs = null;
+		try {
+			conn1 = DBUtil.getConnection("jojosoft");
+			conn2 = DBUtil.getConnection("jojosoft");
+			conn1.setAutoCommit(false);
+			conn2.setAutoCommit(false);
+
+			stmt1 = conn1.prepareStatement(sqlSelectOrderId);
+			stmt2 = conn2.prepareStatement(sqlDeleteOrderDetail);
+
+			stmt1.setString(1, userId);
+			rs = stmt1.executeQuery();
+			rs.next();
+			int orderId = rs.getInt(1);
+			stmt2.setInt(1, orderId);
+			stmt2.executeUpdate();
+			conn2.commit();
+			return true;
+
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "예외 발생, UserDAO 클래스 payment 메소드 검토 ");
+		} finally {
+			try {
+				conn2.rollback();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			DBUtil.closeAll(null, stmt1, conn1);
+			DBUtil.closeAll(null, stmt2, conn2);
+		}
 		return false;
 	}
 	
-	// 장바구니에 담겨있는 목록 중 체크한 목록들을 모두 지우는 메소드
-		public static boolean removeShoopingList(String userId, List<String> gameIdList, List<JCheckBox> boxList) {
-
-			String sqlSelectOrderId = "SELECT order_id FROM `order` where user_id = ? and order_status = 0;";
-			String sqlDeleteOrderDetail = "DELETE FROM order_list\r\n" + "		WHERE order_id = ?";
-			for (int i = 0; i < gameIdList.size(); i++) {
-				if (boxList.get(i).isSelected()) {
-					sqlDeleteOrderDetail += (" and game_id = " + gameIdList.get(i));
-				}
-			}
-
-			Connection conn1 = null;
-			PreparedStatement stmt1 = null;
-			Connection conn2 = null;
-			PreparedStatement stmt2 = null;
-
-			ResultSet rs = null;
-			try {
-				conn1 = DBUtil.getConnection("jojosoft");
-				conn2 = DBUtil.getConnection("jojosoft");
-
-				conn1.setAutoCommit(false);
-				conn2.setAutoCommit(false);
-
-				stmt1 = conn1.prepareStatement(sqlSelectOrderId);
-				stmt2 = conn2.prepareStatement(sqlDeleteOrderDetail);
-
-				stmt1.setString(1, userId);
+	
+	//유저의 사용 금액을 체크하고 일정 사용 금액 이상일 시 등급을 변경시켜주는 메소드 ()
+	public static String changUserRank(String userId) {
+		String findUserUsedMoney = "select user_usedcash, user_grade from user where user_id = ?";
+		
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try {
+			
+			conn = DBUtil.getConnection("jojosoft");
+			stmt = conn.prepareStatement(findUserUsedMoney);
+			stmt.setString(1, userId);
+			rs = stmt.executeQuery();
+			rs.next();
+			int useMoney = rs.getInt(1);
+			String userRank = rs.getString(2);
+			String rank = "";
+			
+			if (userRank.equals("VVIP")) {
 				
-				rs = stmt1.executeQuery();
-				rs.next();
-				int orderId = rs.getInt(1);
-				stmt2.setInt(1, orderId);
-
-				stmt2.executeUpdate();
-				conn2.commit();
-				return true;
-
-			} catch (Exception e) {
-				JOptionPane.showMessageDialog(null, "예외 발생, UserDAO 클래스 payment 메소드 검토 ");
-			} finally {
-				try {
-					conn2.rollback();
-				} catch (SQLException e) {
-					e.printStackTrace();
+			} else if (useMoney > 1000000) {
+				if (userRank.equals("VIP")) {
+					rank = "VVIP";
 				}
-				DBUtil.closeAll(null, stmt1, conn1);
-				DBUtil.closeAll(null, stmt2, conn2);
+			} else if (useMoney > 200000) {
+				if (userRank.equals("정회원")) {
+					rank = "VIP";
+				}
+			} else if (useMoney > 50000) {
+				if (userRank.equals("준회원")) {
+					rank = "정회원";
+				}
+			} else {
+				if (useMoney > 20000) {
+					rank = "준회원";
+				}
 			}
-			return false;
+			if (!rank.equals("")) {
+				String changeUserRank = "update user set user_grade = ? where user_id = ?";
+				Connection conn2 = null;
+				PreparedStatement stmt2 = null;
+				conn2 = DBUtil.getConnection("jojosoft");
+				stmt2 = conn2.prepareStatement(changeUserRank);
+				stmt2.setString(1, rank);
+				stmt2.setString(2, userId);
+				stmt2.executeUpdate();
+			}
+			return rank;
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "예외 발생, UserDAO 클래스 changUserRank 메소드 검토 ");
+		} finally {
+			DBUtil.closeAll(rs, stmt, conn);
 		}
+		
+		return null;
+	}
 
 	// 전화번호 양식 체크 메소드
 	private Matcher phoneNumberFome(String phoneNumber) {

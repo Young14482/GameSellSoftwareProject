@@ -5,7 +5,6 @@ import java.awt.CardLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -68,11 +67,17 @@ public class PnlBasic extends JPanel implements ActionListener {
 	public JLabel getLnlNickname() {
 		return ((PnlToolBar) pnlToolBar).getLnlNickname();
 	}
-
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		ChargeMoneyDialog chargeMoneyDialog = new ChargeMoneyDialog(this);
 		if (e.getActionCommand().equals("회원 정보")) {
+
+        	MemberInfoPnl memberInfoPanel = ((MemberInfoPnl) DataManager.getData("MemberInfoPnl"));
+        	memberInfoPanel.removeAll();
+        	memberInfoPanel.reconstruction(((JLabel) DataManager.getData("jLabel")));
+        	memberInfoPanel.revalidate();
+        	memberInfoPanel.repaint();
 			cardLayout.show(pnlContainer, "MemberInfoPanel");
 		} else if (e.getActionCommand().equals("JOJOSOFT")) {
 			cardLayout.show(pnlContainer, "MainPanel");
@@ -89,6 +94,11 @@ public class PnlBasic extends JPanel implements ActionListener {
 			new Login().setVisible(true);
 		} else if (e.getActionCommand().equals("장바구니")) {
 			cardLayout.show(pnlContainer, "ShoopingCart");
+			
+			((ShoopingCart) shoopingCart).removeAll();
+			((ShoopingCart) shoopingCart).reconstruction();
+			((ShoopingCart) shoopingCart).revalidate();
+			((ShoopingCart) shoopingCart).repaint();
 			
 		} else if (e.getActionCommand().equals("장바구니에 담기")) {
 			
@@ -137,10 +147,12 @@ public class PnlBasic extends JPanel implements ActionListener {
 		String[] options = { "계속 쇼핑", "장바구니" };
 		int choice = JOptionPane.showOptionDialog(this, str, "알림",  JOptionPane.DEFAULT_OPTION
 				, JOptionPane.QUESTION_MESSAGE, null, options, null);
+		
 		if (choice == 1) {
 			cardLayout.show(pnlContainer, "ShoopingCart");
 			ShoopingCart getShoopingCart = (ShoopingCart) DataManager.getData("ShoopingCart");
 			getShoopingCart.removeAll();
+			getShoopingCart.reconstruction();
 			getShoopingCart.revalidate();
 			getShoopingCart.repaint();
 		} else {

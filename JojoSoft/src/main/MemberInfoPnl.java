@@ -26,6 +26,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import materials.DBUtil;
 import materials.DataManager;
@@ -35,7 +37,11 @@ import user.UserDAO;
 // 구매한 게임 이력을 확인할수 있는 탭
 class ShoopingInfo extends JPanel {
 	public ShoopingInfo() {
+		DataManager.inputData("ShoopingInfo", this);
+		reconstruction();
+	}
 
+	public void reconstruction() {
 		// 게임 아이디, 유저 아이디, 게임이름, 구매날짜, 당시 구매가, 결제 상태 순서로 리스트에 들어가있음
 		List<List<String>> userInfoList = makeUserInfoList();
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -55,7 +61,7 @@ class ShoopingInfo extends JPanel {
 				pnl.setPreferredSize(new Dimension(1000, 100));
 				pnl.setLayout(null);
 				
-				JLabel listLbl = new JLabel("구매 목록 " + (i + 1));
+				JLabel listLbl = new JLabel("목록 " + (i + 1));
 				listLbl.setBounds(5, 0, 100, 20);
 				pnl.add(listLbl);
 				
@@ -157,6 +163,10 @@ class InfoChange extends JPanel implements ActionListener {
 	private JLabel welcomeLbl;
 
 	public InfoChange(JLabel jLabel) {
+		reconstruction(jLabel);
+	}
+
+	public void reconstruction(JLabel jLabel) {
 		this.welcomeLbl = jLabel;
 		JPanel eastPnl = new JPanel();
 		JPanel westPnl = new JPanel();
@@ -417,9 +427,15 @@ class ChangeInfoPnl extends JDialog implements ActionListener {
 public class MemberInfoPnl extends JPanel {
 
 	public MemberInfoPnl(JLabel jLabel) {
-		setLayout(new BorderLayout()); // BorderLayout으로 레이아웃 설정
-		DataManager.inputData("MemberInfoPnl", this);
 		
+		reconstruction(jLabel);
+
+	}
+	public void reconstruction(JLabel jLabel) {
+		DataManager.inputData("MemberInfoPnl", this);
+		DataManager.inputData("jLabel", jLabel);
+		
+		setLayout(new BorderLayout()); // BorderLayout으로 레이아웃 설정
 		JPanel shoopingInfo = new ShoopingInfo();
 		//shoopingInfo.setPreferredSize(new Dimension(1000, 1000));
 		JTabbedPane tabbedPane = new JTabbedPane();
@@ -430,11 +446,28 @@ public class MemberInfoPnl extends JPanel {
 
 		tabbedPane.addTab("회원 정보 수정", infoChange);
 		tabbedPane.addTab("쇼핑 정보", js);
+		
+		tabbedPane.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                // 선택된 탭 인덱스 가져오기
+                int selectedIndex = tabbedPane.getSelectedIndex();
+                
+                // 특정 탭이 선택되었을 때의 행동 지정
+                switch (selectedIndex) {
+                    case 1:
+                    	ShoopingInfo shoinfo = ((ShoopingInfo) DataManager.getData("ShoopingInfo"));
+                    	shoinfo.removeAll();
+                    	shoinfo.reconstruction();
+                    	shoinfo.revalidate();
+                    	shoinfo.repaint();
+                        break;
+                    default:
+                        break;
+                }
+            }
+		});
 		add(tabbedPane);
 		add(tabbedPane, BorderLayout.CENTER); // JTabbedPane을 중앙에 추가
-
 	}
-//	public static void main(String[] args) {
-//		new MemberInfoPnl().setVisible(true);
-//	}
 }

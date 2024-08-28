@@ -67,17 +67,21 @@ class BuyDialog extends JDialog implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("확인")) {
 			UserDAO userDAO = new UserDAO();
-			boolean result = userDAO.payment(User.getCurUser().getUserId(), buyGameIdList, totalPaymentMoney);
-			if (result) {
+			String grade = userDAO.payment(User.getCurUser().getUserId(), buyGameIdList, totalPaymentMoney);
+			if (grade != null) {
+				User.getCurUser().setUserUsedCash(User.getCurUser().getUserUsedCash() + totalPaymentMoney);
+				
+				if (!grade.equals("")) {
+					User.getCurUser().setUserGrade(grade);
+				}
 				JOptionPane.showMessageDialog(this, "결제가 완료되었습니다.");
 				this.setVisible(false);
 				
 				// 쇼핑 카트 패널에서 모든 항목 제거
 				shoopingCart.removeAll();
 				// 패널의 레이아웃과 내용 갱신
+				((ShoopingCart) shoopingCart).reconstruction();
 				shoopingCart.revalidate();
-				JLabel lbl = new JLabel("현재 장바구니에 담겨있는 목록이 없습니다.");
-				shoopingCart.add(lbl, BorderLayout.CENTER);
 				shoopingCart.repaint();
 			} else {
 				JOptionPane.showMessageDialog(this, "오류발생. UserDAO의 payment메소드 검토");
@@ -95,6 +99,10 @@ public class ShoopingCart extends JPanel implements ActionListener {
 	private List<String> gameIdList;
 	private JPanel mainPnl;
 	public ShoopingCart() {
+		reconstruction();
+	}
+
+	public void reconstruction() {
 		// 게임 이름, 게임 기본 가격, 할인율, 이미지 데이터 아이디 순서로 리스트에 삽입
 		DataManager.inputData("ShoopingCart", this);
 		
@@ -212,15 +220,16 @@ public class ShoopingCart extends JPanel implements ActionListener {
 		} else if (e.getActionCommand().equals("체크된 목록 모두 삭제하기")) {
 			int count = boxCheck();
 			if (count != 0) {
-				for (int i = 0; i < checkBoxList.size(); i++) {
-					UserDAO.removeShoopingList(User.getCurUser().getUserId(), gameIdList, checkBoxList);
-					
-					if (checkBoxList.get(i).isSelected()) {
-						mainPnl.remove(pnlList.get(i));
-					}
+				boolean result = UserDAO.removeShoopingList(User.getCurUser().getUserId(), gameIdList, checkBoxList);
+				if (result) {
+					this.removeAll();
+					this.reconstruction();
+					this.revalidate();
+					this.repaint();
+				} else {
+					JOptionPane.showMessageDialog(this, "에러발생");
 				}
-				mainPnl.revalidate();
-				mainPnl.repaint();
+				
 			} else {
 				JOptionPane.showMessageDialog(this, "체크된 목록이 없습니다.");
 			}
