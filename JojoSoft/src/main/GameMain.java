@@ -246,11 +246,11 @@ public class GameMain extends JFrame {
 	public GameMain() {
 		pnlBasic = new PnlBasic();
 		add(pnlBasic);
-		DataManager.inputData("pnlBasic", pnlBasic);
 		setSize(920, 700);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 		setLocation((d.width - this.getSize().width) / 2, (d.height - this.getSize().height) / 2);
+
 	}
 
 //	public static void main(String[] args) {

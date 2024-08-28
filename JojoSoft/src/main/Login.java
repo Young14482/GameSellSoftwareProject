@@ -392,6 +392,7 @@ public class Login extends JFrame implements ActionListener {
 				User.setCurUser(user);
 				this.setVisible(false);
 				new GameMain().setVisible(true);
+
 			}
 
 		} else if (command.equals("회원 가입")) {

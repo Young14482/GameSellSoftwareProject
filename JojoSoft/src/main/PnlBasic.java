@@ -12,8 +12,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import game.Game;
+import materials.DataManager;
 import materials.pnlGameList;
+import order.OrderDAO;
+import order.OrderListDAO;
 import user.User;
 import user.UserDAO;
 
@@ -28,8 +30,11 @@ public class PnlBasic extends JPanel implements ActionListener {
 	private GameDetailPnl gameDetailPnl;
 	private JPanel shoopingCart;
 	private pnlGameList pnlGameList;
+	private OrderDAO orderDAO;
+	private OrderListDAO orderListDAO;
 
 	public PnlBasic() {
+		DataManager.inputData("pnlBasic", this);
 		pnlToolBar = new PnlToolBar(this);
 
 		// CardLayout과 패널 컨테이너 설정
@@ -82,7 +87,18 @@ public class PnlBasic extends JPanel implements ActionListener {
 			new Login().setVisible(true);
 		} else if (e.getActionCommand().equals("장바구니")) {
 			cardLayout.show(pnlContainer, "ShoopingCart");
-		} else if (e.getActionCommand().equals("금액 충전 하기")) {
+		}  else if (e.getActionCommand().equals("장바구니에 담기")) {
+			orderDAO = new OrderDAO();
+			orderListDAO = new OrderListDAO();
+			int order_id = orderDAO.insert();
+			int result = orderListDAO.insert(order_id);
+			if (result == 1) {
+				System.out.println("등록 완료");
+				cardLayout.show(pnlContainer, "MainPanel");
+			} else {
+				System.out.println("등록 실패");
+			}
+		}else if (e.getActionCommand().equals("금액 충전 하기")) {
 			chargeMoneyDialog.setVisible(true);
 		} else if (e.getActionCommand().equals("금액 충전")) {
 			chargeMoneyDialog = (ChargeMoneyDialog) ((JButton) e.getSource()).getTopLevelAncestor();
@@ -103,7 +119,6 @@ public class PnlBasic extends JPanel implements ActionListener {
 	}
 
 	public void changeScreenToGameDetail() {
-		System.out.println(Game.getCurGame());
 		cardLayout.show(pnlContainer, "GameDetail");
 		gameDetailPnl.update();
 	}
