@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -386,6 +388,118 @@ public class UserDAO {
 				e.printStackTrace();
 			}
 			DBUtil.closeAll(rs, stmt, conn);
+		}
+		return 0;
+	}
+
+	// 로그인 한 유저의 게임 관련 결제 이력을 나타내는 정보
+	public static List<List<String>> makeUserInfoList() {
+
+		List<List<String>> result = new ArrayList<>();
+
+		String sql = "select game_id, A.user_id, D.game_name, order_date,round(D.game_price * (100 - C.order_discount) / 100, -2) as '당시 구매가', order_status from `user` as A\r\n"
+				+ "   join `order` as B using (user_id)\r\n" + "    join `order_list` as C using (order_Id)\r\n"
+				+ "    join game as D using (game_id)\r\n" + "    where A.user_id = ?;";
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try {
+			conn = DBUtil.getConnection("jojosoft");
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, User.getCurUser().getUserId());
+			rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				List<String> collect = new ArrayList<>();
+				for (int i = 1; i < 7; i++) {
+					if (i != 4) {
+						if (i == 6) {
+							if (rs.getString(i).equals("1")) {
+								collect.add("결제 완료");
+							} else {
+								collect.add("결제 X");
+							}
+						}
+						collect.add(rs.getString(i));
+					} else {
+						String before = rs.getString(i);
+						String after = before.substring(0, 10);
+						collect.add(after);
+					}
+				}
+				result.add(collect);
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "예외 발생. UserDAO 클래스 확인");
+		}
+		return result;
+	}
+
+	// 유저가 장바구니에 담은 게임들을 찾아서 반환하는 메소드
+	// (order 테이블에서 유저 아이디로 검색하여 order_status 값들 중 0인 값만 가져옴)
+	public static List<List<String>> userShoopingCart(String userId) {
+		String sql = "select C.game_name, C.game_price, B.order_discount, D.id as 'imageData' from `order` as A \r\n"
+				+ "join `order_list` as B using (order_id)\r\n" + "join `game` as C using (game_id)\r\n"
+				+ "join `picture` as D on (C.game_profile = D.id)\r\n" + "where A.user_id = ? and A.order_status = 1;";
+		List<List<String>> list = new ArrayList<>();
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try {
+			conn = DBUtil.getConnection("jojosoft");
+			conn.setAutoCommit(false);
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, userId);
+			rs = stmt.executeQuery();
+
+			// 게임 이름, 게임 아이디, 할인율, 이미지 데이터(문자열로 변환된 버전) 순서로 리스트에 삽입
+			while (rs.next()) {
+				List<String> detailList = new ArrayList<>();
+				for (int i = 1; i < 5; i++) {
+					detailList.add(rs.getString(i));
+				}
+				list.add(detailList);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.rollback();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			DBUtil.closeAll(rs, stmt, conn);
+		}
+		return list;
+	}
+
+	// 유저의 아이디를 통하여 돈을 충전시켜주는 메소드
+	public static int chargeMoney(String userId, int chargeMoney) {
+		String sql = "update user set user_chargeMoney = user_chargeMoney + ? where user_id = ?;";
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		try {
+			conn = DBUtil.getConnection("jojosoft");
+			conn.setAutoCommit(false);
+			stmt = conn.prepareStatement(sql);
+
+			stmt.setInt(1, chargeMoney);
+			stmt.setString(2, userId);
+			int result = stmt.executeUpdate();
+			if (result == 1) {
+				conn.commit();
+			}
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.rollback();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			DBUtil.closeAll(null, stmt, conn);
 		}
 		return 0;
 	}

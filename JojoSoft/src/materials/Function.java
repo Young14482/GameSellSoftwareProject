@@ -56,6 +56,13 @@ public class Function {
 
 		return false; // 한글이 포함되어 있지 않으면 false 반환
 	}
+	
+	
+	public static int priceCalculate(int price, int discountNumber) {
+		int sellPrice = price * (100 - discountNumber) / 100;
+	    int result = Math.round(sellPrice/100) * 100;
+		return result;
+	}
 
 	// 어떤 광고를 띄울지 랜덤으로 번호를 정해서 광고 id를 반환하는 메소드
 	public static int randomPictureNum(List<Integer> pictureNumList) {

@@ -19,7 +19,6 @@ import javax.swing.border.LineBorder;
 
 import game.Game;
 import game.GameDAO;
-import materials.DataManager;
 import materials.JLableFactory;
 import materials.JPanelFactory;
 import picture.IconManager;
@@ -37,6 +36,8 @@ class PnlToolBar extends JPanel {
 		JButton btnLogout = new JButton("로그아웃");
 		btnLogout.addActionListener(pnlBasic);
 		JButton btnCart = new JButton("장바구니");
+
+		btnCart.addActionListener(pnlBasic);
 
 		pnlEast.add(lnlNickname);
 		pnlEast.add(btnLogout);
@@ -63,13 +64,17 @@ class PnlToolBar extends JPanel {
 		JPanel pnlBtns = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		pnlBtns.setBorder(new LineBorder(Color.green));
 		JButton btnGame = new JButton("게임");
+		btnGame.addActionListener(pnlBasic);
 		JButton btnPromotion = new JButton("프로모션");
 		JButton userInfoBtn = new JButton("회원 정보");
+		JButton chargeMoneyBtn = new JButton("금액 충전 하기");
+		chargeMoneyBtn.addActionListener(pnlBasic);
 		userInfoBtn.addActionListener(pnlBasic);
 
 		pnlBtns.add(btnGame);
 		pnlBtns.add(btnPromotion);
 		pnlBtns.add(userInfoBtn);
+		pnlBtns.add(chargeMoneyBtn);
 
 		pnlCenter.add(pnlSerch);
 		pnlCenter.add(pnlBtns);
@@ -241,11 +246,11 @@ public class GameMain extends JFrame {
 	public GameMain() {
 		pnlBasic = new PnlBasic();
 		add(pnlBasic);
-		DataManager.inputData("pnlBasic", pnlBasic);
 		setSize(920, 700);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 		setLocation((d.width - this.getSize().width) / 2, (d.height - this.getSize().height) / 2);
+
 	}
 
 //	public static void main(String[] args) {
