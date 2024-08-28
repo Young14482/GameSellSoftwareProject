@@ -64,6 +64,7 @@ class PnlToolBar extends JPanel {
 		JPanel pnlBtns = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		pnlBtns.setBorder(new LineBorder(Color.green));
 		JButton btnGame = new JButton("게임");
+		btnGame.addActionListener(pnlBasic);
 		JButton btnPromotion = new JButton("프로모션");
 		JButton userInfoBtn = new JButton("회원 정보");
 		JButton chargeMoneyBtn = new JButton("금액 충전 하기");

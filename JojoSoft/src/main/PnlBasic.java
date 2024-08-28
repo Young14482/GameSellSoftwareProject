@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import game.Game;
+import materials.pnlGameList;
 import user.User;
 import user.UserDAO;
 
@@ -26,6 +27,7 @@ public class PnlBasic extends JPanel implements ActionListener {
 	private JPanel pnlContainer;
 	private GameDetailPnl gameDetailPnl;
 	private JPanel shoopingCart;
+	private pnlGameList pnlGameList;
 
 	public PnlBasic() {
 		pnlToolBar = new PnlToolBar(this);
@@ -41,11 +43,13 @@ public class PnlBasic extends JPanel implements ActionListener {
 		shoopingCart = new ShoopingCart();
 		memberInfoPnl = new MemberInfoPnl(getLnlNickname());
 		gameDetailPnl = new GameDetailPnl();
+		pnlGameList = new pnlGameList();
 
 		// CardLayout에 패널 추가
 		pnlContainer.add(js, "MainPanel");
 		pnlContainer.add(memberInfoPnl, "MemberInfoPanel");
 		pnlContainer.add(gameDetailPnl, "GameDetail");
+		pnlContainer.add(pnlGameList, "GameList");
 
 		setLayout(new BorderLayout());
 
@@ -65,6 +69,8 @@ public class PnlBasic extends JPanel implements ActionListener {
 			cardLayout.show(pnlContainer, "MemberInfoPanel");
 		} else if (e.getActionCommand().equals("JOJOSOFT")) {
 			cardLayout.show(pnlContainer, "MainPanel");
+		} else if (e.getActionCommand().equals("게임")) {
+			cardLayout.show(pnlContainer, "GameList");
 		} else if (e.getActionCommand().equals("로그아웃")) {
 			// 기본적으로 내장된 윈도우 메소드를 통해 모든 창을 가져옴.
 			// 반복문을 통하여 가져오는 모든 창들을 dispose(종료)시킴

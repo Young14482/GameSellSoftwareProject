@@ -122,6 +122,32 @@ public class GameDAO {
 		return null;
 	}
 
+	public List<String> getProductionList() {
+		String sql = "SELECT DISTINCT game_production FROM game";
+		List<String> list = new ArrayList<>();
+
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = DBUtil.getConnection("jojosoft");
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+
+			while (rs.next()) {
+				String game_production = rs.getString("game_production");
+				list.add(game_production);
+			}
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.closeAll(rs, stmt, conn);
+		}
+		return null;
+	}
+
 	public List<Game> getRandomList() {
 		int size = getAllCount();
 		Random random = new Random();
