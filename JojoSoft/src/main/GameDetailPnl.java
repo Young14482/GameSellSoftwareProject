@@ -146,7 +146,6 @@ public class GameDetailPnl extends JPanel {
 					pnlCenterSouth.add(gamePnl);
 				}
 			}
-			System.out.println(pnlCenterSouth.getPreferredSize());
 
 		}
 	}
