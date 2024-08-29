@@ -5,11 +5,13 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,8 +33,12 @@ import javax.swing.event.ChangeListener;
 
 import materials.DBUtil;
 import materials.DataManager;
+import order.OrderDAO;
+import order.OrderListDAO;
+import user.DeleteUserDAO;
 import user.User;
 import user.UserDAO;
+import user.UserService;
 
 // 구매한 게임 이력을 확인할수 있는 탭
 class ShoopingInfo extends JPanel {
@@ -45,28 +51,27 @@ class ShoopingInfo extends JPanel {
 		// 게임 아이디, 유저 아이디, 게임이름, 구매날짜, 당시 구매가, 결제 상태 순서로 리스트에 들어가있음
 		List<List<String>> userInfoList = makeUserInfoList();
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		
+
 		if (userInfoList.size() == 0) {
 			JLabel lbl = new JLabel("확인된 구매 이력이 없습니다.");
 			lbl.setFont(new Font("굴림", Font.BOLD, 25));
 			lbl.setHorizontalAlignment(SwingConstants.CENTER);
 			add(lbl);
 		} else {
-			
+
 			for (int i = 0; i < userInfoList.size(); i++) {
-				
-				
+
 				int x = 10;
 				JPanel pnl = new JPanel();
 				pnl.setPreferredSize(new Dimension(1000, 100));
 				pnl.setLayout(null);
-				
+
 				JLabel listLbl = new JLabel("목록 " + (i + 1));
 				listLbl.setBounds(5, 0, 100, 20);
 				pnl.add(listLbl);
-				
-			//	JLabel gameIdLbl = makeLbl("게임 아이디 : ", userInfoList.get(i), 0, pnl, x, 20);
-				//x = x + gameIdLbl.getSize().width + 10;
+
+				// JLabel gameIdLbl = makeLbl("게임 아이디 : ", userInfoList.get(i), 0, pnl, x, 20);
+				// x = x + gameIdLbl.getSize().width + 10;
 				JLabel userIdLbl = makeLbl("유저 아이디 : ", userInfoList.get(i), 1, pnl, x, 20);
 				x = x + userIdLbl.getSize().width + 10;
 				JLabel gameNameLbl = makeLbl("게임 이름 : ", userInfoList.get(i), 2, pnl, x, 20);
@@ -82,19 +87,19 @@ class ShoopingInfo extends JPanel {
 					lastLbl.setBackground(new Color(200, 200, 200));
 					lastLbl.setOpaque(true);
 				}
-				
-			add(pnl);
+
+				add(pnl);
 			}
-			
-			setPreferredSize(new Dimension(1500, userInfoList.size()*90));
+
+			setPreferredSize(new Dimension(1500, userInfoList.size() * 90));
 		}
 	}
 
 	private JLabel makeLbl(String detail, List<String> list, int index, JPanel pnl, int x, int y) {
 		Border border = BorderFactory.createLineBorder(Color.BLACK, 2);
-		
+
 		JLabel lbl = null;
-		if(list == null) {
+		if (list == null) {
 			lbl = new JLabel(detail);
 		} else {
 			lbl = new JLabel(detail + list.get(index));
@@ -170,8 +175,8 @@ class InfoChange extends JPanel implements ActionListener {
 		this.welcomeLbl = jLabel;
 		JPanel eastPnl = new JPanel();
 		JPanel westPnl = new JPanel();
-		eastPnl.setLayout(new GridLayout(6, 1));
-		westPnl.setLayout(new GridLayout(4, 1));
+		eastPnl.setLayout(new GridLayout(7, 1));
+		westPnl.setLayout(new GridLayout(5, 1));
 		JLabel idLbl = new JLabel("아이디 : " + User.getCurUser().getUserId());
 		idLbl.setFont(new Font("굴림", Font.BOLD, 18));
 		nickNameLbl = new JLabel("닉네임 : " + User.getCurUser().getUserNickName());
@@ -184,6 +189,8 @@ class InfoChange extends JPanel implements ActionListener {
 		gradeLbl.setFont(new Font("굴림", Font.BOLD, 18));
 		JLabel moneyLbl = new JLabel("현재까지 사용금액 : " + User.getCurUser().getUserUsedCash());
 		moneyLbl.setFont(new Font("굴림", Font.BOLD, 18));
+		JLabel chargeMoneyLbl = new JLabel("충전금액 : " + User.getCurUser().getUserChargeMoney());
+		chargeMoneyLbl.setFont(new Font("굴림", Font.BOLD, 18));
 
 		JButton pwChangeBtn = new JButton("비밀번호 변경하기");
 		pwChangeBtn.addActionListener(this);
@@ -193,18 +200,22 @@ class InfoChange extends JPanel implements ActionListener {
 		phoneNumChangeBtn.addActionListener(this);
 		JButton dateChangeBtn = new JButton("생년월일 변경하기");
 		dateChangeBtn.addActionListener(this);
+		JButton deleteAccountBtn = new JButton("회원 탈퇴");
+		deleteAccountBtn.addActionListener(this);
 
 		eastPnl.add(idLbl);
 		eastPnl.add(nickNameLbl);
 		eastPnl.add(phoneLbl);
 		eastPnl.add(birthLbl);
 		eastPnl.add(gradeLbl);
+		eastPnl.add(chargeMoneyLbl);
 		eastPnl.add(moneyLbl);
 
 		westPnl.add(pwChangeBtn);
 		westPnl.add(nickNameChangeBtn);
 		westPnl.add(phoneNumChangeBtn);
 		westPnl.add(dateChangeBtn);
+		westPnl.add(deleteAccountBtn);
 
 		add(eastPnl, "East");
 		add(westPnl, "west");
@@ -237,7 +248,33 @@ class InfoChange extends JPanel implements ActionListener {
 		} else if (e.getActionCommand().equals("생년월일 변경하기")) {
 			ChangeInfoPnl changeInfoPnl = new ChangeInfoPnl(e.getActionCommand(), this, welcomeLbl);
 			changeInfoPnl.setVisible(true);
+		} else if (e.getActionCommand().equals("회원 탈퇴")) {
+			int result = showDialog("탈퇴하시겠습니까?\n충전된 금액은 환불이 불가합니다.");
+			if (result == 0) {
+				UserDAO userDAO = new UserDAO();
+				DeleteUserDAO deleteUserDAO = new DeleteUserDAO();
+				OrderDAO orderDAO = new OrderDAO();
+				OrderListDAO orderListDAO = new OrderListDAO();
+				UserService service = new UserService(userDAO, deleteUserDAO, orderDAO, orderListDAO);
+				User u = User.getCurUser();
+				service.deleteUser(u);
+				JOptionPane.showMessageDialog(this, "탈퇴가 완료되었습니다.");
+				for (Window window : Window.getWindows()) {
+					window.dispose();
+				}
+				new Login().setVisible(true);
+			} else {
+				JOptionPane.showMessageDialog(this, "취소되었습니다.");
+			}
 		}
+	}
+	
+	private int showDialog(String str) {
+		String[] options = { "탈퇴", "취소" };
+		int choice = JOptionPane.showOptionDialog(this, str, "알림",  JOptionPane.DEFAULT_OPTION
+				, JOptionPane.QUESTION_MESSAGE, null, options, null);
+
+		return choice;
 	}
 }
 
@@ -427,45 +464,43 @@ class ChangeInfoPnl extends JDialog implements ActionListener {
 public class MemberInfoPnl extends JPanel {
 
 	public MemberInfoPnl(JLabel jLabel) {
-		
 		reconstruction(jLabel);
-
 	}
+
 	public void reconstruction(JLabel jLabel) {
 		DataManager.inputData("MemberInfoPnl", this);
 		DataManager.inputData("jLabel", jLabel);
-		
+
 		setLayout(new BorderLayout()); // BorderLayout으로 레이아웃 설정
 		JPanel shoopingInfo = new ShoopingInfo();
-		//shoopingInfo.setPreferredSize(new Dimension(1000, 1000));
+		// shoopingInfo.setPreferredSize(new Dimension(1000, 1000));
 		JTabbedPane tabbedPane = new JTabbedPane();
 		InfoChange infoChange = new InfoChange(jLabel);
 		JScrollPane js = new JScrollPane(shoopingInfo);
 		js.getVerticalScrollBar().setUnitIncrement(10);
-		
 
 		tabbedPane.addTab("회원 정보 수정", infoChange);
 		tabbedPane.addTab("쇼핑 정보", js);
-		
+
 		tabbedPane.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                // 선택된 탭 인덱스 가져오기
-                int selectedIndex = tabbedPane.getSelectedIndex();
-                
-                // 특정 탭이 선택되었을 때의 행동 지정
-                switch (selectedIndex) {
-                    case 1:
-                    	ShoopingInfo shoinfo = ((ShoopingInfo) DataManager.getData("ShoopingInfo"));
-                    	shoinfo.removeAll();
-                    	shoinfo.reconstruction();
-                    	shoinfo.revalidate();
-                    	shoinfo.repaint();
-                        break;
-                    default:
-                        break;
-                }
-            }
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				// 선택된 탭 인덱스 가져오기
+				int selectedIndex = tabbedPane.getSelectedIndex();
+
+				// 특정 탭이 선택되었을 때의 행동 지정
+				switch (selectedIndex) {
+				case 1:
+					ShoopingInfo shoinfo = ((ShoopingInfo) DataManager.getData("ShoopingInfo"));
+					shoinfo.removeAll();
+					shoinfo.reconstruction();
+					shoinfo.revalidate();
+					shoinfo.repaint();
+					break;
+				default:
+					break;
+				}
+			}
 		});
 		add(tabbedPane);
 		add(tabbedPane, BorderLayout.CENTER); // JTabbedPane을 중앙에 추가

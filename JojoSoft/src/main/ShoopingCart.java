@@ -70,6 +70,7 @@ class BuyDialog extends JDialog implements ActionListener {
 			String grade = userDAO.payment(User.getCurUser().getUserId(), buyGameIdList, totalPaymentMoney);
 			if (grade != null) {
 				User.getCurUser().setUserUsedCash(User.getCurUser().getUserUsedCash() + totalPaymentMoney);
+				User.getCurUser().setUserChargeMoney(User.getCurUser().getUserChargeMoney() - totalPaymentMoney);
 				
 				if (!grade.equals("")) {
 					User.getCurUser().setUserGrade(grade);

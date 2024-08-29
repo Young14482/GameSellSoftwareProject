@@ -98,4 +98,46 @@ public class OrderDAO {
 		}
 		return 0;
 	}
+	
+	public List<Integer> getOrderIdList(User user) {
+		String sql = "SELECT order_id FROM `order` WHERE user_id = ?;";
+
+		List<Integer> list = new ArrayList<Integer>();
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try {
+			conn = DBUtil.getConnection("jojosoft");
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, user.getUserId());
+			rs = stmt.executeQuery();
+			while(rs.next()) {
+				list.add(rs.getInt(1));
+			}
+			return list;
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "예외 발생, function 클래스 검토 요망");
+		} finally {
+			DBUtil.closeAll(rs, stmt, conn);
+		}
+		return list;
+	}
+	
+	public int deleteOrder(Connection conn, User curUser) {
+		String sql = "DELETE FROM `order` WHERE user_id = ?";
+
+		PreparedStatement stmt = null;
+
+		try {
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, curUser.getUserId());
+			stmt.executeUpdate();
+			return 1;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.closeStatement(stmt);
+		}
+		return 0;
+}
 }

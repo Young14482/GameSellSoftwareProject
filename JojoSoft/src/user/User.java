@@ -8,10 +8,11 @@ public class User {
 	private String userBirth;
 	private String userPhoneNumber;
 	private int userUsedCash;
+	private int userChargeMoney;
 	private static User curUser;
 
-	public User(String userId, String userPw, String userNickName, String userGrade, String userBirth, String userPhoneNumber,
-			int userUsedCash) {
+	public User(String userId, String userPw, String userNickName, String userGrade, String userBirth,
+			String userPhoneNumber, int userUsedCash, int userChargeMoney) {
 		super();
 		this.userId = userId;
 		this.userPw = userPw;
@@ -20,6 +21,7 @@ public class User {
 		this.userBirth = userBirth;
 		this.userPhoneNumber = userPhoneNumber;
 		this.userUsedCash = userUsedCash;
+		this.userChargeMoney = userChargeMoney;
 	}
 
 	public String getUserId() {
@@ -85,10 +87,21 @@ public class User {
 	public static User getCurUser() {
 		return curUser;
 	}
+	
+	
+	public int getUserChargeMoney() {
+		return userChargeMoney;
+	}
+
+	public void setUserChargeMoney(int userChargeMoney) {
+		this.userChargeMoney = userChargeMoney;
+	}
 
 	@Override
 	public String toString() {
-		return "User [userId=" + userId + ", userPw=" + userPw + ", userNickName=" + userNickName + ", userGrade=" + userGrade
-				+ ", userUsedCash=" + userUsedCash + "]";
+		return "User [userId=" + userId + ", userPw=" + userPw + ", userNickName=" + userNickName + ", userGrade="
+				+ userGrade + ", userBirth=" + userBirth + ", userPhoneNumber=" + userPhoneNumber + ", userUsedCash="
+				+ userUsedCash + ", userChargeMoney=" + userChargeMoney + "]";
 	}
+
 }

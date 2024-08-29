@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 
 import game.Game;
 import materials.DBUtil;
+import user.User;
 
 public class OrderListDAO {
 	public int insert(int order_id) {
@@ -58,4 +59,21 @@ public class OrderListDAO {
 		}
 		return 0;
 	}
+	public int deleteOrderListWithOrderId(Connection conn, List<Integer> orderIdList) {
+		String sql = "DELETE FROM order_list WHERE order_id = ?";
+		PreparedStatement stmt = null;
+		try {
+			stmt = conn.prepareStatement(sql);
+			for(int orderId : orderIdList) {
+				stmt.setInt(1, orderId);
+				stmt.executeUpdate();
+			}
+			return 1;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.closeStatement(stmt);
+		}
+		return 0;
+}
 }

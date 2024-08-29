@@ -33,6 +33,7 @@ public class ChargeMoneyDialog extends JDialog {
 
 		add(pnl);
 		pack();
+		setLocationRelativeTo(pnlBasic);
 	}
 
 	public JLabel getLbl() {

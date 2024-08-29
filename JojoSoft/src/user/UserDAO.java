@@ -147,7 +147,7 @@ public class UserDAO {
 				return result;
 			}
 		} catch (Exception e) {
-
+			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "예외 발생, UserDAO 클래스 insert 검토 요망");
 		} finally {
 			DBUtil.closeAll(null, stmt, conn);
@@ -735,5 +735,22 @@ public class UserDAO {
 		Matcher m = p.matcher(birth);
 		return m;
 	}
+	
+	public int deleteUser(Connection conn, User curUser) {
+			String sql = "DELETE FROM `user` WHERE user_id = ?";
 
+			PreparedStatement stmt = null;
+
+			try {
+				stmt = conn.prepareStatement(sql);
+				stmt.setString(1, curUser.getUserId());
+				int a = stmt.executeUpdate();
+				return a;
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				DBUtil.closeStatement(stmt);
+			}
+			return 0;
+	}
 }
