@@ -12,9 +12,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 
+import game.Game;
 import game.GameDAO;
 import materials.JLableFactory;
+import picture.IconManager;
+import picture.PictureDAO;
 
 class Test extends JFrame {
 	public Test() {
@@ -33,28 +37,18 @@ class Test extends JFrame {
 		jta.setBackground(null);
 		jta.setLineWrap(true);
 		pnl.add(lbl, "North");
-		JPanel pnl2 = new JPanel();
+		JPanel pnl2 = new JPanel(new BorderLayout());
 		pnl2.setPreferredSize(new Dimension(700, 377));
-		pnl2.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		pnl2.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		lbl2.setPreferredSize(new Dimension(700, 377));
 
 		pnl2.add(lbl2);
 		pnl.add(pnl2, "South");
 		pnl.add(jta);
+
 		JScrollPane js = new JScrollPane(pnl);
-		js.setHorizontalScrollBarPolicy(js.HORIZONTAL_SCROLLBAR_NEVER);
-		pnl.addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				System.out.println(js.getVerticalScrollBar().getValue());
-				js.getVerticalScrollBar().setValue(396);
-				super.mouseClicked(e);
-			}
-
-		});
+		js.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		js.getVerticalScrollBar().setUnitIncrement(10);
-		js.getVerticalScrollBar().setValueIsAdjusting(false);
 		add(js);
 		jta.setText(gdao.getGame(1).getGame_info());
 
@@ -64,8 +58,22 @@ class Test extends JFrame {
 	}
 }
 
+class Test2 extends JFrame {
+	public Test2() {
+		GameDetailPnl pnl = new GameDetailPnl();
+		pnl.setBackground(Color.RED);
+		Game.setCurGame(new GameDAO().getGame(9));
+		pnl.update();
+		add(pnl);
+		JLabel lbl = new JLabel(IconManager.getInstance().getIconByKey(71));
+//		add(lbl);
+		setSize(920, 600);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+	}
+}
+
 public class Main {
 	public static void main(String[] args) {
-		new Test().setVisible(true);
+		new Test2().setVisible(true);
 	}
 }

@@ -19,7 +19,6 @@ import javax.swing.border.LineBorder;
 
 import game.Game;
 import game.GameDAO;
-import materials.DataManager;
 import materials.JLableFactory;
 import materials.JPanelFactory;
 import picture.IconManager;
@@ -37,6 +36,7 @@ class PnlToolBar extends JPanel {
 		JButton btnLogout = new JButton("로그아웃");
 		btnLogout.addActionListener(pnlBasic);
 		JButton btnCart = new JButton("장바구니");
+
 		btnCart.addActionListener(pnlBasic);
 
 		pnlEast.add(lnlNickname);
