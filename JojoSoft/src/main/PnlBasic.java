@@ -32,6 +32,7 @@ public class PnlBasic extends JPanel implements ActionListener {
 	private pnlGameList pnlGameList;
 	private OrderDAO orderDAO;
 	private OrderListDAO orderListDAO;
+	private pnlPromotion pnlPromotion;
 
 	public PnlBasic() {
 		DataManager.inputData("pnlBasic", this);
@@ -49,6 +50,7 @@ public class PnlBasic extends JPanel implements ActionListener {
 		memberInfoPnl = new MemberInfoPnl(getLnlNickname());
 		gameDetailPnl = new GameDetailPnl();
 		pnlGameList = new pnlGameList();
+		pnlPromotion = new pnlPromotion();
 
 		// CardLayout에 패널 추가
 		pnlContainer.add(js, "MainPanel");
@@ -56,6 +58,7 @@ public class PnlBasic extends JPanel implements ActionListener {
 		pnlContainer.add(gameDetailPnl, "GameDetail");
 		pnlContainer.add(pnlGameList, "GameList");
 		pnlContainer.add(shoopingCart, "ShoopingCart");
+		pnlContainer.add(pnlPromotion, "Promotion");
 
 		setLayout(new BorderLayout());
 
@@ -67,22 +70,23 @@ public class PnlBasic extends JPanel implements ActionListener {
 	public JLabel getLnlNickname() {
 		return ((PnlToolBar) pnlToolBar).getLnlNickname();
 	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		ChargeMoneyDialog chargeMoneyDialog = new ChargeMoneyDialog(this);
 		if (e.getActionCommand().equals("회원 정보")) {
 
-        	MemberInfoPnl memberInfoPanel = ((MemberInfoPnl) DataManager.getData("MemberInfoPnl"));
-        	memberInfoPanel.removeAll();
-        	memberInfoPanel.reconstruction(((JLabel) DataManager.getData("jLabel")));
-        	memberInfoPanel.revalidate();
-        	memberInfoPanel.repaint();
+			MemberInfoPnl memberInfoPanel = ((MemberInfoPnl) DataManager.getData("MemberInfoPnl"));
+			memberInfoPanel.removeAll();
+			memberInfoPanel.reconstruction(((JLabel) DataManager.getData("jLabel")));
+			memberInfoPanel.revalidate();
+			memberInfoPanel.repaint();
 			cardLayout.show(pnlContainer, "MemberInfoPanel");
 		} else if (e.getActionCommand().equals("JOJOSOFT")) {
 			cardLayout.show(pnlContainer, "MainPanel");
 		} else if (e.getActionCommand().equals("게임")) {
 			cardLayout.show(pnlContainer, "GameList");
+		} else if (e.getActionCommand().equals("프로모션")) {
+			cardLayout.show(pnlContainer, "Promotion");
 		} else if (e.getActionCommand().equals("로그아웃")) {
 			// 기본적으로 내장된 윈도우 메소드를 통해 모든 창을 가져옴.
 			// 반복문을 통하여 가져오는 모든 창들을 dispose(종료)시킴
@@ -94,25 +98,25 @@ public class PnlBasic extends JPanel implements ActionListener {
 			new Login().setVisible(true);
 		} else if (e.getActionCommand().equals("장바구니")) {
 			cardLayout.show(pnlContainer, "ShoopingCart");
-			
+
 			((ShoopingCart) shoopingCart).removeAll();
 			((ShoopingCart) shoopingCart).reconstruction();
 			((ShoopingCart) shoopingCart).revalidate();
 			((ShoopingCart) shoopingCart).repaint();
-			
+
 		} else if (e.getActionCommand().equals("장바구니에 담기")) {
-			
+
 			orderDAO = new OrderDAO();
 			orderListDAO = new OrderListDAO();
 			int order_idOrNot = orderDAO.getNotBuyList();
-			
-			if(order_idOrNot == 0) {
-				int order_id  = orderDAO.insert();
+
+			if (order_idOrNot == 0) {
+				int order_id = orderDAO.insert();
 				orderListDAO.insert(order_id);
 				showCartDialog("상품을 장바구니에 담았습니다");
 			} else {
 				int order_id = orderListDAO.checkGame(order_idOrNot);
-				if(order_id == 0) {
+				if (order_id == 0) {
 					orderListDAO.insert(order_idOrNot);
 					showCartDialog("상품을 장바구니에 담았습니다");
 				} else {
@@ -120,9 +124,9 @@ public class PnlBasic extends JPanel implements ActionListener {
 				}
 			}
 		} else if (e.getActionCommand().equals("금액 충전 하기")) {
-			chargeMoneyDialog.setVisible(true);
+			new ChargeMoneyDialog(this).setVisible(true);
 		} else if (e.getActionCommand().equals("금액 충전")) {
-			chargeMoneyDialog = (ChargeMoneyDialog) ((JButton) e.getSource()).getTopLevelAncestor();
+			ChargeMoneyDialog chargeMoneyDialog = (ChargeMoneyDialog) ((JButton) e.getSource()).getTopLevelAncestor();
 			try {
 				int chargeMoney = Integer.valueOf(chargeMoneyDialog.getTf().getText());
 				if (chargeMoney > 0) {
@@ -143,11 +147,12 @@ public class PnlBasic extends JPanel implements ActionListener {
 		cardLayout.show(pnlContainer, "GameDetail");
 		gameDetailPnl.update();
 	}
+
 	private void showCartDialog(String str) {
 		String[] options = { "계속 쇼핑", "장바구니" };
-		int choice = JOptionPane.showOptionDialog(this, str, "알림",  JOptionPane.DEFAULT_OPTION
-				, JOptionPane.QUESTION_MESSAGE, null, options, null);
-		
+		int choice = JOptionPane.showOptionDialog(this, str, "알림", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+				null, options, null);
+
 		if (choice == 1) {
 			cardLayout.show(pnlContainer, "ShoopingCart");
 			ShoopingCart getShoopingCart = (ShoopingCart) DataManager.getData("ShoopingCart");

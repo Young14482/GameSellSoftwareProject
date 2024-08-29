@@ -19,6 +19,7 @@ import javax.swing.border.LineBorder;
 
 import game.Game;
 import game.GameDAO;
+import materials.DataManager;
 import materials.JLableFactory;
 import materials.JPanelFactory;
 import picture.IconManager;
@@ -68,8 +69,9 @@ class PnlToolBar extends JPanel {
 		JButton btnPromotion = new JButton("프로모션");
 		JButton userInfoBtn = new JButton("회원 정보");
 		JButton chargeMoneyBtn = new JButton("금액 충전 하기");
-		chargeMoneyBtn.addActionListener(pnlBasic);
+		btnPromotion.addActionListener(pnlBasic);
 		userInfoBtn.addActionListener(pnlBasic);
+		chargeMoneyBtn.addActionListener(pnlBasic);
 
 		pnlBtns.add(btnGame);
 		pnlBtns.add(btnPromotion);

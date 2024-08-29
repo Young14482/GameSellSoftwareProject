@@ -95,18 +95,15 @@ public class UserDAO {
 			DBUtil.closeAll(rs3, stmt3, conn);
 		}
 
-		String exp = "^(19[1-9][0-9]|20[0-1][0-9]|2020)-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$";
 		String exp2 = "^\\d{3}-\\d{3,4}-\\d{4}$";
 		// 정규표현식으로 문자열의 동등함을 비교
-		Pattern p = Pattern.compile(exp);
-		Matcher m1 = p.matcher(birth);
-		Pattern p2 = Pattern.compile(exp2);
-		Matcher m2 = p2.matcher(phoneNum);
 
-		if (!m1.matches()) {
+		Pattern p = Pattern.compile(exp2);
+		Matcher m = p.matcher(phoneNum);
+
+		if (!m.matches()) {
 			return "전화번호양식";
-
-		} else if (!m2.matches() || !isDate(phoneNum)) {
+		} else if (!isDate(birth)) {
 			return "생년월일";
 		} else {
 			return null;
@@ -117,7 +114,9 @@ public class UserDAO {
 		try {
 			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 			int year = LocalDate.parse(date, dateTimeFormatter).getYear();
-
+			if (year < 1910 || 2020 < year) {
+				return false;
+			}
 			return true;
 		} catch (DateTimeParseException ex) {
 			return false;
@@ -229,13 +228,11 @@ public class UserDAO {
 	}
 
 	/**
-	 * <<<<<<< HEAD 유저 아이디를 통해 유저의 정보를 변경하는 메소드 String select 문구를 바꾸어서 기능을 변경시킬 수 있음
-	 * select 종류 : 아이디로 찾기, 비밀번호 변경, 닉네임 변경, 생년월일 변경 비밀번호, 닉네임, 전화번호, 생년월일도 변경할 수
-	 * 있도록 추가 0을 리턴하면 메소드로 걸러내지 못한 값을 반영하려고 하여 반영에 실패하였을 때 0을 리턴, 1을 리턴하면 정상적으로
-	 * 반영되었을 때, 2를 리턴하면 올바른 양식대로 작성하지 않았을 때, 3을 리턴하면 기존과 동일한 값을 입력하였을 때 4를 리턴하면 이미
-	 * 존재하는 정보라 (Unique) 반영할 수 없을 때 ======= 유저 아이디를 통해 유저의 정보를 변경하는 메소드 String
-	 * select 문구를 바꾸어서 기능을 변경시킬 수 있음 select 종류 : 아이디로 찾기, 비밀번호 변경, 닉네임 변경, 생년월일 변경
-	 * 비밀번호, 닉네임, 전화번호, 생년월일도 변경할 수 있도록 추가 >>>>>>> stash
+	 * <<<<<<< HEAD 유저 아이디를 통해 유저의 정보를 변경하는 메소드 String select 문구를 바꾸어서 기능을 변경시킬 수 있음 select 종류 : 아이디로 찾기, 비밀번호 변경, 닉네임 변경, 생년월일
+	 * 변경 비밀번호, 닉네임, 전화번호, 생년월일도 변경할 수 있도록 추가 0을 리턴하면 메소드로 걸러내지 못한 값을 반영하려고 하여 반영에 실패하였을 때 0을 리턴, 1을 리턴하면 정상적으로 반영되었을 때, 2를 리턴하면
+	 * 올바른 양식대로 작성하지 않았을 때, 3을 리턴하면 기존과 동일한 값을 입력하였을 때 4를 리턴하면 이미 존재하는 정보라 (Unique) 반영할 수 없을 때 ======= 유저 아이디를 통해 유저의 정보를 변경하는
+	 * 메소드 String select 문구를 바꾸어서 기능을 변경시킬 수 있음 select 종류 : 아이디로 찾기, 비밀번호 변경, 닉네임 변경, 생년월일 변경 비밀번호, 닉네임, 전화번호, 생년월일도 변경할 수 있도록 추가
+	 * >>>>>>> stash
 	 */
 	public int changeUserInfo(String select, String userId, String userPw, String userNickName, String phoneNumber,
 			String userBirth) {
@@ -583,13 +580,13 @@ public class UserDAO {
 			stmt2.executeUpdate();
 			stmt3.executeUpdate();
 			stmt4.executeUpdate();
-			
+
 			String result = changUserRank(userId);
-			
+
 			conn2.commit();
 			conn3.commit();
 			conn4.commit();
-			
+
 			return result;
 
 		} catch (Exception e) {
@@ -659,17 +656,16 @@ public class UserDAO {
 		}
 		return false;
 	}
-	
-	
-	//유저의 사용 금액을 체크하고 일정 사용 금액 이상일 시 등급을 변경시켜주는 메소드 ()
+
+	// 유저의 사용 금액을 체크하고 일정 사용 금액 이상일 시 등급을 변경시켜주는 메소드 ()
 	public static String changUserRank(String userId) {
 		String findUserUsedMoney = "select user_usedcash, user_grade from user where user_id = ?";
-		
+
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		try {
-			
+
 			conn = DBUtil.getConnection("jojosoft");
 			stmt = conn.prepareStatement(findUserUsedMoney);
 			stmt.setString(1, userId);
@@ -678,9 +674,9 @@ public class UserDAO {
 			int useMoney = rs.getInt(1);
 			String userRank = rs.getString(2);
 			String rank = "";
-			
+
 			if (userRank.equals("VVIP")) {
-				
+
 			} else if (useMoney > 1000000) {
 				if (userRank.equals("VIP")) {
 					rank = "VVIP";
@@ -714,7 +710,7 @@ public class UserDAO {
 		} finally {
 			DBUtil.closeAll(rs, stmt, conn);
 		}
-		
+
 		return null;
 	}
 
