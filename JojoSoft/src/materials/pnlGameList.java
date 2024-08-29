@@ -167,7 +167,6 @@ public class pnlGameList extends JPanel implements ActionListener {
 			JButton btn = new JButton((i + start + 1) + "");
 			if (i == page) {
 				btn.setEnabled(false);
-				btn.setVisible(false);
 			}
 
 			btn.addActionListener(this);
