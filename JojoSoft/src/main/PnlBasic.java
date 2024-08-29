@@ -32,6 +32,7 @@ public class PnlBasic extends JPanel implements ActionListener {
 	private pnlGameList pnlGameList;
 	private OrderDAO orderDAO;
 	private OrderListDAO orderListDAO;
+	private pnlPromotion pnlPromotion;
 
 	public PnlBasic() {
 		DataManager.inputData("pnlBasic", this);
@@ -49,6 +50,7 @@ public class PnlBasic extends JPanel implements ActionListener {
 		memberInfoPnl = new MemberInfoPnl(getLnlNickname());
 		gameDetailPnl = new GameDetailPnl();
 		pnlGameList = new pnlGameList();
+		pnlPromotion = new pnlPromotion();
 
 		// CardLayout에 패널 추가
 		pnlContainer.add(js, "MainPanel");
@@ -56,6 +58,7 @@ public class PnlBasic extends JPanel implements ActionListener {
 		pnlContainer.add(gameDetailPnl, "GameDetail");
 		pnlContainer.add(pnlGameList, "GameList");
 		pnlContainer.add(shoopingCart, "ShoopingCart");
+		pnlContainer.add(pnlPromotion, "Promotion");
 
 		setLayout(new BorderLayout());
 
@@ -82,6 +85,8 @@ public class PnlBasic extends JPanel implements ActionListener {
 			cardLayout.show(pnlContainer, "MainPanel");
 		} else if (e.getActionCommand().equals("게임")) {
 			cardLayout.show(pnlContainer, "GameList");
+		} else if (e.getActionCommand().equals("프로모션")) {
+			cardLayout.show(pnlContainer, "Promotion");
 		} else if (e.getActionCommand().equals("로그아웃")) {
 			// 기본적으로 내장된 윈도우 메소드를 통해 모든 창을 가져옴.
 			// 반복문을 통하여 가져오는 모든 창들을 dispose(종료)시킴

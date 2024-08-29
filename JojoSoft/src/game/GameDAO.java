@@ -197,8 +197,46 @@ public class GameDAO {
 		return list;
 	}
 
+	public List<Game> getDisCountListOption(String category, int order) {
+		String sql = "SELECT * FROM game WHERE game_discount > 0 ";
+		if (!category.equals("전체")) {
+			sql += "AND game_category = ? ";
+		}
+		if (order == ORDER_BY_RELEASE_DESC) {
+			sql += "ORDER BY game_release DESC";
+		} else if (order == ORDER_BY_PRICE_DESC) {
+			sql += "ORDER BY ROUND(game_price * (100-game_discount)*100, -2) DESC";
+		} else if (order == ORDER_BY_PRICE_ASC) {
+			sql += "ORDER BY ROUND(game_price * (100-game_discount)*100, -2)";
+		}
+		List<Game> list = new ArrayList<>();
+
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = DBUtil.getConnection("jojosoft");
+			stmt = conn.prepareStatement(sql);
+			if (!category.equals("전체")) {
+				stmt.setString(1, category);
+			}
+			rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				list.add(gameMapper.resultMapping(rs));
+			}
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.closeAll(rs, stmt, conn);
+		}
+		return null;
+	}
+
 	public List<Game> getDiscountList() {
-		String sql = "SELECT * FROM game WHERE game_discount > 0 LIMIT 10";
+		String sql = "SELECT * FROM game WHERE game_discount > 0 ORDER BY game_release DESC LIMIT 10";
 		List<Game> list = new ArrayList<>();
 
 		Connection conn = null;

@@ -69,8 +69,9 @@ class PnlToolBar extends JPanel {
 		JButton btnPromotion = new JButton("프로모션");
 		JButton userInfoBtn = new JButton("회원 정보");
 		JButton chargeMoneyBtn = new JButton("금액 충전 하기");
-		chargeMoneyBtn.addActionListener(pnlBasic);
+		btnPromotion.addActionListener(pnlBasic);
 		userInfoBtn.addActionListener(pnlBasic);
+		chargeMoneyBtn.addActionListener(pnlBasic);
 
 		pnlBtns.add(btnGame);
 		pnlBtns.add(btnPromotion);
