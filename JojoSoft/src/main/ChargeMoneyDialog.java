@@ -1,7 +1,6 @@
 package main;
 
 import java.awt.Dimension;
-import java.awt.GridLayout;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -33,6 +32,7 @@ public class ChargeMoneyDialog extends JDialog {
 
 		add(pnl);
 		pack();
+		setLocationRelativeTo(pnlBasic);
 	}
 
 	public JLabel getLbl() {

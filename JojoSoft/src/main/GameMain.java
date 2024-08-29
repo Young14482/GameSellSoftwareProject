@@ -19,6 +19,7 @@ import javax.swing.border.LineBorder;
 
 import game.Game;
 import game.GameDAO;
+import materials.DataManager;
 import materials.JLableFactory;
 import materials.JPanelFactory;
 import picture.IconManager;

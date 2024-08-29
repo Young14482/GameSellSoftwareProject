@@ -17,8 +17,8 @@ import materials.IResultMapper;
 public class GameDAO {
 	private static final IResultMapper<Game> gameMapper = new GameMapper();
 	public static final int ORDER_BY_RELEASE_DESC = 0;
-	public static final int ORDER_BY_PRICE_ASC = 1;
-	public static final int ORDER_BY_PRICE_DESC = 2;
+	public static final int ORDER_BY_PRICE_DESC = 1;
+	public static final int ORDER_BY_PRICE_ASC = 2;
 
 	public Game getGame(int key) {
 		String sql = "SELECT * FROM game WHERE game_Id = ?";
@@ -148,6 +148,32 @@ public class GameDAO {
 		return null;
 	}
 
+	public List<String> getCategoryList() {
+		String sql = "SELECT DISTINCT game_category FROM game";
+		List<String> list = new ArrayList<>();
+
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = DBUtil.getConnection("jojosoft");
+			stmt = conn.createStatement();
+			rs = stmt.executeQuery(sql);
+
+			while (rs.next()) {
+				String game_category = rs.getString("game_category");
+				list.add(game_category);
+			}
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.closeAll(rs, stmt, conn);
+		}
+		return null;
+	}
+
 	public List<Game> getRandomList() {
 		int size = getAllCount();
 		Random random = new Random();
@@ -197,7 +223,7 @@ public class GameDAO {
 	}
 
 	public List<Game> getSearchedListDefault() {
-		return getSearchedList(null, null, null, null, null, ORDER_BY_RELEASE_DESC);
+		return getSearchedList(null, null, null, null, null, ORDER_BY_RELEASE_DESC, 0);
 	}
 
 	public int getAllCount() {
@@ -265,7 +291,8 @@ public class GameDAO {
 		return -1;
 	}
 
-	public List<Game> getSearchedList(String main, String sub, String genre, String production, String category, int order) {
+	public List<Game> getSearchedList(String main, String sub, String genre, String production, String category, int order,
+			int page) {
 		String sql = "SELECT * FROM game ";
 		StringJoiner stringJoiner = new StringJoiner(" AND ", "WHERE ", " ");
 		boolean where = false;
@@ -299,7 +326,7 @@ public class GameDAO {
 		} else if (order == ORDER_BY_PRICE_ASC) {
 			sql += "ORDER BY ROUND(game_price * (100-game_discount)*100, -2)";
 		}
-		sql += " LIMIT 10";
+		sql += " LIMIT 10 OFFSET " + (page * 10);
 
 		List<Game> list = new ArrayList<>();
 
