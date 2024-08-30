@@ -8,19 +8,19 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JPanel;
 
-import main.GameDetailPnl;
 import main.Login;
 import materials.DataManager;
-import materials.pnlGameList;
+import materials.PnlGameList;
 
 //메인 패널
 public class PnlBasicAdmin extends JPanel implements ActionListener {
-	private JPanel pnlToolBarAdmin;
+	private PnlToolBarAdmin pnlToolBarAdmin;
 	private CardLayout cardLayout;
 	private JPanel pnlContainer;
-	private pnlGameList pnlGameList;
+	private PnlGameList pnlGameList;
 	private PnlAddGame pnlAddGame;
 	private PnlModifyGame pnlModifyGame;
+	private SearchPnlAdmin searchPnl;
 
 	public PnlBasicAdmin() {
 		DataManager.removeData("pnlBasic");
@@ -31,14 +31,17 @@ public class PnlBasicAdmin extends JPanel implements ActionListener {
 		cardLayout = new CardLayout();
 		pnlContainer = new JPanel(cardLayout);
 		// 메인 정보 패널 및 스크롤 패널 설정
-		pnlGameList = new pnlGameList();
+		pnlGameList = new PnlGameList();
 		pnlAddGame = new PnlAddGame();
 		pnlModifyGame = new PnlModifyGame();
+		searchPnl = new SearchPnlAdmin(pnlToolBarAdmin.getTfSearch().getText(), this, null);
 
 		// CardLayout에 패널 추가
 		pnlContainer.add(pnlGameList, "MainPanel");
 		pnlContainer.add(pnlAddGame, "AddGame");
 		pnlContainer.add(pnlModifyGame, "GameDetail");
+
+		pnlContainer.add(searchPnl, "SearchPnl");
 
 		setLayout(new BorderLayout());
 
@@ -66,7 +69,23 @@ public class PnlBasicAdmin extends JPanel implements ActionListener {
 				window.dispose();
 			}
 			new Login().setVisible(true);
+		} else if (e.getActionCommand().equals("검색")) {
+
+			reconstructionSearchPnl(pnlToolBarAdmin.getTfSearch().getText(), null);
+			cardLayout.show(pnlContainer, "SearchPnl");
+
+		} else if (e.getActionCommand().equals("검색 창 내부 검색")) {
+
+			String saveStr = searchPnl.getSaveStr();
+			reconstructionSearchPnl(saveStr, searchPnl.getTfField().getText());
 		}
+	}
+
+	private void reconstructionSearchPnl(String str1, String str2) {
+		searchPnl.removeAll();
+		searchPnl.reconstruction(str1, this, str2);
+		searchPnl.revalidate();
+		searchPnl.repaint();
 	}
 
 	public void changeScreenToGameDetail() {

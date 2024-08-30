@@ -2,6 +2,8 @@ package materials;
 
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Function {
 
@@ -56,11 +58,43 @@ public class Function {
 
 		return false; // 한글이 포함되어 있지 않으면 false 반환
 	}
+
+	// 회원가입 시 아이디의 제약사항을 검토하는 메소드
+	public static boolean constraintsId(String strId) {
+		String exp = "^\\w{6,20}$";
+		// 정규표현식으로 문자열의 동등함을 비교
+		Pattern p = Pattern.compile(exp);
+		Matcher m = p.matcher(strId);
+		if (m.matches()) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	// 랜덤한 문자 10개를 만들어주는 메소드
+	public static String randomStringGenerator() {
+	        int length = 10;
+	        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	        Random random = new Random();
+
+	        // StringBuilder를 사용하여 랜덤 문자열 생성
+	        StringBuilder sb = new StringBuilder(length);
+
+	        for (int i = 0; i < length; i++) {
+	            int index = random.nextInt(characters.length());
+	            sb.append(characters.charAt(index));
+	        }
+
+	        String randomString = sb.toString();
+	        return randomString;
+	}
 	
 	
+
 	public static int priceCalculate(int price, int discountNumber) {
 		int sellPrice = price * (100 - discountNumber) / 100;
-	    int result = Math.round(sellPrice/100) * 100;
+		int result = Math.round(sellPrice / 100) * 100;
 		return result;
 	}
 

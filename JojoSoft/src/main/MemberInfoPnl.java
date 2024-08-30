@@ -33,6 +33,7 @@ import javax.swing.event.ChangeListener;
 
 import materials.DBUtil;
 import materials.DataManager;
+import materials.Function;
 import order.OrderDAO;
 import order.OrderListDAO;
 import user.DeleteUserDAO;
@@ -63,15 +64,14 @@ class ShoopingInfo extends JPanel {
 
 				int x = 10;
 				JPanel pnl = new JPanel();
-				pnl.setPreferredSize(new Dimension(1000, 100));
+				pnl.setPreferredSize(new Dimension(1500, 100));
 				pnl.setLayout(null);
 
 				JLabel listLbl = new JLabel("목록 " + (i + 1));
 				listLbl.setBounds(5, 0, 100, 20);
 				pnl.add(listLbl);
-
-				// JLabel gameIdLbl = makeLbl("게임 아이디 : ", userInfoList.get(i), 0, pnl, x, 20);
-				// x = x + gameIdLbl.getSize().width + 10;
+				JLabel gameIdLbl = makeLbl("게임 코드 : ", userInfoList.get(i), 0, pnl, x, 20);
+				x = x + gameIdLbl.getSize().width + 10;
 				JLabel userIdLbl = makeLbl("유저 아이디 : ", userInfoList.get(i), 1, pnl, x, 20);
 				x = x + userIdLbl.getSize().width + 10;
 				JLabel gameNameLbl = makeLbl("게임 이름 : ", userInfoList.get(i), 2, pnl, x, 20);
@@ -91,7 +91,7 @@ class ShoopingInfo extends JPanel {
 				add(pnl);
 			}
 
-			setPreferredSize(new Dimension(1500, userInfoList.size() * 90));
+			setPreferredSize(new Dimension(2000, userInfoList.size() * 90));
 		}
 	}
 
@@ -120,7 +120,7 @@ class ShoopingInfo extends JPanel {
 
 		List<List<String>> result = new ArrayList<>();
 
-		String sql = "select game_id, A.user_id, D.game_name, order_date,round(D.game_price * (100 - C.order_discount) / 100, -2) as '당시 구매가', order_status from `user` as A\r\n"
+		String sql = "select C.game_code, A.user_id, D.game_name, order_date,round(D.game_price * (100 - C.order_discount) / 100, -2) as '당시 구매가', order_status from `user` as A\r\n"
 				+ "   join `order` as B using (user_id)\r\n" + "    join `order_list` as C using (order_Id)\r\n"
 				+ "    join game as D using (game_id)\r\n" + "    where A.user_id = ?;";
 		Connection conn = null;
@@ -135,7 +135,9 @@ class ShoopingInfo extends JPanel {
 			while (rs.next()) {
 				List<String> collect = new ArrayList<>();
 				for (int i = 1; i < 7; i++) {
-					if (i != 4) {
+					if (i == 1) {
+						collect.add(Function.changePWBasic(rs.getString(i)));
+					} else if (i != 4 || i != 1) {
 						if (i == 6) {
 							if (rs.getString(i).equals("1")) {
 								collect.add("결제 완료");
@@ -159,7 +161,7 @@ class ShoopingInfo extends JPanel {
 	}
 }
 
-// 정보수정 탭. 구현 중
+// 정보수정 탭.
 class InfoChange extends JPanel implements ActionListener {
 
 	private JLabel phoneLbl;
@@ -175,6 +177,12 @@ class InfoChange extends JPanel implements ActionListener {
 		this.welcomeLbl = jLabel;
 		JPanel eastPnl = new JPanel();
 		JPanel westPnl = new JPanel();
+		
+		// 위치를 맞추기 위해 빈 패널 생성 및 추가
+		JPanel northEmptyPnl = new JPanel();
+		northEmptyPnl.setPreferredSize(new Dimension(1, 450));
+		
+		
 		eastPnl.setLayout(new GridLayout(7, 1));
 		westPnl.setLayout(new GridLayout(5, 1));
 		JLabel idLbl = new JLabel("아이디 : " + User.getCurUser().getUserId());
@@ -201,6 +209,8 @@ class InfoChange extends JPanel implements ActionListener {
 		JButton dateChangeBtn = new JButton("생년월일 변경하기");
 		dateChangeBtn.addActionListener(this);
 		JButton deleteAccountBtn = new JButton("회원 탈퇴");
+		deleteAccountBtn.setOpaque(true);
+		deleteAccountBtn.setBackground(new Color(255, 180, 180));
 		deleteAccountBtn.addActionListener(this);
 
 		eastPnl.add(idLbl);
@@ -219,6 +229,7 @@ class InfoChange extends JPanel implements ActionListener {
 
 		add(eastPnl, "East");
 		add(westPnl, "west");
+		add(northEmptyPnl, "North");
 	}
 
 	public JLabel getNickNameLbl() {
@@ -235,20 +246,25 @@ class InfoChange extends JPanel implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-
+		ChangeInfoPnl changeInfoPnl = new ChangeInfoPnl(e.getActionCommand(), this, welcomeLbl);
 		if (e.getActionCommand().equals("비밀번호 변경하기")) {
-			ChangeInfoPnl changeInfoPnl = new ChangeInfoPnl(e.getActionCommand(), this, welcomeLbl);
+			changeInfoPnl.setBtnActionCommand("비밀번호 변경하기");
+			changeInfoPnl.setLocationRelativeTo(this);
 			changeInfoPnl.setVisible(true);
 		} else if (e.getActionCommand().equals("닉네임 변경하기")) {
-			ChangeInfoPnl changeInfoPnl = new ChangeInfoPnl(e.getActionCommand(), this, welcomeLbl);
+			changeInfoPnl.setBtnActionCommand("닉네임 변경하기");
+			changeInfoPnl.setLocationRelativeTo(this);
 			changeInfoPnl.setVisible(true);
 		} else if (e.getActionCommand().equals("전화번호 변경하기")) {
-			ChangeInfoPnl changeInfoPnl = new ChangeInfoPnl(e.getActionCommand(), this, welcomeLbl);
+			changeInfoPnl.setBtnActionCommand("전화번호 변경하기");
+			changeInfoPnl.setLocationRelativeTo(this);
 			changeInfoPnl.setVisible(true);
 		} else if (e.getActionCommand().equals("생년월일 변경하기")) {
-			ChangeInfoPnl changeInfoPnl = new ChangeInfoPnl(e.getActionCommand(), this, welcomeLbl);
+			changeInfoPnl.setBtnActionCommand("생년월일 변경하기");
+			changeInfoPnl.setLocationRelativeTo(this);
 			changeInfoPnl.setVisible(true);
 		} else if (e.getActionCommand().equals("회원 탈퇴")) {
+			changeInfoPnl.setBtnActionCommand("회원 탈퇴");
 			int result = showDialog("탈퇴하시겠습니까?\n충전된 금액은 환불이 불가합니다.");
 			if (result == 0) {
 				UserDAO userDAO = new UserDAO();
@@ -288,10 +304,11 @@ class ChangeInfoPnl extends JDialog implements ActionListener {
 	private JLabel anotherQuestionLbl;
 	private InfoChange infoChange;
 	private JLabel welcomeLbl;
-
+	private String btnActionCommand;
 	public ChangeInfoPnl(String btnActionCommand, InfoChange infoChange, JLabel welcomeLbl) {
 		this.infoChange = infoChange;
 		this.welcomeLbl = welcomeLbl;
+		this.btnActionCommand = btnActionCommand;
 		JPanel pnl = new JPanel();
 		pnl.setLayout(null);
 		if (btnActionCommand.equals("비밀번호 변경하기")) {
@@ -458,6 +475,16 @@ class ChangeInfoPnl extends JDialog implements ActionListener {
 			}
 		}
 	}
+
+	public String getBtnActionCommand() {
+		return btnActionCommand;
+	}
+
+	public void setBtnActionCommand(String btnActionCommand) {
+		this.btnActionCommand = btnActionCommand;
+	}
+	
+	
 }
 
 // 회원 정보 보기 버튼을 눌렀을 때 띄워주는 창

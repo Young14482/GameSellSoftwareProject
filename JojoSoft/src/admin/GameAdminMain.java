@@ -14,14 +14,19 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
+import materials.DataManager;
 import user.User;
 import user.UserDAO;
 
 // 상단부 검색바 구성
 class PnlToolBarAdmin extends JPanel {
 	private JLabel lblNickname;
+	private JTextField tfSearch;
 
 	public PnlToolBarAdmin(PnlBasicAdmin pnlBasicAdmin) {
+		DataManager.removeData("PnlToolBar");
+		DataManager.inputData("PnlToolBar", this);
+
 		setLayout(new BorderLayout());
 		// pnlEast: 로그인,로그아웃, 사용자 닉네임 알려주는 패널
 		JPanel pnlEast = new JPanel(new GridLayout(3, 0));
@@ -38,16 +43,17 @@ class PnlToolBarAdmin extends JPanel {
 		pnlCenter.setBorder(new LineBorder(Color.BLACK));
 
 		// 검색바 패널
-		JPanel pnlSerch = new JPanel();
-		pnlSerch.setBorder(new LineBorder(Color.CYAN));
+		JPanel pnlSearch = new JPanel();
+		pnlSearch.setBorder(new LineBorder(Color.CYAN));
 		JButton btnLogo = new JButton("JOJOSOFT");
 		btnLogo.addActionListener(pnlBasicAdmin);
-		JTextField tfSeach = new JTextField(20);
-		JButton btnSeach = new JButton("검색");
+		tfSearch = new JTextField(20);
+		JButton btnSearch = new JButton("검색");
+		btnSearch.addActionListener(pnlBasicAdmin);
 
-		pnlSerch.add(btnLogo);
-		pnlSerch.add(tfSeach);
-		pnlSerch.add(btnSeach);
+		pnlSearch.add(btnLogo);
+		pnlSearch.add(tfSearch);
+		pnlSearch.add(btnSearch);
 
 		// 상품 추가, 상품 수정
 		JPanel pnlBtns = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -60,13 +66,17 @@ class PnlToolBarAdmin extends JPanel {
 		pnlBtns.add(btnAddGame);
 		pnlBtns.add(btnUpdataGame);
 
-		pnlCenter.add(pnlSerch);
+		pnlCenter.add(pnlSearch);
 		pnlCenter.add(pnlBtns);
 
 		add(pnlEast, BorderLayout.EAST);
 		add(pnlCenter, BorderLayout.CENTER);
 
 		setPreferredSize(new Dimension(900, 100));
+	}
+
+	public JTextField getTfSearch() {
+		return tfSearch;
 	}
 
 	public JLabel getLnlNickname() {

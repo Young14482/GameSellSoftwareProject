@@ -139,6 +139,10 @@ class AccessionMember extends JDialog implements ActionListener {
 			warningLbl.setText("비밀번호와 비밀번호 확인이 서로 일치하지 않습니다.");
 		} else if (Function.containsKorean(id)) {
 			warningLbl.setText("아이디에 한글을 포함할 수 없습니다.");
+		} else if (!Function.constraintsId(id)) {
+			warningLbl.setText("아이디는 6 ~ 20자리로만 구성할 수 있습니다.");
+		} else if (pw.length() < 8 || pw.length() > 20) {
+			warningLbl.setText("비밀번호는 8 ~ 20자리로만 구성할 수 있습니다.");
 		} else {
 			String result = userDAO.checkUser(id, nickName, birth, phoneNumber);
 			if (result == null) {
@@ -389,7 +393,7 @@ public class Login extends JFrame implements ActionListener {
 
 			if (user == null) {
 				JOptionPane.showMessageDialog(this, "없는 회원입니다.");
-			} else if (!user.getUserGrade().equals("ADMIN")){
+			} else if (!user.getUserGrade().equals("ADMIN")) {
 				JOptionPane.showMessageDialog(this, "환영합니다.");
 				User.setCurUser(user);
 				this.setVisible(false);

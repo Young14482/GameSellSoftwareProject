@@ -228,11 +228,13 @@ public class UserDAO {
 	}
 
 	/**
-	 * <<<<<<< HEAD 유저 아이디를 통해 유저의 정보를 변경하는 메소드 String select 문구를 바꾸어서 기능을 변경시킬 수 있음 select 종류 : 아이디로 찾기, 비밀번호 변경, 닉네임 변경, 생년월일
-	 * 변경 비밀번호, 닉네임, 전화번호, 생년월일도 변경할 수 있도록 추가 0을 리턴하면 메소드로 걸러내지 못한 값을 반영하려고 하여 반영에 실패하였을 때 0을 리턴, 1을 리턴하면 정상적으로 반영되었을 때, 2를 리턴하면
-	 * 올바른 양식대로 작성하지 않았을 때, 3을 리턴하면 기존과 동일한 값을 입력하였을 때 4를 리턴하면 이미 존재하는 정보라 (Unique) 반영할 수 없을 때 ======= 유저 아이디를 통해 유저의 정보를 변경하는
-	 * 메소드 String select 문구를 바꾸어서 기능을 변경시킬 수 있음 select 종류 : 아이디로 찾기, 비밀번호 변경, 닉네임 변경, 생년월일 변경 비밀번호, 닉네임, 전화번호, 생년월일도 변경할 수 있도록 추가
-	 * >>>>>>> stash
+	 * <<<<<<< HEAD 유저 아이디를 통해 유저의 정보를 변경하는 메소드 String select 문구를 바꾸어서 기능을 변경시킬 수 있음
+	 * select 종류 : 아이디로 찾기, 비밀번호 변경, 닉네임 변경, 생년월일 변경 비밀번호, 닉네임, 전화번호, 생년월일도 변경할 수
+	 * 있도록 추가 0을 리턴하면 메소드로 걸러내지 못한 값을 반영하려고 하여 반영에 실패하였을 때 0을 리턴, 1을 리턴하면 정상적으로
+	 * 반영되었을 때, 2를 리턴하면 올바른 양식대로 작성하지 않았을 때, 3을 리턴하면 기존과 동일한 값을 입력하였을 때 4를 리턴하면 이미
+	 * 존재하는 정보라 (Unique) 반영할 수 없을 때 ======= 유저 아이디를 통해 유저의 정보를 변경하는 메소드 String
+	 * select 문구를 바꾸어서 기능을 변경시킬 수 있음 select 종류 : 아이디로 찾기, 비밀번호 변경, 닉네임 변경, 생년월일 변경
+	 * 비밀번호, 닉네임, 전화번호, 생년월일도 변경할 수 있도록 추가 >>>>>>> stash
 	 */
 	public int changeUserInfo(String select, String userId, String userPw, String userNickName, String phoneNumber,
 			String userBirth) {
@@ -530,12 +532,13 @@ public class UserDAO {
 	}
 
 	// 장바구니에 담겨있는 목록 중 체크한 목록들을 모두 구매시켜주고 DB값을 변경해주는 메소드
-	public String payment(String userId, List<Integer> buyGameIdList, int totalPaymentMoney) {
+	public void payment(String userId, List<Integer> buyGameIdList, int totalPaymentMoney) {
 
 		String sqlSelectOrderId = "SELECT order_id FROM `order` where user_id = ? and order_status = 0;";
 		String sqlUpdateUser = "update user set user_chargeMoney = user_chargeMoney - ?, user_usedcash = user_usedcash + ? where user_id = ?;";
 		String sqlUpdateOrder = "update `order` set order_status = 1 where user_id = ? and order_status = 0;";
 		String sqlDeleteOrderDetail = "DELETE FROM order_list\r\n" + "		WHERE order_id = ?";
+
 		for (int i = 0; i < buyGameIdList.size(); i++) {
 			sqlDeleteOrderDetail += (" and game_id != " + buyGameIdList.get(i));
 		}
@@ -581,13 +584,14 @@ public class UserDAO {
 			stmt3.executeUpdate();
 			stmt4.executeUpdate();
 
-			String result = changUserRank(userId);
+			
 
 			conn2.commit();
 			conn3.commit();
 			conn4.commit();
+			
+			insertGameCode(String.valueOf(orderId));
 
-			return result;
 
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "예외 발생, UserDAO 클래스 payment 메소드 검토 ");
@@ -603,7 +607,90 @@ public class UserDAO {
 			DBUtil.closeAll(null, stmt2, conn2);
 			DBUtil.closeAll(null, stmt3, conn3);
 		}
-		return null;
+		
+	}
+
+	
+	// null인 게임코드를 찾아서 정상적인 코드로 삽입해주는 메소드
+	public void insertGameCode(String orderId) {
+		String sqlcountNull = "select game_id from order_list where order_id = ? and game_code = 'null'";
+
+		List<Integer> gameIdList = new ArrayList<>();
+
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = DBUtil.getConnection("jojosoft");
+			stmt = conn.prepareStatement(sqlcountNull);
+			stmt.setInt(1, Integer.valueOf(orderId));
+
+			rs = stmt.executeQuery();
+			while (rs.next()) {
+				gameIdList.add(rs.getInt(1));
+			}
+
+			for (int i = 0; i < gameIdList.size(); i++) {
+				String sqlUpdateOrderList = "update `order_list` set game_code = ? where order_id = ? and game_id = ?";
+				Connection conn2 = null;
+				PreparedStatement stmt2 = null;
+				ResultSet rs2 = null;
+				try {
+					boolean duplicateCheck = true;
+					String gameCode = Function.randomStringGenerator();
+					while (duplicateCheck) {
+						if (checkDuplicateCode(gameCode)) {
+							gameCode = Function.randomStringGenerator();
+						} else {
+							duplicateCheck = false;
+						}
+					}
+
+					conn2 = DBUtil.getConnection("jojosoft");
+					stmt2 = conn2.prepareStatement(sqlUpdateOrderList);
+					stmt2.setString(1, Function.changePW(gameCode));
+					stmt2.setInt(2, Integer.valueOf(orderId));
+					stmt2.setInt(3, gameIdList.get(i));
+					
+					stmt2.executeUpdate();
+
+				} catch (Exception e) {
+				} finally {
+					DBUtil.closeAll(rs2, stmt2, conn2);
+				}
+			}
+		} catch (Exception e) {
+		} finally {
+			DBUtil.closeAll(rs, stmt, conn);
+		}
+	}
+
+	public boolean checkDuplicateCode(String code) {
+		String sql = "select * from order_list where game_code = ?";
+
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try {
+			conn = DBUtil.getConnection("jojosoft");
+			stmt = conn.prepareStatement(sql);
+			String changeCode = Function.changePW(code);
+			stmt.setString(1, changeCode);
+
+			rs = stmt.executeQuery();
+
+			if (rs.next()) {
+				return true;
+			}
+
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "예외 발생, UserDAO 클래스 checkDuplicateCode 검토 요망");
+		} finally {
+			DBUtil.closeAll(rs, stmt, conn);
+		}
+
+		return false;
 	}
 
 	// 장바구니에 담겨있는 목록 중 체크한 목록들을 모두 지우는 메소드
@@ -644,7 +731,7 @@ public class UserDAO {
 			return true;
 
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "예외 발생, UserDAO 클래스 payment 메소드 검토 ");
+			JOptionPane.showMessageDialog(null, "예외 발생, UserDAO 클래스 removeShoopingList 메소드 검토 ");
 		} finally {
 			try {
 				conn2.rollback();
@@ -658,12 +745,16 @@ public class UserDAO {
 	}
 
 	// 유저의 사용 금액을 체크하고 일정 사용 금액 이상일 시 등급을 변경시켜주는 메소드 ()
-	public static String changUserRank(String userId) {
+	public static String changeUserRank(String userId, int userUsedMoney) {
 		String findUserUsedMoney = "select user_usedcash, user_grade from user where user_id = ?";
 
 		Connection conn = null;
 		PreparedStatement stmt = null;
+		Connection conn2 = null;
+		PreparedStatement stmt2 = null;
 		ResultSet rs = null;
+		
+		String rank = "";
 		try {
 
 			conn = DBUtil.getConnection("jojosoft");
@@ -671,22 +762,21 @@ public class UserDAO {
 			stmt.setString(1, userId);
 			rs = stmt.executeQuery();
 			rs.next();
-			int useMoney = rs.getInt(1);
-			String userRank = rs.getString(2);
-			String rank = "";
-
+			int useMoney = rs.getInt("user_usedcash") + userUsedMoney;
+			String userRank = rs.getString("user_grade");
+			
+			//
 			if (userRank.equals("VVIP")) {
-
 			} else if (useMoney > 1000000) {
-				if (userRank.equals("VIP")) {
+				if (!userRank.equals("VVIP")) {
 					rank = "VVIP";
 				}
 			} else if (useMoney > 200000) {
-				if (userRank.equals("정회원")) {
+				if (!userRank.equals("VIP")) {
 					rank = "VIP";
 				}
 			} else if (useMoney > 50000) {
-				if (userRank.equals("준회원")) {
+				if (!userRank.equals("정회원")) {
 					rank = "정회원";
 				}
 			} else {
@@ -694,24 +784,30 @@ public class UserDAO {
 					rank = "준회원";
 				}
 			}
-			if (!rank.equals("")) {
+		} catch (Exception e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "예외 발생, UserDAO 클래스 changUserRank 메소드 검토 ");
+		} finally {
+			DBUtil.closeAll(rs, stmt, conn);
+			
+		}
+		
+		if (rank != "") {
+			try {
 				String changeUserRank = "update user set user_grade = ? where user_id = ?";
-				Connection conn2 = null;
-				PreparedStatement stmt2 = null;
 				conn2 = DBUtil.getConnection("jojosoft");
 				stmt2 = conn2.prepareStatement(changeUserRank);
 				stmt2.setString(1, rank);
 				stmt2.setString(2, userId);
 				stmt2.executeUpdate();
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				DBUtil.closeAll(null, stmt2, conn2);
 			}
-			return rank;
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "예외 발생, UserDAO 클래스 changUserRank 메소드 검토 ");
-		} finally {
-			DBUtil.closeAll(rs, stmt, conn);
 		}
 
-		return null;
+		return rank;
 	}
 
 	// 전화번호 양식 체크 메소드
@@ -731,22 +827,22 @@ public class UserDAO {
 		Matcher m = p.matcher(birth);
 		return m;
 	}
-	
+
 	public int deleteUser(Connection conn, User curUser) {
-			String sql = "DELETE FROM `user` WHERE user_id = ?";
+		String sql = "DELETE FROM `user` WHERE user_id = ?";
 
-			PreparedStatement stmt = null;
+		PreparedStatement stmt = null;
 
-			try {
-				stmt = conn.prepareStatement(sql);
-				stmt.setString(1, curUser.getUserId());
-				int a = stmt.executeUpdate();
-				return a;
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} finally {
-				DBUtil.closeStatement(stmt);
-			}
-			return 0;
+		try {
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, curUser.getUserId());
+			int a = stmt.executeUpdate();
+			return a;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.closeStatement(stmt);
+		}
+		return 0;
 	}
 }

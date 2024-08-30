@@ -18,7 +18,7 @@ public class ChargeMoneyDialog extends JDialog {
 		pnl.setPreferredSize(new Dimension(290, 250));
 		pnl.setLayout(null);
 		lbl = new JLabel("충전하실 금액을 입력해주세요");
-		lbl.setBounds(55, 50, 200, 30);
+		lbl.setBounds(50, 50, 240, 30);
 		tf = new JTextField(10);
 		tf.setBounds(70, 100, 150, 30);
 		JButton btn = new JButton("확인");

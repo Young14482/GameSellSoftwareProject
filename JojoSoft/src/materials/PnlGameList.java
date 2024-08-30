@@ -20,7 +20,7 @@ import javax.swing.border.LineBorder;
 import game.Game;
 import game.GameDAO;
 
-public class pnlGameList extends JPanel implements ActionListener {
+public class PnlGameList extends JPanel implements ActionListener {
 	GameDAO gameDAO;
 	private JLabel lblAmount;
 	private JPanel pnlGame;
@@ -40,7 +40,7 @@ public class pnlGameList extends JPanel implements ActionListener {
 	private int endPage;
 	private JPanel pnlOption;
 
-	public pnlGameList() {
+	public PnlGameList() {
 		gameDAO = new GameDAO();
 		setLayout(new BorderLayout());
 

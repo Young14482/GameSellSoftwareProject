@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import materials.DataManager;
-import materials.pnlGameList;
+import materials.PnlGameList;
 import order.OrderDAO;
 import order.OrderListDAO;
 import user.User;
@@ -21,7 +21,7 @@ import user.UserDAO;
 
 //메인 패널
 public class PnlBasic extends JPanel implements ActionListener {
-	private JPanel pnlToolBar;
+	private PnlToolBar pnlToolBar;
 	private JPanel pnlMainInfo;
 	private JScrollPane js;
 	private JPanel memberInfoPnl;
@@ -29,10 +29,11 @@ public class PnlBasic extends JPanel implements ActionListener {
 	private JPanel pnlContainer;
 	private GameDetailPnl gameDetailPnl;
 	private JPanel shoopingCart;
-	private pnlGameList pnlGameList;
+	private PnlGameList pnlGameList;
 	private OrderDAO orderDAO;
 	private OrderListDAO orderListDAO;
 	private PnlPromotion pnlPromotion;
+	private SearchPnl searchPnl;
 
 	public PnlBasic() {
 		DataManager.removeData("pnlBasic");
@@ -50,7 +51,7 @@ public class PnlBasic extends JPanel implements ActionListener {
 		shoopingCart = new ShoopingCart();
 		memberInfoPnl = new MemberInfoPnl(getLnlNickname());
 		gameDetailPnl = new GameDetailPnl();
-		pnlGameList = new pnlGameList();
+		pnlGameList = new PnlGameList();
 		pnlPromotion = new PnlPromotion();
 
 		// CardLayout에 패널 추가
@@ -60,6 +61,9 @@ public class PnlBasic extends JPanel implements ActionListener {
 		pnlContainer.add(pnlGameList, "GameList");
 		pnlContainer.add(shoopingCart, "ShoopingCart");
 		pnlContainer.add(pnlPromotion, "Promotion");
+
+		searchPnl = new SearchPnl(pnlToolBar.getTfSeach().getText(), this, null);
+		pnlContainer.add(searchPnl, "SearchPnl");
 
 		setLayout(new BorderLayout());
 
@@ -130,18 +134,40 @@ public class PnlBasic extends JPanel implements ActionListener {
 			ChargeMoneyDialog chargeMoneyDialog = (ChargeMoneyDialog) ((JButton) e.getSource()).getTopLevelAncestor();
 			try {
 				int chargeMoney = Integer.valueOf(chargeMoneyDialog.getTf().getText());
-				if (chargeMoney > 0) {
-					UserDAO.chargeMoney(User.getCurUser().getUserId(), chargeMoney);
-					JOptionPane.showMessageDialog(this, chargeMoney + "원 충전이 완료되었습니다.");
-					chargeMoneyDialog.setVisible(false);
+				long checkRange = (long) (chargeMoney + (long) User.getCurUser().getUserChargeMoney());
+				if (checkRange >= 2147483647) {
+					chargeMoneyDialog.getLbl().setText("최대 보유 금액을 초과할 수 없습니다.");
 				} else {
-					chargeMoneyDialog.getLbl().setText("1원 이상만 충전하실 수 있습니다.");
+					if (chargeMoney > 0) {
+						UserDAO.chargeMoney(User.getCurUser().getUserId(), chargeMoney);
+						JOptionPane.showMessageDialog(this, chargeMoney + "원 충전이 완료되었습니다.");
+						User.getCurUser().setUserChargeMoney(User.getCurUser().getUserChargeMoney() + chargeMoney);
+						chargeMoneyDialog.setVisible(false);
+					} else {
+						chargeMoneyDialog.getLbl().setText("1원 이상만 충전하실 수 있습니다.");
+					}
 				}
 
 			} catch (Exception e2) {
 				chargeMoneyDialog.getLbl().setText("정수의 숫자만 입력하여 주십시오");
 			}
+		} else if (e.getActionCommand().equals("검색")) {
+
+			reconstructionSearchPnl(pnlToolBar.getTfSeach().getText(), null);
+			cardLayout.show(pnlContainer, "SearchPnl");
+
+		} else if (e.getActionCommand().equals("검색 창 내부 검색")) {
+
+			String saveStr = searchPnl.getSaveStr();
+			reconstructionSearchPnl(saveStr, searchPnl.getTfField().getText());
 		}
+	}
+
+	private void reconstructionSearchPnl(String str1, String str2) {
+		searchPnl.removeAll();
+		searchPnl.reconstruction(str1, this, str2);
+		searchPnl.revalidate();
+		searchPnl.repaint();
 	}
 
 	public void changeScreenToGameDetail() {
