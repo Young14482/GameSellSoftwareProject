@@ -141,6 +141,8 @@ public class pnlGameList extends JPanel implements ActionListener {
 
 		createButtons();
 
+		repaint();
+		revalidate();
 		js.getVerticalScrollBar().setValue(0);
 	}
 
