@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -67,7 +68,9 @@ class BuyDialog extends JDialog implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("확인")) {
 			UserDAO userDAO = new UserDAO();
-			String grade = userDAO.payment(User.getCurUser().getUserId(), buyGameIdList, totalPaymentMoney);
+			userDAO.payment(User.getCurUser().getUserId(), buyGameIdList, totalPaymentMoney);
+			String grade = UserDAO.changeUserRank(User.getCurUser().getUserId(), totalPaymentMoney);
+			
 			if (grade != null) {
 				User.getCurUser().setUserUsedCash(User.getCurUser().getUserUsedCash() + totalPaymentMoney);
 				User.getCurUser().setUserChargeMoney(User.getCurUser().getUserChargeMoney() - totalPaymentMoney);
@@ -75,12 +78,10 @@ class BuyDialog extends JDialog implements ActionListener {
 				if (!grade.equals("")) {
 					User.getCurUser().setUserGrade(grade);
 				}
-				JOptionPane.showMessageDialog(this, "결제가 완료되었습니다.");
+				JOptionPane.showMessageDialog(this, "결제가 완료되었습니다. 게임 코드는 '회원 정보'의 '쇼핑정보' 안에서 확인할 수 있습니다.");
 				this.setVisible(false);
 				
-				// 쇼핑 카트 패널에서 모든 항목 제거
 				shoopingCart.removeAll();
-				// 패널의 레이아웃과 내용 갱신
 				((ShoopingCart) shoopingCart).reconstruction();
 				shoopingCart.revalidate();
 				shoopingCart.repaint();
@@ -121,6 +122,9 @@ public class ShoopingCart extends JPanel implements ActionListener {
 		js.getVerticalScrollBar().setUnitIncrement(10);
 
 		if (gameInfoList.size() < 1) {
+			
+			
+			setLayout(new FlowLayout());
 			JLabel lbl = new JLabel("현재 장바구니에 담겨있는 목록이 없습니다.");
 			add(lbl, BorderLayout.CENTER);
 		} else {
@@ -173,11 +177,16 @@ public class ShoopingCart extends JPanel implements ActionListener {
 				pnlList.add(pnl);
 				mainPnl.add(pnl);
 			}
-
+			
 			JPanel southPnl = new JPanel();
+			JButton allCheckBtn = new JButton("모든 목록 체크하기");
+			allCheckBtn.setPreferredSize(new Dimension(200, 40));
+			southPnl.add(allCheckBtn);
+			
 			JButton buyBtn = new JButton("체크된 목록 모두 구매하기");
 			buyBtn.setPreferredSize(new Dimension(200, 40));
 			southPnl.add(buyBtn);
+			
 			JButton deleteBtn = new JButton("체크된 목록 모두 삭제하기");
 			deleteBtn.setPreferredSize(new Dimension(200, 40));
 			deleteBtn.setBackground(new Color(250, 50, 50));
@@ -185,6 +194,7 @@ public class ShoopingCart extends JPanel implements ActionListener {
 
 			buyBtn.addActionListener(this);
 			deleteBtn.addActionListener(this);
+			allCheckBtn.addActionListener(this);
 
 			add(js, BorderLayout.CENTER);
 			add(southPnl, BorderLayout.SOUTH);
@@ -234,6 +244,11 @@ public class ShoopingCart extends JPanel implements ActionListener {
 			} else {
 				JOptionPane.showMessageDialog(this, "체크된 목록이 없습니다.");
 			}
+		} else if (e.getActionCommand().equals("모든 목록 체크하기")) {
+			for (int i = 0; i < checkBoxList.size(); i++) {
+				checkBoxList.get(i).setSelected(true);
+			} 
+			
 		}
 	}
 

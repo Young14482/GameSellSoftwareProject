@@ -28,8 +28,11 @@ import user.User;
 // 상단부 검색바 구성
 class PnlToolBar extends JPanel {
 	private JLabel lnlNickname;
+	private JTextField tfSeach;
 
 	public PnlToolBar(PnlBasic pnlBasic) {
+		DataManager.inputData("PnlToolBar", this);
+		
 		setLayout(new BorderLayout());
 		// pnlEast: 로그인,로그아웃, 사용자 닉네임 알려주는 패널
 		JPanel pnlEast = new JPanel(new GridLayout(3, 0));
@@ -43,27 +46,26 @@ class PnlToolBar extends JPanel {
 		pnlEast.add(lnlNickname);
 		pnlEast.add(btnLogout);
 		pnlEast.add(btnCart);
-		pnlEast.setBorder(new LineBorder(Color.RED));
 
 		// 검색바랑 검색바 밑 버튼들 나누기 위한 패널생성
 		JPanel pnlCenter = new JPanel(new GridLayout(2, 0));
-		pnlCenter.setBorder(new LineBorder(Color.BLACK));
 
 		// 검색바 패널
 		JPanel pnlSerch = new JPanel();
-		pnlSerch.setBorder(new LineBorder(Color.CYAN));
 		JButton btnLogo = new JButton("JOJOSOFT");
+		btnLogo.setOpaque(true);
+		btnLogo.setBackground(new Color(240, 180, 0));
 		btnLogo.addActionListener(pnlBasic);
-		JTextField tfSeach = new JTextField(20);
+		tfSeach = new JTextField(20);
 		JButton btnSeach = new JButton("검색");
-
+		btnSeach.addActionListener(pnlBasic);
+		
 		pnlSerch.add(btnLogo);
 		pnlSerch.add(tfSeach);
 		pnlSerch.add(btnSeach);
 
 		// 게임,프로모션 버튼들 담을 패널
 		JPanel pnlBtns = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		pnlBtns.setBorder(new LineBorder(Color.green));
 		JButton btnGame = new JButton("게임");
 		btnGame.addActionListener(pnlBasic);
 		JButton btnPromotion = new JButton("프로모션");
@@ -85,6 +87,11 @@ class PnlToolBar extends JPanel {
 		add(pnlCenter, BorderLayout.CENTER);
 
 		setPreferredSize(new Dimension(900, 100));
+	}
+
+	
+	public JTextField getTfSeach() {
+		return tfSeach;
 	}
 
 	public JLabel getLnlNickname() {
@@ -113,7 +120,6 @@ class PnlProduction extends JPanel {
 
 	public PnlProduction() {
 		setLayout(new FlowLayout(FlowLayout.CENTER));
-		setBorder(BorderFactory.createLineBorder(Color.RED));
 		setPreferredSize(new Dimension(160, 0));
 
 		JLabel lblProduction1 = JLableFactory.createLblwithIcon(6);

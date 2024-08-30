@@ -1,6 +1,7 @@
 package main;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.List;
@@ -69,6 +70,9 @@ public class GameDetailPnl extends JPanel {
 		pnlGameInfo.add(lblAgeLimit);
 
 		JButton btnInsertCart = new JButton("장바구니에 담기");
+		btnInsertCart.setPreferredSize(new Dimension(50, 40));
+		btnInsertCart.setOpaque(true);
+		btnInsertCart.setBackground(new Color(250, 180, 0));
 		btnInsertCart.addActionListener((PnlBasic) DataManager.getData("pnlBasic"));
 
 		pnlEast.add(lblGameProfile, BorderLayout.NORTH);
