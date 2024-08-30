@@ -13,4 +13,8 @@ public class DataManager {
 	public static Object getData(String key) {
 		return dataMap.get(key);
 	}
+
+	public static void removeData(String key) {
+		dataMap.remove(key);
+	}
 }

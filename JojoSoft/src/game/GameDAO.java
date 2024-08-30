@@ -67,9 +67,9 @@ public class GameDAO {
 	}
 
 	public int insertGame(String game_name, int game_price, int age_limit, String game_genre, String game_production,
-			String game_ifgo, Date game_release, int game_profile, String game_category) {
+			String game_info, Date game_release, int game_profile, String game_category) {
 		String sql = "INSERT INTO game (game_name, game_price, age_limit, game_genre, game_production,\r\n"
-				+ "	game_ifgo, game_release, game_profile, game_category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				+ "	game_info, game_release, game_profile, game_category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 		Connection conn = null;
 		PreparedStatement stmt = null;
@@ -82,7 +82,7 @@ public class GameDAO {
 			stmt.setInt(3, age_limit);
 			stmt.setString(4, game_genre);
 			stmt.setString(5, game_production);
-			stmt.setString(6, game_ifgo);
+			stmt.setString(6, game_info);
 			stmt.setDate(7, game_release);
 			stmt.setInt(8, game_profile);
 			stmt.setString(9, game_category);
@@ -94,6 +94,84 @@ public class GameDAO {
 			DBUtil.closeAll(null, stmt, conn);
 		}
 		return 0;
+	}
+
+	public int insertGame(Connection conn, Game g) {
+		String sql = "INSERT INTO game (game_name, game_price,game_discount, age_limit, game_genre, game_production, game_info, game_release, game_profile, game_category) "
+				+ "VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+
+		try {
+			stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+			stmt.setString(1, g.getGame_name());
+			stmt.setInt(2, g.getGame_price());
+			stmt.setInt(3, g.getGame_discount());
+			stmt.setInt(4, g.getAge_limit());
+			stmt.setString(5, g.getGame_genre());
+			stmt.setString(6, g.getGame_production());
+			stmt.setString(7, g.getGame_info());
+			stmt.setDate(8, g.getGame_release());
+			stmt.setInt(9, g.getGame_profile());
+			stmt.setString(10, g.getGame_category());
+			stmt.executeUpdate();
+			rs = stmt.getGeneratedKeys();
+			if (rs.next()) {
+				return rs.getInt(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.closeAll(rs, stmt, null);
+		}
+		return -1;
+	}
+
+	public int updateGame(Connection conn, Game g) {
+		String sql = "UPDATE game SET game_name = ?, game_price = ?, game_discount = ?, age_limit = ?, game_genre = ?, game_production = ?, "
+				+ "game_info = ?, game_release = ?, game_profile = ?, game_category = ? WHERE game_id = ?";
+		PreparedStatement stmt = null;
+		try {
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, g.getGame_name());
+			stmt.setInt(2, g.getGame_price());
+			stmt.setInt(3, g.getGame_discount());
+			stmt.setInt(4, g.getAge_limit());
+			stmt.setString(5, g.getGame_genre());
+			stmt.setString(6, g.getGame_production());
+			stmt.setString(7, g.getGame_info());
+			stmt.setDate(8, g.getGame_release());
+			stmt.setInt(9, g.getGame_profile());
+			stmt.setString(10, g.getGame_category());
+			stmt.setInt(11, g.getGame_Id());
+
+			int result = stmt.executeUpdate();
+			return result;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.closeStatement(stmt);
+		}
+		return 0;
+	}
+
+	public int delteGame(Connection conn, int game_id) {
+		String sql = "DELETE FROM game WHERE game_id = ?";
+
+		PreparedStatement stmt = null;
+
+		try {
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, game_id);
+			return stmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+			throw new RuntimeException("뭔가 잘 못 됨");
+		} finally {
+			DBUtil.closeStatement(stmt);
+		}
 	}
 
 	public List<String> getGenreList() {
@@ -175,11 +253,13 @@ public class GameDAO {
 	}
 
 	public List<Game> getRandomList() {
-		int size = getAllCount();
+		List<Integer> gameIds = getGameIDs();
+		int size = gameIds.size();
 		Random random = new Random();
 		List<Integer> randomId = new ArrayList<>();
 		while (randomId.size() < 10) {
-			int id = random.nextInt(size) + 1;
+			int index = random.nextInt(size);
+			int id = gameIds.get(index);
 			if (!randomId.contains(id)) {
 				randomId.add(id);
 			}
@@ -195,6 +275,31 @@ public class GameDAO {
 			e.printStackTrace();
 		}
 		return list;
+	}
+
+	public List<Integer> getGameIDs() {
+		String sql = "SELECT game_id FROM game";
+		List<Integer> list = new ArrayList<>();
+
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = DBUtil.getConnection("jojosoft");
+			stmt = conn.prepareStatement(sql);
+			rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				list.add(rs.getInt("game_id"));
+			}
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.closeAll(rs, stmt, conn);
+		}
+		return null;
 	}
 
 	public List<Game> getDisCountListOption(String category, int order) {
@@ -258,14 +363,6 @@ public class GameDAO {
 			DBUtil.closeAll(rs, stmt, conn);
 		}
 		return null;
-	}
-
-	public List<Game> getSearchedListDefault() {
-		return getSearchedList(null, null, null, null, null, ORDER_BY_RELEASE_DESC, 0);
-	}
-
-	public int getAllCount() {
-		return getSearchedCount(null, null, null, null, null);
 	}
 
 	public int getSearchedCount(String main, String sub, String genre, String production, String category) {

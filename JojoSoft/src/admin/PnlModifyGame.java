@@ -27,7 +27,7 @@ import game.GameService;
 import materials.DataManager;
 import picture.Picture;
 
-public class PnlAddGame extends JPanel implements ActionListener {
+public class PnlModifyGame extends JPanel implements ActionListener {
 	private JTextField tfName;
 	private JTextField tfPrice;
 	private JTextField tfDiscount;
@@ -44,7 +44,7 @@ public class PnlAddGame extends JPanel implements ActionListener {
 	private File fileInGame;
 	private GameService gameService;
 
-	public PnlAddGame() {
+	public PnlModifyGame() {
 		setLayout(new BorderLayout());
 		gameService = new GameService();
 
@@ -119,9 +119,12 @@ public class PnlAddGame extends JPanel implements ActionListener {
 		pnlInGame.add(btnInGame);
 
 		JPanel pnlSouth = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		JButton btnAdd = new JButton("추가");
-		btnAdd.addActionListener(this);
-		pnlSouth.add(btnAdd);
+		JButton btnAmend = new JButton("수정");
+		btnAmend.addActionListener(this);
+		pnlSouth.add(btnAmend);
+		JButton btnDelete = new JButton("삭제");
+		btnDelete.addActionListener(this);
+		pnlSouth.add(btnDelete);
 		JButton btnReset = new JButton("초기화");
 		btnReset.addActionListener(this);
 		pnlSouth.add(btnReset);
@@ -140,17 +143,18 @@ public class PnlAddGame extends JPanel implements ActionListener {
 	}
 
 	public void update() {
-		tfName.setText("");
-		tfPrice.setText("");
-		tfDiscount.setText("");
-		tfAge.setText("");
-		tfGenre.setText("");
-		tfProduction.setText("");
-		taInfo.setText("");
-		tfRelease.setText("");
-		cbCategory.setSelectedItem("");
-		lblThumnailFile.setText("이미지 없음");
-		lblInGameFile.setText("이미지 없음");
+		Game game = Game.getCurGame();
+		tfName.setText(game.getGame_name());
+		tfPrice.setText(game.getGame_price() + "");
+		tfDiscount.setText(game.getGame_discount() + "");
+		tfAge.setText(game.getAge_limit() + "");
+		tfGenre.setText(game.getGame_genre());
+		tfProduction.setText(game.getGame_production());
+		taInfo.setText(game.getGame_info());
+		tfRelease.setText(game.getGame_release().toString());
+		cbCategory.setSelectedItem(game.getGame_category());
+		lblThumnailFile.setText("기존 이미지");
+		lblInGameFile.setText("기존 이미지");
 		fileThumnail = null;
 		fileInGame = null;
 	}
@@ -168,15 +172,9 @@ public class PnlAddGame extends JPanel implements ActionListener {
 				fileInGame = fileChooser.getSelectedFile();
 				lblInGameFile.setText(fileInGame.getAbsolutePath());
 			}
-		} else if (command.equals("추가")) {
-			if (tfName.getText().length() == 0 || tfPrice.getText().length() == 0 || tfDiscount.getText().length() == 0
-					|| tfAge.getText().length() == 0 || tfGenre.getText().length() == 0 || tfProduction.getText().length() == 0
-					|| taInfo.getText().length() == 0 || tfRelease.getText().length() == 0 || fileThumnail == null
-					|| fileInGame == null) {
-				JOptionPane.showMessageDialog(this, "정보를 모두 입력해주세요!");
-				return;
-			}
+		} else if (command.equals("수정")) {
 			try {
+				int game_Id = Game.getCurGame().getGame_Id();
 				String game_name = tfName.getText();
 				int game_price = Integer.parseInt(tfPrice.getText());
 				int game_discount = Integer.parseInt(tfDiscount.getText());
@@ -185,14 +183,21 @@ public class PnlAddGame extends JPanel implements ActionListener {
 				String game_production = tfProduction.getText();
 				String game_info = taInfo.getText();
 				Date game_release = Date.valueOf(tfRelease.getText());
+				int game_profile = Game.getCurGame().getGame_profile();
 				String game_category = (String) cbCategory.getSelectedItem();
-				Game g = new Game(-1, game_name, game_price, game_discount, age_limit, game_genre, game_production, game_info,
-						game_release, -1, game_category);
-				Picture picThumnail = new Picture("썸네일: " + fileThumnail.getName(), Files.readAllBytes(fileThumnail.toPath()));
-				Picture picInGame = new Picture("인게임: " + fileInGame.getName(), Files.readAllBytes(fileInGame.toPath()));
-				gameService.insertGame(g, picThumnail, picInGame);
+				Game g = new Game(game_Id, game_name, game_price, game_discount, age_limit, game_genre, game_production,
+						game_info, game_release, game_profile, game_category);
+				Picture picThumnail = null;
+				if (fileThumnail != null) {
+					picThumnail = new Picture("썸네일: " + fileThumnail.getName(), Files.readAllBytes(fileThumnail.toPath()));
+				}
+				Picture picInGame = null;
+				if (fileInGame != null) {
+					picInGame = new Picture("인게임: " + fileInGame.getName(), Files.readAllBytes(fileInGame.toPath()));
+				}
+				gameService.UpdateGame(g, picThumnail, picInGame);
 
-				JOptionPane.showMessageDialog(this, "게임 추가 완료!");
+				JOptionPane.showMessageDialog(this, "게임 수정 완료!");
 				((PnlBasicAdmin) DataManager.getData("pnlBasic")).changeScreenToMain();
 			} catch (NumberFormatException e1) {
 				e1.printStackTrace();
@@ -202,6 +207,14 @@ public class PnlAddGame extends JPanel implements ActionListener {
 				JOptionPane.showMessageDialog(this, "날짜 입력 오류!");
 			} catch (Exception e1) {
 				e1.printStackTrace();
+				JOptionPane.showMessageDialog(this, e1.getMessage());
+			}
+		} else if (command.equals("삭제")) {
+			try {
+				gameService.deleteGame(Game.getCurGame());
+				JOptionPane.showMessageDialog(this, "게임 삭제 완료!");
+				((PnlBasicAdmin) DataManager.getData("pnlBasic")).changeScreenToMain();
+			} catch (Exception e1) {
 				JOptionPane.showMessageDialog(this, e1.getMessage());
 			}
 		} else if (command.equals("초기화")) {

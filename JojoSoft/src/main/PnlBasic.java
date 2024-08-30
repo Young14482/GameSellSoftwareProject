@@ -32,9 +32,10 @@ public class PnlBasic extends JPanel implements ActionListener {
 	private pnlGameList pnlGameList;
 	private OrderDAO orderDAO;
 	private OrderListDAO orderListDAO;
-	private pnlPromotion pnlPromotion;
+	private PnlPromotion pnlPromotion;
 
 	public PnlBasic() {
+		DataManager.removeData("pnlBasic");
 		DataManager.inputData("pnlBasic", this);
 		pnlToolBar = new PnlToolBar(this);
 
@@ -50,7 +51,7 @@ public class PnlBasic extends JPanel implements ActionListener {
 		memberInfoPnl = new MemberInfoPnl(getLnlNickname());
 		gameDetailPnl = new GameDetailPnl();
 		pnlGameList = new pnlGameList();
-		pnlPromotion = new pnlPromotion();
+		pnlPromotion = new PnlPromotion();
 
 		// CardLayout에 패널 추가
 		pnlContainer.add(js, "MainPanel");

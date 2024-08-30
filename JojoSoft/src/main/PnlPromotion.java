@@ -18,14 +18,14 @@ import game.Game;
 import game.GameDAO;
 import materials.JPanelFactory;
 
-public class pnlPromotion extends JPanel implements ActionListener {
+public class PnlPromotion extends JPanel implements ActionListener {
 	private JPanel pnlCenter;
 	private JPanel pnlNorth;
 	private String category;
 	private int order;
 	private JComboBox<String> cbOrder;
 
-	public pnlPromotion() {
+	public PnlPromotion() {
 		category = "전체";
 		order = GameDAO.ORDER_BY_RELEASE_DESC;
 

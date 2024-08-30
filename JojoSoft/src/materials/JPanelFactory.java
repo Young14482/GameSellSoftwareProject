@@ -11,6 +11,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import admin.PnlBasicAdmin;
 import game.Game;
 import main.PnlBasic;
 import picture.IconManager;
@@ -67,10 +68,15 @@ public class JPanelFactory {
 			public void mouseEntered(MouseEvent e) {
 				Game.setCurGame(g);
 			}
-			
+
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				((PnlBasic) DataManager.getData("pnlBasic")).changeScreenToGameDetail();
+				Object pnlBasic = DataManager.getData("pnlBasic");
+				if (pnlBasic instanceof PnlBasic) {
+					((PnlBasic) pnlBasic).changeScreenToGameDetail();
+				} else {
+					((PnlBasicAdmin) pnlBasic).changeScreenToGameDetail();
+				}
 			}
 
 		});

@@ -38,47 +38,20 @@ public class pnlGameList extends JPanel implements ActionListener {
 	private int page;
 	private int amount;
 	private int endPage;
+	private JPanel pnlOption;
 
 	public pnlGameList() {
 		gameDAO = new GameDAO();
 		setLayout(new BorderLayout());
 
-		order = GameDAO.ORDER_BY_RELEASE_DESC;
-		genre = null;
-		production = null;
-		category = null;
-		btnList = new ArrayList<>();
-		page = 0;
+		initOptions();
 
-		JPanel pnlOption = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 30));
+		pnlOption = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 30));
 		pnlOption.setPreferredSize(new Dimension(160, 0));
 		pnlOption.setBorder(new EmptyBorder(40, 0, 0, 0));
 		add(pnlOption, "West");
 
-		String[] orderArr = { ":::정렬순 선택:::", "출시일순", "높은가격순", "낮은가격순" };
-		cbOrder = new JComboBox<>(orderArr);
-		cbOrder.setPreferredSize(new Dimension(125, 25));
-		List<String> genreList = gameDAO.getGenreList();
-		genreList.add(0, "::장르 선택::");
-		cbGenre = new JComboBox<>(genreList.toArray(new String[0]));
-		cbGenre.setPreferredSize(new Dimension(125, 25));
-		List<String> productionList = gameDAO.getProductionList();
-		productionList.add(0, "::제작사 선택::");
-		cbProduction = new JComboBox<>(productionList.toArray(new String[0]));
-		cbProduction.setPreferredSize(new Dimension(125, 25));
-		List<String> categoryList = gameDAO.getCategoryList();
-		categoryList.add(0, "::게임유형 선택::");
-		cbCategory = new JComboBox<>(categoryList.toArray(new String[0]));
-		cbCategory.setPreferredSize(new Dimension(125, 25));
-		JButton searchConfirm = new JButton("검색하기");
-		searchConfirm.setPreferredSize(new Dimension(125, 25));
-		searchConfirm.addActionListener(this);
-
-		pnlOption.add(cbOrder);
-		pnlOption.add(cbGenre);
-		pnlOption.add(cbProduction);
-		pnlOption.add(cbCategory);
-		pnlOption.add(searchConfirm);
+		recreateOptionComponents();
 
 		JPanel pnlMain = new JPanel(new BorderLayout());
 		lblAmount = new JLabel();
@@ -102,6 +75,15 @@ public class pnlGameList extends JPanel implements ActionListener {
 		js.getVerticalScrollBar().setUnitIncrement(10);
 		add(js);
 		update();
+	}
+
+	public void initOptions() {
+		order = GameDAO.ORDER_BY_RELEASE_DESC;
+		genre = null;
+		production = null;
+		category = null;
+		btnList = new ArrayList<>();
+		page = 0;
 	}
 
 	@Override
@@ -137,13 +119,42 @@ public class pnlGameList extends JPanel implements ActionListener {
 
 		setAmount();
 
-		createGamePanels();
+		createGameComponents();
 
 		createButtons();
 
 		repaint();
 		revalidate();
 		js.getVerticalScrollBar().setValue(0);
+	}
+
+	public void recreateOptionComponents() {
+		pnlOption.removeAll();
+
+		String[] orderArr = { ":::정렬순 선택:::", "출시일순", "높은가격순", "낮은가격순" };
+		cbOrder = new JComboBox<>(orderArr);
+		cbOrder.setPreferredSize(new Dimension(125, 25));
+		List<String> genreList = gameDAO.getGenreList();
+		genreList.add(0, "::장르 선택::");
+		cbGenre = new JComboBox<>(genreList.toArray(new String[0]));
+		cbGenre.setPreferredSize(new Dimension(125, 25));
+		List<String> productionList = gameDAO.getProductionList();
+		productionList.add(0, "::제작사 선택::");
+		cbProduction = new JComboBox<>(productionList.toArray(new String[0]));
+		cbProduction.setPreferredSize(new Dimension(125, 25));
+		List<String> categoryList = gameDAO.getCategoryList();
+		categoryList.add(0, "::게임유형 선택::");
+		cbCategory = new JComboBox<>(categoryList.toArray(new String[0]));
+		cbCategory.setPreferredSize(new Dimension(125, 25));
+		JButton searchConfirm = new JButton("검색하기");
+		searchConfirm.setPreferredSize(new Dimension(125, 25));
+		searchConfirm.addActionListener(this);
+
+		pnlOption.add(cbOrder);
+		pnlOption.add(cbGenre);
+		pnlOption.add(cbProduction);
+		pnlOption.add(cbCategory);
+		pnlOption.add(searchConfirm);
 	}
 
 	private void createButtons() {
@@ -187,7 +198,7 @@ public class pnlGameList extends JPanel implements ActionListener {
 		}
 	}
 
-	private void createGamePanels() {
+	private void createGameComponents() {
 		List<Game> list = gameDAO.getSearchedList(null, null, genre, production, category, order, page);
 		JPanelFactory panelFactory = new JPanelFactory();
 		for (Game game : list) {

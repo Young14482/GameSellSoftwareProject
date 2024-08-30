@@ -34,4 +34,41 @@ public class GamePictureDAO {
 		}
 		return -1;
 	}
+
+	public int insertGamePicture(Connection conn, int game_id, int picture_id) {
+		String sql = "INSERT INTO game_picture VALUES (?, ?)";
+
+		PreparedStatement stmt = null;
+
+		try {
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, game_id);
+			stmt.setInt(2, picture_id);
+			return stmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+			throw new RuntimeException("뭔가 잘 못 됨");
+		} finally {
+			DBUtil.closeStatement(stmt);
+		}
+	}
+
+	public int deleteGamePicture(Connection conn, int game_id) {
+		String sql = "DELETE FROM game_picture WHERE game_id = ?";
+
+		PreparedStatement stmt = null;
+
+		try {
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, game_id);
+			return stmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+			throw new RuntimeException("뭔가 잘 못 됨");
+		} finally {
+			DBUtil.closeStatement(stmt);
+		}
+	}
 }

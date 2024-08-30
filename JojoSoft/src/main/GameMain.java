@@ -158,7 +158,7 @@ class PnlLatestGames extends JPanel {
 		panelFactory = new JPanelFactory();
 		gameDAO = new GameDAO();
 		setBorder(BorderFactory.createLineBorder(Color.cyan));
-		List<Game> list = gameDAO.getSearchedListDefault();
+		List<Game> list = gameDAO.getSearchedList(null, null, null, null, null, GameDAO.ORDER_BY_RELEASE_DESC, 0);
 		setPreferredSize(new Dimension(500, 100 + 85 * list.size()));
 
 		for (Game game : list) {
