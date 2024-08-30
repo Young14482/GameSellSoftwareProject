@@ -19,6 +19,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import admin.GameAdminMain;
 import lombok.Getter;
 import materials.Function;
 import picture.IconManager;
@@ -388,11 +389,16 @@ public class Login extends JFrame implements ActionListener {
 
 			if (user == null) {
 				JOptionPane.showMessageDialog(this, "없는 회원입니다.");
-			} else {
+			} else if (!user.getUserGrade().equals("ADMIN")){
 				JOptionPane.showMessageDialog(this, "환영합니다.");
 				User.setCurUser(user);
 				this.setVisible(false);
 				new GameMain().setVisible(true);
+			} else {
+				JOptionPane.showMessageDialog(this, "환영합니다. 관리자님");
+				User.setCurUser(user);
+				this.setVisible(false);
+				new GameAdminMain().setVisible(true);
 			}
 
 		} else if (command.equals("회원 가입")) {
