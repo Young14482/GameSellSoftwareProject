@@ -16,6 +16,11 @@ import game.Game;
 import main.PnlBasic;
 import picture.IconManager;
 
+/*
+ * JPanelFactory.java
+ * 게임 선택 화면에서 게임 정보를 담는 JPanel을 생성하는 클래스
+ * 빨간 테두리 영역
+ */
 public class JPanelFactory {
 	public JPanel createGamePnl(Game g) {
 		JPanel pnlGame = new JPanel();
