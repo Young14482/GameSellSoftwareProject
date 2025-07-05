@@ -161,7 +161,9 @@ Enviroment
 <p align="center"><img src="https://github.com/user-attachments/assets/8d2b7240-0e77-4f8b-a002-b4d0047a647c"/></p>
 <p align="center"><img src="https://github.com/user-attachments/assets/1c9bbc8b-d236-485d-b150-538926571e45"/></p>
 
-2. 재사용성이 높은 부분 리팩토링
+2. 재사용성이 높은 부분 리팩토링  
+     <a href="https://github.com/Young14482/GameSellSoftwareProject/blob/master/JojoSoft/src/materials/JPanelFactory.java">JPanelFactory.java</a>
+
 ---
 ## ERD
 
