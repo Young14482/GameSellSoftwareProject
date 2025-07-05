@@ -161,8 +161,4 @@ Enviroment
 
 <p align="center"><img src="https://github.com/user-attachments/assets/9fd40b78-bb50-4309-9ae8-9beb4e45e949" width="700" height="600"></p>
 
-## Authors
-
-[![GitHub stats](https://github-readme-stats.vercel.app/api?username=HSLee1013)](https://github.com/HSLee1013)
-
 
