@@ -156,6 +156,12 @@ Enviroment
 <p align="center">(요소를 클릭하면 아래와 같은 화면으로 넘어갈 수 있도록 ppt자료를 구성)</p>
 <p align="center"><img src="https://github.com/user-attachments/assets/ba540d28-a587-4e9b-b0ca-3a12df96cdb2" width="500" height="350"></p>
     
+#### 담당 업무
+1. 프로그램 구동을 위한 더미데이터 생성
+<p align="center"><img src="https://github.com/user-attachments/assets/8d2b7240-0e77-4f8b-a002-b4d0047a647c"/></p>
+<p align="center"><img src="https://github.com/user-attachments/assets/1c9bbc8b-d236-485d-b150-538926571e45"/></p>
+
+2. 재사용성이 높은 부분 리팩토링
 ---
 ## ERD
 
